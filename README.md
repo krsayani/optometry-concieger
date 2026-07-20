@@ -49,7 +49,7 @@ Optometry Concierge is a modern, real-time career concierge and job placement pl
 
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/abubakarcodeer/optometry-concieger.git
    cd optometry-concierge
    ```
 
