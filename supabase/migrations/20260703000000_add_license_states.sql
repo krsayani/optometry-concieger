@@ -1,0 +1,1 @@
+ALTER TABLE public.od_intake_responses ADD COLUMN license_states text;
