@@ -38,4 +38,4 @@ dist-ssr
 !.env.example
 
 # Supabase
-.supabase/
+.supabase
