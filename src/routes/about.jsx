@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteLayout } from "@/layouts/SiteLayout";
-import { Star, ShieldCheck, Heart, ArrowRight } from "lucide-react";
+import { ShieldCheck, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ConfidentialIllustration } from "@/components/Illustrations";
 
@@ -13,45 +13,42 @@ function About() {
     <SiteLayout>
       <section id="story" className="container-page py-12 md:py-24 scroll-mt-20">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          <div>
-            <span className="text-primary font-bold uppercase tracking-widest text-xs md:text-sm mb-4 block">Our Story</span>
-            <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-8">
-              Doctor owned and led, 100% in your corner
+          <div className="lg:col-span-2 max-w-3xl">
+            <h1 className="text-3xl md:text-5xl font-black tracking-tight mb-4 text-primary">
+              Optometry Concierge
             </h1>
-            <div className="space-y-4 md:space-y-6 text-base md:text-lg text-muted-foreground leading-relaxed">
+            <span className="text-accent font-bold text-xl md:text-2xl mb-8 block">About Us</span>
+            <div className="space-y-5 md:space-y-6 text-base md:text-lg text-muted-foreground leading-relaxed">
               <p>
-                Optometry Concierge was founded by ODs who lived the confusion of navigating job searches without guidance.
-                We've seen it all — bad contracts, missed negotiation opportunities, and the stress of making major life
-                decisions with no one to bounce ideas off of.
+                Optometry Concierge was created by Doctor Bilal Ismail and Doctor Karim Sayani, two optometrists who graduated together from the University of the Incarnate Word Rosenberg School of Optometry.
               </p>
               <p>
-                The problem is clear: Private practices struggle to compete with the massive recruiting budgets of corporate chains.
-                Meanwhile, ODs — whether new grads or seasoned doctors — are often left to figure out salary benchmarks and contract
-                terms entirely on their own.
+                When we were graduating, we quickly realized there was no clear roadmap for finding the right first job. We had questions about resumes, interviews, salary expectations, contracts, negotiation, benefits, non-competes, production bonuses, and how to know whether an offer was actually fair.
               </p>
               <p>
-                We built this platform to fix both sides of that problem. We are not a corporate recruiting firm.
-                We are your colleagues, and our mission is to make sure no OD ever signs their first (or fifth) contract blind.
+                Like many new grads, we had to figure it out ourselves. We asked professors, watched negotiation videos, compared notes with classmates, and learned through experience. Thankfully, we were able to land strong first jobs and negotiate competitive offers.
               </p>
-            </div>
-          </div>
-          <div className="relative">
-            <div className="aspect-[4/5] rounded-[4rem] overflow-hidden bg-accent shadow-elevated relative group flex flex-col items-center justify-center text-center p-8">
-               <Star className="h-12 w-12 text-primary mb-6" strokeWidth={1.5} />
-               <h3 className="font-black text-xl md:text-2xl text-primary uppercase tracking-tight mb-2">Meet Your Colleagues</h3>
-               <p className="text-[10px] md:text-xs text-primary/70 uppercase tracking-[0.2em] font-black">OD Graduate & Practice Owners</p>
-            </div>
-
-            <div className="absolute -bottom-10 -left-6 md:-left-10 p-6 md:p-8 bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-2xl max-w-[260px] md:max-w-[300px] z-20 border border-border/50">
-               <div className="flex items-center gap-4 mb-4">
-                  <div className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-muted flex items-center justify-center text-primary shrink-0">
-                    <Heart className="h-5 w-5 md:h-6 md:w-6 fill-primary" />
-                  </div>
-                  <h3 className="text-base md:text-lg font-black text-primary">Our Philosophy</h3>
-               </div>
-               <p className="text-xs md:text-sm text-muted-foreground font-medium leading-relaxed">
-                 We are Doctor-first. We speak the language of ODs because we are ODs. No corporate middle-men.
-               </p>
+              <p>
+                But after speaking with classmates, colleagues, and friends, we realized many optometrists were dealing with the same problem. Some did not know what to ask. Some did not know what they were worth. Some accepted offers that were lower than they deserved. One colleague was making about $20,000 less than what she could have been earning in her market.
+              </p>
+              <p>
+                That is why we built Optometry Concierge.
+              </p>
+              <p>
+                Our mission is simple: help optometrists make smarter career decisions.
+              </p>
+              <p>
+                Whether you are a student, a new graduate, or a practicing OD quietly exploring your next move, we help with resume review, interview preparation, salary guidance, offer comparison, contract red-flag education, negotiation support, and job matching.
+              </p>
+              <p>
+                Everything is confidential. Your information is never shared with an employer unless you approve it first. If you are currently working and simply want to explore better options, your employer will not know.
+              </p>
+              <p>
+                For optometrists, our service is completely free.
+              </p>
+              <p>
+                We are not just another job board. We are optometrists helping optometrists move from uncertainty to the right opportunity.
+              </p>
             </div>
           </div>
         </div>
