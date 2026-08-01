@@ -20,6 +20,7 @@ export function MeetTheFoundersSection() {
             controls
             playsInline
             preload="metadata"
+            poster="/videos/meet-the-founders-poster.jpg"
           >
             <source src="/videos/meet-the-founders.mp4" type="video/mp4" />
             Your browser does not support the video tag.

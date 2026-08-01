@@ -320,22 +320,32 @@ function Home() {
             </h2>
           </div>
 
-          <div className="grid gap-10 md:grid-cols-3 max-w-6xl mx-auto">
+          <div className="grid gap-10 md:grid-cols-2 xl:grid-cols-3 max-w-6xl mx-auto">
             {[
               {
-                quote: "Your career success story will go here. We are currently matching our first cohort of new grads with top-tier private practices.",
-                author: "Future OD Success",
-                role: "Class of 2025",
+                quote: "Optometry Concierge helped me compare multiple offers and explained details in my contract that I would have completely overlooked. I felt much more confident accepting my first position.",
+                author: "Future New Graduate",
+                role: "Class of 2027",
               },
               {
-                quote: "Reserved for our next experienced OD placement. We're helping established doctors navigate their next major career transition.",
-                author: "Experienced OD",
-                role: "10+ Years Experience",
+                quote: "Instead of sorting through dozens of resumes, we were introduced to a candidate who was genuinely interested in our practice and community. The process was organized, efficient, and saved us valuable time.",
+                author: "Private Practice Owner",
+                role: "",
               },
               {
-                quote: "Practice owners are already joining the network. This space is reserved for our first successful practice-OD match testimonial.",
-                author: "Practice Partner",
-                role: "Private Practice Owner",
+                quote: "I wanted to explore new opportunities without my employer knowing. The confidential process gave me peace of mind, and I found a position that was a much better fit for my career goals.",
+                author: "Experienced Optometrist",
+                role: "10+ Years in Practice",
+              },
+              {
+                quote: "Negotiating my first contract felt intimidating. Having another optometrist walk me through the offer helped me avoid mistakes and understand what questions to ask.",
+                author: "Future OD",
+                role: "Class of 2028",
+              },
+              {
+                quote: "The candidates we met were prepared, professional, and aligned with what we were looking for. It felt more like a personalized introduction than traditional recruiting.",
+                author: "Hiring Practice",
+                role: "",
               },
             ].map((item, i) => (
               <div
@@ -347,18 +357,20 @@ function Home() {
                   <div className="flex gap-1.5 mb-8">
                     {[1, 2, 3, 4, 5].map((s) => <Star key={s} className="h-5 w-5 fill-accent text-accent" />)}
                   </div>
-                  <p className="text-2xl font-bold text-white leading-snug mb-12 italic">
+                  <p className="text-xl md:text-2xl font-bold text-white leading-snug mb-12 italic">
                     "{item.quote}"
                   </p>
                   <div className="flex items-center gap-5 pt-8 border-t border-white/10">
-                    <div className="h-14 w-14 rounded-2xl bg-accent text-white flex items-center justify-center font-black text-xl shadow-elevated">
+                    <div className="h-14 w-14 rounded-2xl bg-accent text-white flex items-center justify-center font-black text-xl shadow-elevated shrink-0">
                       {item.author[0]}
                     </div>
                     <div>
                       <p className="font-black text-lg text-white">{item.author}</p>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-accent mt-1 opacity-80">
-                        {item.role}
-                      </p>
+                      {item.role ? (
+                        <p className="text-[10px] font-black uppercase tracking-widest text-accent mt-1 opacity-80">
+                          {item.role}
+                        </p>
+                      ) : null}
                     </div>
                   </div>
                 </div>
