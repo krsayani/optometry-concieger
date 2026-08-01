@@ -1,6 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import { Instagram, Facebook, Linkedin } from "lucide-react";
-import { MedicalBadge } from "./Illustrations";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -56,17 +54,6 @@ export function Footer() {
               <a href="mailto:Admin@optometryconcierge.com" className="text-sm hover:text-accent transition-colors block font-bold">
                 Admin@optometryconcierge.com
               </a>
-              <div className="flex items-center gap-4 pt-2">
-                <a href="#" className="hover:text-accent transition-colors" aria-label="Instagram">
-                  <Instagram className="h-5 w-5" />
-                </a>
-                <a href="#" className="hover:text-accent transition-colors" aria-label="Facebook">
-                  <Facebook className="h-5 w-5" />
-                </a>
-                <a href="#" className="hover:text-accent transition-colors" aria-label="LinkedIn">
-                  <Linkedin className="h-5 w-5" />
-                </a>
-              </div>
             </div>
           </div>
         </div>
@@ -78,18 +65,6 @@ export function Footer() {
             <span className="h-4 w-px bg-white/10 hidden md:block" />
             <Link to="/terms" className="hover:text-accent transition-colors">Terms of Service</Link>
             <Link to="/privacy" className="hover:text-accent transition-colors">Privacy Policy</Link>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <a href="#" className="hover:opacity-70 transition-opacity" aria-label="Instagram">
-              <Instagram className="h-5 w-5" />
-            </a>
-            <a href="#" className="hover:opacity-70 transition-opacity" aria-label="Facebook">
-              <Facebook className="h-5 w-5" />
-            </a>
-            <a href="#" className="hover:opacity-70 transition-opacity" aria-label="LinkedIn">
-              <Linkedin className="h-5 w-5" />
-            </a>
           </div>
         </div>
       </div>
