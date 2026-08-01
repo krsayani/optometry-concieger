@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { ConfidentialitySection } from "@/components/ConfidentialitySection";
 import { DoctorOwnedSection } from "@/components/DoctorOwnedSection";
+import { MeetTheFoundersSection } from "@/components/MeetTheFoundersSection";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ConciergeIllustration, RoadmapIllustration, OptometryIllustration, InteractiveRoadmap } from "@/components/Illustrations";
@@ -96,8 +97,11 @@ function Home() {
         </div>
       </section>
 
-      {/* 2. Trust Bar - Social Proof */}
-      <div className="bg-white border-y border-border/50 py-10 relative z-20 -mt-8 mx-4 rounded-3xl shadow-soft max-w-6xl md:mx-auto">
+      {/* 2. Meet the Founders */}
+      <MeetTheFoundersSection />
+
+      {/* 3. Trust Bar - Social Proof */}
+      <div className="bg-white border-y border-border/50 py-10 relative z-20 mx-4 rounded-3xl shadow-soft max-w-6xl md:mx-auto">
         <div className="container-page">
           <div className="grid grid-cols-1 md:flex md:flex-row md:justify-between items-center gap-6 md:gap-4 text-[10px] font-black uppercase tracking-[0.25em] text-primary/70">
             <div className="flex items-center justify-center gap-3">
@@ -120,7 +124,7 @@ function Home() {
         </div>
       </div>
 
-      {/* 3. Value Proposition Section - For ODs */}
+      {/* 4. Value Proposition Section - For ODs */}
       <section className="relative bg-background pt-16 pb-16 md:pt-24 md:pb-32 overflow-hidden">
 
         <div className="container-page text-center mb-16 max-w-6xl relative z-10">
