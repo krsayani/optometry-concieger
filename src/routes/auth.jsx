@@ -52,7 +52,7 @@ function AuthPage() {
   const [busy, setBusy] = useState(false);
   const [forgot, setForgot] = useState(!!expired);
   const [showPassword, setShowPassword] = useState(false);
-  const [activeRole, setActiveRole] = useState("practice"); // 'practice' or 'Doctor'
+  const [activeRole, setActiveRole] = useState("practice"); // 'practice' or 'doctor'
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -194,10 +194,10 @@ function AuthPage() {
                   Practice
                 </button>
                 <button
-                  onClick={() => setActiveRole("Doctor")}
+                  onClick={() => setActiveRole("doctor")}
                   className={cn(
                     "flex flex-1 items-center justify-center gap-2 h-14 rounded-xl text-sm font-bold transition-all",
-                    activeRole === "Doctor"
+                    activeRole === "doctor"
                       ? "bg-accent/20 text-primary shadow-sm border border-primary/10"
                       : "text-muted-foreground hover:text-foreground"
                   )}
