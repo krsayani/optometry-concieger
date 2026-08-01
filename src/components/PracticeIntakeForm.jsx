@@ -396,7 +396,7 @@ export function PracticeIntakeForm() {
                           register("email").onBlur(e);
                           handleEmailBlur(e);
                         }}
-                        placeholder="doctor.smith@example.com"
+                        placeholder="Doctor.smith@example.com"
                         className={cn(!emailAvailable && "border-destructive focus-visible:ring-destructive")}
                         disabled={!!user}
                       />

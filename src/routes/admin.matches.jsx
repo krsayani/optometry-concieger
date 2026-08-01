@@ -573,7 +573,7 @@ function AdminMatches() {
                                 </div>
                             ) : (
                                 <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
-                                    Pair a doctor with a practice to start
+                                    Pair a Doctor with a practice to start
                                 </p>
                             )}
                         </div>

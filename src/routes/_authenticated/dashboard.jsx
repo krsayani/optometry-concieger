@@ -408,7 +408,7 @@ function PracticeDashboard({ isNested }) {
             {request?.practice_name || "Practice Dashboard"}
           </h1>
           <p className="mt-2 text-muted-foreground">
-            We are actively scanning our doctor network for your {request?.position_type || "OD"} role in {request?.location}.
+            We are actively scanning our Doctor network for your {request?.position_type || "OD"} role in {request?.location}.
           </p>
         </div>
         <div className="flex items-center gap-3 px-4 py-2 rounded-2xl bg-success/5 border border-success/10">

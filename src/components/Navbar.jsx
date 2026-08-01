@@ -84,7 +84,7 @@ export function Navbar() {
           </div>
           <div className="flex items-center gap-4">
              <span className="flex items-center gap-1.5 text-primary">
-               doctor owned and led
+               Doctor owned and led
              </span>
              <span className="h-4 w-px bg-border/50" />
              <span className="flex items-center gap-1.5 text-primary">

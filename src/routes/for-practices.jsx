@@ -91,7 +91,7 @@ function ForPractices() {
           <div className="grid lg:grid-cols-2 gap-20 items-center">
             <div>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 mb-8 backdrop-blur-sm">
-                     <span className="text-[10px] font-black uppercase tracking-[0.2em] text-accent">doctor owned and led</span>
+                     <span className="text-[10px] font-black uppercase tracking-[0.2em] text-accent">Doctor owned and led</span>
               </div>
 
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-tight md:leading-[1.1] text-white mb-6">
@@ -100,7 +100,7 @@ function ForPractices() {
               </h1>
 
               <p className="mt-6 text-base md:text-lg text-white/80 font-medium leading-relaxed max-w-xl">
-                The recruitment alternative with doctor owned and led. Skip the corporate headhunters and access a pre-vetted pipeline of high-retention clinical talent.
+                The recruitment alternative with Doctor owned and led. Skip the corporate headhunters and access a pre-vetted pipeline of high-retention clinical talent.
               </p>
 
               <div className="mt-10 flex flex-wrap gap-4 items-center">
@@ -203,7 +203,7 @@ function ForPractices() {
                         </div>
                      </div>
                      <p className="text-[9px] md:text-[11px] font-medium text-muted-foreground leading-relaxed">
-                       Access a nationwide pool of ODs through our private, doctor-vetted network.
+                       Access a nationwide pool of ODs through our private, Doctor-vetted network.
                      </p>
                   </div>
 

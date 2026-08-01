@@ -85,7 +85,7 @@ function HowItWorks() {
           <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-8 leading-[1.1] md:leading-[0.9]">The Methodology</h1>
           <p className="text-lg md:text-xl opacity-90 font-medium leading-relaxed max-w-2xl mx-auto mb-12">
             We've refined clinical recruitment into a transparent, low-friction framework
-            built for the modern doctor and practice owner.
+            built for the modern Doctor and practice owner.
           </p>
         </div>
       </section>

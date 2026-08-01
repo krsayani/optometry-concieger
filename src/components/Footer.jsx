@@ -17,11 +17,11 @@ export function Footer() {
                 </span>
              </Link>
              <p className="text-base font-medium opacity-70 leading-relaxed max-w-sm">
-                The premier doctor owned and led agency for optometry professionals. Built by colleagues, for colleagues, with absolute confidentiality.
+                The premier Doctor owned and led agency for optometry professionals. Built by colleagues, for colleagues, with absolute confidentiality.
              </p>
              <div className="pt-4 flex items-center gap-2 text-accent text-xs font-black uppercase tracking-widest">
                 <div className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
-                doctor owned and led
+                Doctor owned and led
              </div>
           </div>
 

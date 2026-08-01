@@ -27,7 +27,7 @@ function Contact() {
           <div>
             <h1 className="text-3xl md:text-5xl font-black tracking-tight mb-8">Contact Us</h1>
             <p className="text-lg text-muted-foreground mb-16 leading-relaxed">
-              Have questions about how we work? Whether you are a doctor looking for guidance
+              Have questions about how we work? Whether you are a Doctor looking for guidance
               or a practice looking to hire, we are here to help.
             </p>
 

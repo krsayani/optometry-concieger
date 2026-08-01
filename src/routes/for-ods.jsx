@@ -97,7 +97,7 @@ function ForODs() {
             <div>
               <div className="flex flex-wrap items-center gap-4 mb-12">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm">
-                   <span className="text-[10px] font-black uppercase tracking-[0.2em] text-accent">doctor owned and led</span>
+                   <span className="text-[10px] font-black uppercase tracking-[0.2em] text-accent">Doctor owned and led</span>
                 </div>
 
                 {/* Audience Toggle */}
