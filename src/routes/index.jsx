@@ -340,7 +340,7 @@ function Home() {
               {
                 quote: "Negotiating my first contract felt intimidating. Having another optometrist walk me through the offer helped me avoid mistakes and understand what questions to ask.",
                 author: "Future OD",
-                role: "Class of 2028",
+                role: "Class of 2026",
               },
               {
                 quote: "The candidates we met were prepared, professional, and aligned with what we were looking for. It felt more like a personalized introduction than traditional recruiting.",
