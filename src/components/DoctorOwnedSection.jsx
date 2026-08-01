@@ -3,22 +3,22 @@ import { Stethoscope, Award, ClipboardCheck, HeartPulse } from 'lucide-react';
 
 export const DoctorOwnedSection = () => {
   return (
-    <section className="bg-white py-20 md:py-32 border-y border-border/50 overflow-hidden relative">
+    <section className="bg-card py-16 md:py-24 border-y border-border/50 overflow-hidden relative">
       {/* Decorative Grid */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
-           style={{ backgroundImage: 'radial-gradient(circle, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+      <div className="absolute inset-0 opacity-[0.035] pointer-events-none"
+           style={{ backgroundImage: 'radial-gradient(circle, #000 1px, transparent 1px)', backgroundSize: '36px 36px' }} />
 
       <div className="container-page relative z-10">
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+        <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
           <div className="w-full lg:w-1/2">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/10 mb-6 md:mb-8">
-               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">A Colleague-Driven Network</span>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/5 border border-primary/10 mb-5 md:mb-7">
+               <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">A Colleague-Driven Network</span>
             </div>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-tight text-primary mb-8 text-balance">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-tight text-primary mb-5 md:mb-7 text-balance">
               Doctor <br />
               <span className="text-accent">owned and led</span>
             </h2>
-            <p className="text-base text-muted-foreground font-medium mb-8 md:mb-10 leading-relaxed">
+            <p className="text-sm md:text-base text-muted-foreground font-medium mb-7 md:mb-9 leading-relaxed max-w-xl">
               We aren't just another agency. We are optometrists who understand the clinical nuances, the late-night charting, and the value of a perfectly balanced practice.
             </p>
 

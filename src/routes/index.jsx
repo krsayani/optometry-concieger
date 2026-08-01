@@ -62,34 +62,40 @@ function Home() {
   return (
     <SiteLayout>
       {/* 1. Hero Section - Dark Background */}
-      <section className="relative overflow-hidden bg-primary pt-16 pb-12 text-white md:pt-20 md:pb-16">
+      <section className="relative overflow-hidden bg-primary pt-14 pb-14 text-white md:pt-24 md:pb-20">
         <img
           src="https://images.unsplash.com/photo-1582719471384-894fbb16e074?auto=format&fit=crop&q=80&w=1600"
           alt="Optometry phoropter equipment"
-          className="absolute inset-0 h-full w-full object-cover opacity-30 mix-blend-overlay pointer-events-none"
+          className="absolute inset-0 h-full w-full object-cover opacity-25 mix-blend-overlay pointer-events-none"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/80 via-primary/40 to-primary/80" />
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/85 via-primary/55 to-primary/90" />
         <div className="absolute left-1/4 top-0 h-96 w-96 rounded-full bg-accent/20 blur-[150px] -z-10 animate-pulse-slow" />
         <div className="absolute bottom-0 right-1/4 h-96 w-96 rounded-full bg-white/10 blur-[150px] -z-10" />
 
         <div className="container-page relative z-10">
-          <div className="mx-auto max-w-4xl text-center">
-            <div className="mb-8 inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-6 py-3 shadow-2xl backdrop-blur-md">
-              <span className="text-xs font-black uppercase tracking-[0.2em] text-accent">Doctor owned and led</span>
+          <div className="mx-auto max-w-4xl text-center animate-fade-up">
+            <div className="mb-6 md:mb-8 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 md:px-5 md:py-2.5 backdrop-blur-md">
+              <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+              <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.18em] text-accent">Doctor owned and led</span>
             </div>
-            <h1 className="mb-8 text-3xl font-black leading-tight md:leading-[1.1] tracking-tight text-white md:text-5xl lg:text-6xl">
-              From graduation to <br className="hidden md:block" />
-              great offer <span className="text-accent underline decoration-4 underline-offset-8">with someone</span> <br className="hidden md:block" />
+            <h1 className="mb-5 md:mb-7 text-[1.85rem] sm:text-4xl font-black leading-[1.15] tracking-tight text-white md:text-5xl lg:text-[3.5rem]">
+              From graduation to{" "}
+              <br className="hidden md:block" />
+              great offer{" "}
+              <span className="text-accent underline decoration-accent/60 decoration-[3px] underline-offset-[6px] md:underline-offset-8">
+                with someone
+              </span>{" "}
+              <br className="hidden md:block" />
               in your corner
             </h1>
-            <p className="mx-auto mb-8 max-w-2xl text-base font-medium leading-relaxed text-white/90 md:text-lg">
-              Free resume review, salary guidance, offer comparison, and job matching for ODs at every career stage new grad or 20 years in.
+            <p className="mx-auto mb-8 max-w-2xl text-[0.95rem] font-medium leading-relaxed text-white/85 md:text-lg">
+              Free resume review, salary guidance, offer comparison, and job matching for ODs at every career stage — new grad or 20 years in.
             </p>
-            <div className="mb-6 flex flex-wrap justify-center gap-4">
-              <Button asChild size="lg" className="h-14 rounded-full border-none bg-accent px-10 text-lg font-black text-primary shadow-elevated transition-all hover:scale-105 hover:bg-accent/90 active:scale-95">
+            <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 px-2">
+              <Button asChild size="lg" className="h-12 md:h-14 rounded-full border-none bg-accent px-8 md:px-10 text-base md:text-lg font-bold text-primary shadow-elevated transition-all hover:bg-accent/90 hover:shadow-elevated">
                 <Link to="/for-ods">Get Free Career Help</Link>
               </Button>
-              <Button asChild size="lg" className="h-14 rounded-full border border-white/20 bg-white/10 px-10 text-lg font-black text-white backdrop-blur-md transition-all hover:scale-105 hover:bg-white/20 active:scale-95">
+              <Button asChild size="lg" className="h-12 md:h-14 rounded-full border border-white/25 bg-white/10 px-8 md:px-10 text-base md:text-lg font-bold text-white backdrop-blur-md transition-all hover:bg-white/20 hover:border-white/40">
                 <Link to="/for-practices">Hire an OD</Link>
               </Button>
             </div>
@@ -101,40 +107,37 @@ function Home() {
       <MeetTheFoundersSection />
 
       {/* 3. Trust Bar - Social Proof */}
-      <div className="bg-white border-y border-border/50 py-10 relative z-20 mx-4 rounded-3xl shadow-soft max-w-6xl md:mx-auto">
-        <div className="container-page">
-          <div className="mx-auto flex w-fit max-w-full flex-col items-start gap-6 text-[10px] font-black uppercase tracking-[0.25em] text-primary/70 md:mx-0 md:w-full md:max-w-none md:flex-row md:items-center md:justify-between md:gap-4">
-            <div className="flex items-center gap-3">
-              <div className="h-2 w-2 rounded-full bg-accent shrink-0" />
-              <span>Doctor owned and led</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="h-2 w-2 rounded-full bg-accent shrink-0" />
-              <span>Free for All ODs — New Grad or Experienced</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="h-2 w-2 rounded-full bg-accent shrink-0" />
-              <span>Only Pay When You Hire</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="h-2 w-2 rounded-full bg-accent shrink-0" />
-              <span>Private Practice Specialists</span>
-            </div>
+      <div className="relative z-20 -mt-5 mx-4 md:mx-auto max-w-5xl rounded-2xl border border-border/60 bg-card/95 py-6 md:py-7 px-5 md:px-8 shadow-card backdrop-blur-sm">
+        <div className="mx-auto flex w-fit max-w-full flex-col items-start gap-4 text-[11px] font-bold uppercase tracking-[0.14em] text-primary/75 md:mx-0 md:w-full md:max-w-none md:flex-row md:items-center md:justify-between md:gap-3 md:tracking-[0.12em]">
+          <div className="flex items-center gap-2.5">
+            <div className="h-1.5 w-1.5 rounded-full bg-accent shrink-0" />
+            <span>Doctor owned and led</span>
+          </div>
+          <div className="flex items-center gap-2.5">
+            <div className="h-1.5 w-1.5 rounded-full bg-accent shrink-0" />
+            <span>Free for All ODs — New Grad or Experienced</span>
+          </div>
+          <div className="flex items-center gap-2.5">
+            <div className="h-1.5 w-1.5 rounded-full bg-accent shrink-0" />
+            <span>Only Pay When You Hire</span>
+          </div>
+          <div className="flex items-center gap-2.5">
+            <div className="h-1.5 w-1.5 rounded-full bg-accent shrink-0" />
+            <span>Private Practice Specialists</span>
           </div>
         </div>
       </div>
 
       {/* 4. Value Proposition Section - For ODs */}
-      <section className="relative bg-background pt-16 pb-16 md:pt-24 md:pb-32 overflow-hidden">
-
-        <div className="container-page text-center mb-16 max-w-6xl relative z-10">
-           <span className="text-primary font-black uppercase tracking-[0.3em] text-[10px] mb-6 block">Your Career Partner</span>
-           <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-tight text-primary mb-8">
+      <section className="relative bg-background pt-16 pb-16 md:pt-28 md:pb-28 overflow-hidden">
+        <div className="container-page text-center mb-10 md:mb-14 max-w-6xl relative z-10">
+           <span className="section-eyebrow">Your Career Partner</span>
+           <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-tight text-primary">
              We are not a job board <br/><span className="text-gradient">We are your career concierge</span>
            </h2>
         </div>
 
-        <div className="container-page grid sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="container-page grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 max-w-6xl mx-auto">
            {[
              {
                icon: FileText,
@@ -167,12 +170,12 @@ function Home() {
                desc: "Skip the applications and get your profile in front of decision makers."
              }
            ].map((item, i) => (
-             <div key={i} className="p-10 rounded-[3rem] bg-muted/20 border border-border group hover:border-primary/30 transition-all text-left flex flex-col shadow-soft">
-                <div className="h-16 w-16 rounded-2xl bg-white text-primary flex items-center justify-center mb-8 shadow-sm group-hover:bg-accent group-hover:text-white transition-colors">
-                   <item.icon className="h-8 w-8" />
+             <div key={i} className="p-6 md:p-8 rounded-2xl md:rounded-3xl bg-card border border-border/80 group hover:border-accent/40 hover:shadow-card hover:-translate-y-0.5 transition-all duration-300 text-left flex flex-col shadow-soft">
+                <div className="h-12 w-12 md:h-14 md:w-14 rounded-xl md:rounded-2xl bg-primary/5 text-primary flex items-center justify-center mb-5 md:mb-6 group-hover:bg-accent group-hover:text-white transition-colors duration-300">
+                   <item.icon className="h-6 w-6 md:h-7 md:w-7" />
                 </div>
-                <h3 className="text-2xl font-black text-primary mb-4 tracking-tight">{item.title}</h3>
-                <p className="text-muted-foreground font-medium leading-relaxed">{item.desc}</p>
+                <h3 className="text-lg md:text-xl font-bold text-primary mb-2 md:mb-3 tracking-tight">{item.title}</h3>
+                <p className="text-sm md:text-[0.95rem] text-muted-foreground font-medium leading-relaxed">{item.desc}</p>
              </div>
            ))}
         </div>
@@ -310,17 +313,17 @@ function Home() {
       <DoctorOwnedSection />
 
       {/* 7. Testimonials - Dark Background */}
-      <section className="bg-primary pt-12 pb-16 md:pt-20 md:pb-32 text-white border-y border-white/5 relative overflow-hidden">
+      <section className="bg-primary pt-14 pb-16 md:pt-24 md:pb-28 text-white border-y border-white/5 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[150px] -z-10" />
         <div className="container-page">
-          <div className="mx-auto max-w-4xl text-center mb-16">
-            <span className="text-accent font-black uppercase tracking-[0.3em] text-[10px] mb-6 block">Colleague Feedback</span>
-            <h2 className="text-3xl md:text-5xl font-black tracking-tight text-white leading-tight mb-8">
-              What our <br/><span className="text-accent">clients</span> say
+          <div className="mx-auto max-w-4xl text-center mb-10 md:mb-14">
+            <span className="section-eyebrow text-accent">Colleague Feedback</span>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-white leading-tight">
+              What our <span className="text-accent">clients</span> say
             </h2>
           </div>
 
-          <div className="grid gap-10 md:grid-cols-2 xl:grid-cols-3 max-w-6xl mx-auto">
+          <div className="grid gap-4 md:gap-6 md:grid-cols-2 xl:grid-cols-3 max-w-6xl mx-auto">
             {[
               {
                 quote: "Optometry Concierge helped me compare multiple offers and explained details in my contract that I would have completely overlooked. I felt much more confident accepting my first position.",
@@ -350,24 +353,24 @@ function Home() {
             ].map((item, i) => (
               <div
                 key={i}
-                className="relative rounded-[3.5rem] border border-white/10 bg-white/5 p-12 shadow-soft transition-all hover:bg-white/10 group backdrop-blur-md"
+                className="relative rounded-2xl md:rounded-3xl border border-white/10 bg-white/[0.06] p-6 md:p-8 shadow-soft transition-all duration-300 hover:bg-white/10 hover:border-white/20 group backdrop-blur-md"
               >
-                <Quote className="absolute right-12 top-12 h-12 w-12 text-accent opacity-20 group-hover:opacity-40 transition-colors" />
-                <div className="relative z-10">
-                  <div className="flex gap-1.5 mb-8">
-                    {[1, 2, 3, 4, 5].map((s) => <Star key={s} className="h-5 w-5 fill-accent text-accent" />)}
+                <Quote className="absolute right-5 top-5 md:right-6 md:top-6 h-8 w-8 md:h-10 md:w-10 text-accent opacity-15 group-hover:opacity-30 transition-opacity" />
+                <div className="relative z-10 flex h-full flex-col">
+                  <div className="flex gap-1 mb-4 md:mb-5">
+                    {[1, 2, 3, 4, 5].map((s) => <Star key={s} className="h-3.5 w-3.5 md:h-4 md:w-4 fill-accent text-accent" />)}
                   </div>
-                  <p className="text-xl md:text-2xl font-bold text-white leading-snug mb-12 italic">
+                  <p className="text-base md:text-lg font-semibold text-white/95 leading-relaxed mb-6 md:mb-8 flex-1">
                     "{item.quote}"
                   </p>
-                  <div className="flex items-center gap-5 pt-8 border-t border-white/10">
-                    <div className="h-14 w-14 rounded-2xl bg-accent text-white flex items-center justify-center font-black text-xl shadow-elevated shrink-0">
+                  <div className="flex items-center gap-3 md:gap-4 pt-5 border-t border-white/10">
+                    <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-accent text-primary flex items-center justify-center font-black text-base md:text-lg shadow-soft shrink-0">
                       {item.author[0]}
                     </div>
                     <div>
-                      <p className="font-black text-lg text-white">{item.author}</p>
+                      <p className="font-bold text-sm md:text-base text-white">{item.author}</p>
                       {item.role ? (
-                        <p className="text-[10px] font-black uppercase tracking-widest text-accent mt-1 opacity-80">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-accent mt-0.5 opacity-90">
                           {item.role}
                         </p>
                       ) : null}
@@ -380,29 +383,27 @@ function Home() {
         </div>
       </section>
 
-      {/* 8. Final CTA - Dark Background */}
-      <section className="container-page pb-16 pt-16">
-        <div
-          className="relative overflow-hidden rounded-[3rem] border border-white/10 p-10 text-center shadow-elevated md:p-24 bg-primary text-white"
-        >
+      {/* 8. Final CTA */}
+      <section className="container-page pb-14 pt-10 md:pb-20 md:pt-16">
+        <div className="relative overflow-hidden rounded-2xl md:rounded-3xl border border-white/10 p-8 text-center shadow-elevated md:p-16 lg:p-20 bg-primary text-white">
           <div className="absolute inset-0 z-0 opacity-30">
-            <div className="absolute -left-20 -top-20 h-[600px] w-[600px] rounded-full bg-accent/20 blur-[150px] animate-pulse-slow" />
-            <div className="absolute -right-20 -bottom-20 h-[600px] w-[600px] rounded-full bg-accent/20 blur-[150px] animate-pulse-slow delay-700" />
+            <div className="absolute -left-20 -top-20 h-[500px] w-[500px] rounded-full bg-accent/20 blur-[140px] animate-pulse-slow" />
+            <div className="absolute -right-20 -bottom-20 h-[500px] w-[500px] rounded-full bg-accent/20 blur-[140px] animate-pulse-slow delay-700" />
           </div>
 
-          <div className="relative z-10 max-w-4xl mx-auto">
-            <h2 className="text-3xl font-black tracking-tight text-white sm:text-5xl leading-tight mb-8">
-              Start your next <br /><span className="text-accent">chapter today</span>
+          <div className="relative z-10 max-w-3xl mx-auto">
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-tight mb-4 md:mb-6">
+              Start your next <span className="text-accent">chapter today</span>
             </h2>
-            <p className="mx-auto mt-6 text-base opacity-90 font-medium leading-relaxed mb-10 max-w-2xl">
+            <p className="mx-auto text-sm md:text-base text-white/85 font-medium leading-relaxed mb-8 md:mb-10 max-w-xl">
               Whether you are looking for your first job or your next major career move,
               we are in your corner. 100% free, 100% confidential.
             </p>
-            <div className="mt-10 flex flex-wrap justify-center gap-6">
-              <Button asChild size="lg" className="rounded-full px-10 h-16 text-lg font-black bg-accent hover:bg-accent/90 text-primary border-none shadow-elevated transition-all hover:scale-105">
+            <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4">
+              <Button asChild size="lg" className="h-12 md:h-14 rounded-full px-8 md:px-10 text-base font-bold bg-accent hover:bg-accent/90 text-primary border-none shadow-elevated">
                 <Link to="/for-ods">Get Started Now</Link>
               </Button>
-              <Button asChild size="lg" className="rounded-full px-10 h-16 text-lg font-black bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 transition-all hover:scale-105">
+              <Button asChild size="lg" className="h-12 md:h-14 rounded-full px-8 md:px-10 text-base font-bold bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20">
                 <Link to="/contact">Talk to a Recruiter</Link>
               </Button>
             </div>

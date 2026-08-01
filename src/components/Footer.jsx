@@ -7,20 +7,20 @@ export function Footer() {
 
   return (
     <footer className="mt-auto bg-primary text-primary-foreground border-t border-white/5">
-      <div className="container-page py-20">
-        <div className="grid grid-cols-1 gap-12 md:grid-cols-4 lg:grid-cols-5">
+      <div className="container-page py-14 md:py-20">
+        <div className="grid grid-cols-1 gap-10 md:gap-12 md:grid-cols-4 lg:grid-cols-5">
           {/* Brand/About */}
-          <div className="space-y-6 lg:col-span-2">
-             <Link to="/" className="flex items-center gap-2 mb-4">
-                <span className="text-2xl font-black tracking-tighter uppercase text-white">
+          <div className="space-y-5 lg:col-span-2">
+             <Link to="/" className="flex items-center gap-2 mb-2">
+                <span className="text-xl md:text-2xl font-black tracking-tighter uppercase text-white">
                   Optometry <span className="text-accent">Concierge</span>
                 </span>
              </Link>
-             <p className="text-base font-medium opacity-70 leading-relaxed max-w-sm">
+             <p className="text-sm md:text-base font-medium text-white/70 leading-relaxed max-w-sm">
                 The premier Doctor owned and led agency for optometry professionals. Built by colleagues, for colleagues, with absolute confidentiality.
              </p>
-             <div className="pt-4 flex items-center gap-2 text-accent text-xs font-black uppercase tracking-widest">
-                <div className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
+             <div className="pt-2 flex items-center gap-2 text-accent text-[11px] font-bold uppercase tracking-[0.16em]">
+                <div className="h-1.5 w-1.5 rounded-full bg-accent" />
                 Doctor owned and led
              </div>
           </div>

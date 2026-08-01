@@ -11,14 +11,14 @@ export const Route = createFileRoute("/about")({
 function About() {
   return (
     <SiteLayout>
-      <section id="story" className="container-page py-12 md:py-24 scroll-mt-20">
+      <section id="story" className="container-page py-12 md:py-20 scroll-mt-20">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           <div className="lg:col-span-2 max-w-3xl">
-            <h1 className="text-3xl md:text-5xl font-black tracking-tight mb-4 text-primary">
+            <span className="section-eyebrow text-accent">About Us</span>
+            <h1 className="text-3xl md:text-5xl font-black tracking-tight mb-6 md:mb-8 text-primary">
               Optometry Concierge
             </h1>
-            <span className="text-accent font-bold text-xl md:text-2xl mb-8 block">About Us</span>
-            <div className="space-y-5 md:space-y-6 text-base md:text-lg text-muted-foreground leading-relaxed">
+            <div className="space-y-5 md:space-y-6 text-[0.95rem] md:text-lg text-muted-foreground leading-relaxed">
               <p>
                 Optometry Concierge was created by Doctor Bilal Ismail and Doctor Karim Sayani, two optometrists who graduated together from the University of the Incarnate Word Rosenberg School of Optometry.
               </p>
@@ -89,18 +89,18 @@ function About() {
       </section>
 
       {/* Final CTA */}
-      <section className="container-page py-20 text-center">
-        <div className="max-w-4xl mx-auto rounded-[2.5rem] border border-border bg-card p-10 md:p-20 shadow-elevated relative overflow-hidden">
+      <section className="container-page py-14 md:py-20 text-center">
+        <div className="max-w-3xl mx-auto rounded-2xl md:rounded-3xl border border-border bg-card p-8 md:p-14 shadow-elevated relative overflow-hidden">
           <div className="absolute -right-20 -bottom-20 h-64 w-64 rounded-full bg-primary/5 blur-3xl" />
-          <h2 className="text-2xl md:text-4xl font-black mb-6 tracking-tight">Ready to find your next move?</h2>
-          <p className="text-base text-muted-foreground mb-10 max-w-xl mx-auto font-medium leading-relaxed">
+          <h2 className="text-2xl md:text-4xl font-black mb-4 md:mb-5 tracking-tight relative z-10">Ready to find your next move?</h2>
+          <p className="text-sm md:text-base text-muted-foreground mb-8 md:mb-10 max-w-xl mx-auto font-medium leading-relaxed relative z-10">
             Join hundreds of ODs who have found their ideal practice through our confidential concierge service.
           </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Button asChild size="lg" className="rounded-full px-10 h-14 text-base font-bold shadow-soft">
+          <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 relative z-10">
+            <Button asChild size="lg" className="rounded-full px-8 h-12 md:h-14 text-base font-bold shadow-soft">
               <Link to="/for-ods" hash="intake">Create Your Free Profile <ArrowRight className="ml-2 h-5 w-5" /></Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="rounded-full px-10 h-14 text-base font-bold bg-muted/20">
+            <Button asChild size="lg" variant="outline" className="rounded-full px-8 h-12 md:h-14 text-base font-bold">
               <Link to="/contact">Talk to a Recruiter</Link>
             </Button>
           </div>

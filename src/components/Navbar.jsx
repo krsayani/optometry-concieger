@@ -73,28 +73,28 @@ export function Navbar() {
   );
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-md">
-      {/* Utility Top Bar - Eye-to-Eye Careers Inspired */}
-      <div className="hidden border-b border-border/50 bg-muted/30 py-2 md:block">
-        <div className="container-page flex items-center justify-between text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+    <header className="sticky top-0 z-40 border-b border-border/80 bg-background/90 backdrop-blur-xl supports-[backdrop-filter]:bg-background/75">
+      {/* Utility Top Bar */}
+      <div className="hidden border-b border-border/40 bg-muted/40 py-1.5 md:block">
+        <div className="container-page flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
           <div className="flex items-center gap-6">
             <a href="mailto:Admin@optometryconcierge.com" className="hover:text-primary transition-colors flex items-center gap-1.5">
               Email: Admin@optometryconcierge.com
             </a>
           </div>
           <div className="flex items-center gap-4">
-             <span className="flex items-center gap-1.5 text-primary">
+             <span className="flex items-center gap-1.5 text-primary/80">
                Doctor owned and led
              </span>
-             <span className="h-4 w-px bg-border/50" />
-             <span className="flex items-center gap-1.5 text-primary">
-               <ShieldCheck className="h-3 w-3" /> 100% Confidential Service
+             <span className="h-3.5 w-px bg-border" />
+             <span className="flex items-center gap-1.5 text-primary/80">
+               <ShieldCheck className="h-3 w-3 text-accent" /> 100% Confidential Service
              </span>
           </div>
         </div>
       </div>
 
-      <nav className="container-page flex h-16 items-center justify-between gap-4">
+      <nav className="container-page flex h-14 md:h-16 items-center justify-between gap-4">
         <div className="flex items-center gap-8">
           <BrandLogo />
         </div>
