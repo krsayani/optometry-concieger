@@ -48,7 +48,7 @@ function TermsPage() {
 
               <Section title="2. The Concierge Model">
                 <p>
-                  Optometry Concierge is a private, dr. owned and led. We act as a connection layer between clinical professionals (ODs) and practices.
+                  Optometry Concierge is a private, doctor owned and led. We act as a connection layer between clinical professionals (ODs) and practices.
                 </p>
                 <p>
                   For Doctors: Our services are 100% free of charge. We provide career guidance, contract review feedback, and direct introductions.

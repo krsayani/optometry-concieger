@@ -74,7 +74,7 @@ function Home() {
         <div className="container-page relative z-10">
           <div className="mx-auto max-w-4xl text-center">
             <div className="mb-8 inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-6 py-3 shadow-2xl backdrop-blur-md">
-              <span className="text-xs font-black uppercase tracking-[0.2em] text-accent">dr. owned and led</span>
+              <span className="text-xs font-black uppercase tracking-[0.2em] text-accent">doctor owned and led</span>
             </div>
             <h1 className="mb-8 text-3xl font-black leading-tight md:leading-[1.1] tracking-tight text-white md:text-5xl lg:text-6xl">
               From graduation to <br className="hidden md:block" />
@@ -102,7 +102,7 @@ function Home() {
           <div className="grid grid-cols-1 md:flex md:flex-row md:justify-between items-center gap-6 md:gap-4 text-[10px] font-black uppercase tracking-[0.25em] text-primary/70">
             <div className="flex items-center justify-center gap-3">
               <div className="h-2 w-2 rounded-full bg-accent shrink-0" />
-              <span className="text-center md:text-left">dr. owned and led</span>
+              <span className="text-center md:text-left">doctor owned and led</span>
             </div>
             <div className="flex items-center justify-center gap-3">
               <div className="h-2 w-2 rounded-full bg-accent shrink-0" />

@@ -15,7 +15,7 @@ export const DoctorOwnedSection = () => {
                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">A Colleague-Driven Network</span>
             </div>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-tight text-primary mb-8 text-balance">
-              dr. <br />
+              doctor <br />
               <span className="text-accent">owned and led</span>
             </h2>
             <p className="text-base text-muted-foreground font-medium mb-8 md:mb-10 leading-relaxed">
@@ -69,7 +69,7 @@ export const DoctorOwnedSection = () => {
                 <div className="relative z-10">
                    <div className="flex items-center gap-4 md:gap-6 mb-6 md:mb-8">
                       <div>
-                         <h3 className="text-2xl font-black tracking-tight uppercase">dr. owned and led</h3>
+                         <h3 className="text-2xl font-black tracking-tight uppercase">doctor owned and led</h3>
                          <p className="text-accent font-bold uppercase tracking-widest text-[10px] mt-1">Founders' Commitment</p>
                       </div>
                    </div>

@@ -16,7 +16,7 @@ function About() {
           <div>
             <span className="text-primary font-bold uppercase tracking-widest text-xs md:text-sm mb-4 block">Our Story</span>
             <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-8">
-              dr. owned and led, 100% in your corner
+              doctor owned and led, 100% in your corner
             </h1>
             <div className="space-y-4 md:space-y-6 text-base md:text-lg text-muted-foreground leading-relaxed">
               <p>
