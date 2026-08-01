@@ -103,22 +103,22 @@ function Home() {
       {/* 3. Trust Bar - Social Proof */}
       <div className="bg-white border-y border-border/50 py-10 relative z-20 mx-4 rounded-3xl shadow-soft max-w-6xl md:mx-auto">
         <div className="container-page">
-          <div className="grid grid-cols-1 md:flex md:flex-row md:justify-between items-center gap-6 md:gap-4 text-[10px] font-black uppercase tracking-[0.25em] text-primary/70">
-            <div className="flex items-center justify-center gap-3">
+          <div className="mx-auto flex w-fit max-w-full flex-col items-start gap-6 text-[10px] font-black uppercase tracking-[0.25em] text-primary/70 md:mx-0 md:w-full md:max-w-none md:flex-row md:items-center md:justify-between md:gap-4">
+            <div className="flex items-center gap-3">
               <div className="h-2 w-2 rounded-full bg-accent shrink-0" />
-              <span className="text-center md:text-left">Doctor owned and led</span>
+              <span>Doctor owned and led</span>
             </div>
-            <div className="flex items-center justify-center gap-3">
+            <div className="flex items-center gap-3">
               <div className="h-2 w-2 rounded-full bg-accent shrink-0" />
-              <span className="text-center md:text-left">Free for All ODs — New Grad or Experienced</span>
+              <span>Free for All ODs — New Grad or Experienced</span>
             </div>
-            <div className="flex items-center justify-center gap-3">
+            <div className="flex items-center gap-3">
               <div className="h-2 w-2 rounded-full bg-accent shrink-0" />
-              <span className="text-center md:text-left">Only Pay When You Hire</span>
+              <span>Only Pay When You Hire</span>
             </div>
-            <div className="flex items-center justify-center gap-3">
+            <div className="flex items-center gap-3">
               <div className="h-2 w-2 rounded-full bg-accent shrink-0" />
-              <span className="text-center md:text-left">Private Practice Specialists</span>
+              <span>Private Practice Specialists</span>
             </div>
           </div>
         </div>
