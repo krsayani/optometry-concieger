@@ -64,10 +64,10 @@ function Home() {
       {/* 1. Hero — full-bleed brand composition */}
       <section className="relative min-h-[min(100svh,720px)] overflow-hidden bg-primary pt-12 pb-16 text-white sm:min-h-[78vh] md:min-h-[92vh] md:pt-28 md:pb-28 flex items-center">
         <img
-          src="https://images.unsplash.com/photo-1582719471384-894fbb16e074?auto=format&fit=crop&q=80&w=2000"
+          src="/images/hero-exam.png"
           alt=""
           aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover object-center opacity-40 md:animate-kenburns pointer-events-none"
+          className="absolute inset-0 h-full w-full object-cover object-[center_25%] opacity-45 md:animate-kenburns pointer-events-none"
         />
         <div
           className="absolute inset-0 pointer-events-none"
