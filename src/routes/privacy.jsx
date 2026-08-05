@@ -27,7 +27,7 @@ function PrivacyPage() {
         <div className="absolute top-0 right-0 w-1/3 h-full bg-primary/5 blur-[120px] -z-10" />
         <div className="container-page">
           <div className="max-w-3xl">
-            <span className="text-primary font-black uppercase tracking-[0.3em] text-[10px] mb-6 block">Confidentiality</span>
+            <span className="section-eyebrow">Confidentiality</span>
             <h1 className="text-3xl md:text-5xl font-black tracking-tight text-foreground leading-[1.1] mb-8">
               Privacy <br /><span className="text-gradient">Policy</span>
             </h1>

@@ -58,7 +58,7 @@ function About() {
          <div className="container-page relative z-10">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
                <div className="max-w-xl">
-                  <span className="text-primary font-black uppercase tracking-[0.3em] text-xs mb-4 block">Confidentiality First</span>
+                  <span className="section-eyebrow">Confidentiality First</span>
                   <h2 className="text-2xl md:text-4xl font-black tracking-tight mb-6">The Core Privacy Model</h2>
                   <div className="grid sm:grid-cols-2 gap-8 text-left">
                      <div className="bg-card p-8 rounded-3xl border border-border shadow-soft">

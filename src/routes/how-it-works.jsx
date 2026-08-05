@@ -79,10 +79,10 @@ function HowItWorks() {
     <SiteLayout>
       {/* Hero Section - Dark (Primary) */}
       <section className="bg-primary pt-16 pb-12 md:pt-24 md:pb-24 text-white overflow-hidden relative border-b border-white/5">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,oklch(0.72_0.18_155)_0%,transparent_50%)] opacity-[0.05]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,#2a9d9d_0%,transparent_50%)] opacity-[0.12]" />
         <div className="container-page relative z-10 text-center max-w-4xl mx-auto">
-          <span className="text-accent font-black uppercase tracking-[0.3em] text-[10px] mb-6 block">The Master Plan</span>
-          <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-8 leading-[1.1] md:leading-[0.9]">The Methodology</h1>
+          <span className="section-eyebrow">The Master Plan</span>
+          <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-8 leading-[1.15] md:leading-[1.05] text-white">The Methodology</h1>
           <p className="text-lg md:text-xl opacity-90 font-medium leading-relaxed max-w-2xl mx-auto mb-12">
             We've refined clinical recruitment into a transparent, low-friction framework
             built for the modern Doctor and practice owner.
@@ -118,7 +118,7 @@ function HowItWorks() {
               <div className="max-w-6xl mx-auto">
                 <div className="grid lg:grid-cols-2 gap-12 items-center mb-24">
                   <div className="max-w-xl text-left">
-                    <span className="text-primary font-black uppercase tracking-[0.3em] text-[10px] mb-6 block">OD Roadmap</span>
+                    <span className="section-eyebrow">OD Roadmap</span>
                     <h2 className="text-3xl md:text-5xl font-black tracking-tight text-primary leading-[1.1] md:leading-none mb-10">
                       Two Phases <br /><span className="text-gradient">Total Privacy</span>
                     </h2>
@@ -223,7 +223,7 @@ function HowItWorks() {
                     </div>
                   </div>
                   <div className="order-1 lg:order-2 max-w-xl">
-                    <span className="text-primary font-black uppercase tracking-[0.3em] text-[10px] mb-6 block">Practice Roadmap</span>
+                    <span className="section-eyebrow">Practice Roadmap</span>
                     <h2 className="text-3xl md:text-5xl font-black tracking-tight text-primary leading-tight md:leading-none mb-10">
                       Precision <br /><span className="text-gradient">Clinical Hiring</span>
                     </h2>

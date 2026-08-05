@@ -25,7 +25,7 @@ function TermsPage() {
       <section className="bg-muted/30 py-16 md:py-24">
         <div className="container-page">
           <div className="max-w-3xl">
-            <span className="text-primary font-black uppercase tracking-[0.3em] text-[10px] mb-6 block">Legal</span>
+            <span className="section-eyebrow">Legal</span>
             <h1 className="text-3xl md:text-5xl font-black tracking-tight text-foreground leading-[1.1] mb-8">
               Terms of <br /><span className="text-gradient">Service</span>
             </h1>

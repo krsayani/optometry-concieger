@@ -230,7 +230,7 @@ function ForPractices() {
         />
         <div className="container-page relative z-10">
           <div className="max-w-4xl mx-auto text-center mb-16">
-            <span className="text-primary font-black uppercase tracking-[0.3em] text-[10px] mb-6 block">The Concierge Advantage</span>
+            <span className="section-eyebrow">The Concierge Advantage</span>
             <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-tight text-primary mb-8">
               Hire Smarter <br /><span className="text-gradient">Grow Sustainably</span>
             </h2>
@@ -273,7 +273,7 @@ function ForPractices() {
       <section className="bg-muted/30 py-20 md:py-32">
         <div className="container-page">
           <div className="max-w-4xl mx-auto text-center mb-24">
-            <span className="text-primary font-black uppercase tracking-[0.3em] text-[10px] mb-8 block">Transparent Pricing</span>
+            <span className="section-eyebrow">Transparent Pricing</span>
             <h2 className="text-3xl md:text-5xl font-black tracking-tight mb-10 leading-tight">
               Pricing <span className="text-gradient">Transparency</span>
             </h2>
@@ -320,7 +320,7 @@ function ForPractices() {
 
             <div className="max-w-5xl mx-auto">
                <div className="text-center mb-24">
-                 <span className="text-primary font-black uppercase tracking-[0.3em] text-[10px] mb-6 block">Common Questions</span>
+                 <span className="section-eyebrow">Common Questions</span>
                  <h2 className="text-4xl md:text-6xl font-black tracking-tight text-foreground leading-tight mb-10">
                    Practice <br />
                    <span className="text-gradient">Questions</span>
@@ -357,7 +357,7 @@ function ForPractices() {
       <section id="intake" className="container-page py-20 md:py-32 bg-muted/40 rounded-[3rem] mb-16 mt-16">
          <div className="max-w-5xl mx-auto">
             <div className="text-center mb-16">
-              <span className="text-primary font-black uppercase tracking-[0.3em] text-[10px] mb-6 block">Step 01</span>
+              <span className="section-eyebrow">Step 01</span>
               <h2 className="text-4xl md:text-6xl font-black tracking-tight text-foreground leading-tight md:leading-[0.9] mb-8">Submit a <br /><span className="text-gradient">Hiring Request</span></h2>
               <p className="mt-4 text-lg text-muted-foreground font-medium max-w-2xl mx-auto leading-relaxed">
                 Take the first step toward finding your next great associate. Our team will follow up within 24 hours.

@@ -13,7 +13,7 @@ function GetStarted() {
       <section className="min-h-[80vh] flex flex-col items-center justify-center py-24 md:py-32 bg-background">
         <div className="container-page">
           <div className="max-w-4xl mx-auto text-center mb-16 md:mb-24">
-            <span className="text-primary font-black uppercase tracking-[0.3em] text-[10px] mb-6 block">Welcome to Optometry Concierge</span>
+            <span className="section-eyebrow">Welcome to Optometry Concierge</span>
             <h1 className="text-5xl md:text-7xl font-black tracking-tight text-foreground leading-[0.95] mb-8">
               How would you like <br /><span className="text-gradient">to get started?</span>
             </h1>

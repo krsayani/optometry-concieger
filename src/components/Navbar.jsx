@@ -27,7 +27,7 @@ function BrandLogo({ onClick }) {
         alt="Optometry Concierge"
         className="h-10 w-10 md:h-11 md:w-11 rounded-lg object-cover shadow-sm ring-1 ring-border/60"
       />
-      <span className="ml-2.5 text-sm md:text-base font-black tracking-tighter uppercase text-foreground leading-tight">
+      <span className="ml-2.5 font-display text-sm md:text-base font-extrabold tracking-tighter uppercase text-primary leading-tight">
         Optometry
         <span className="block text-accent -mt-0.5">Concierge</span>
       </span>

@@ -5,7 +5,7 @@ export function ConfidentialitySection({ className }) {
   return (
     <section className={cn("relative overflow-hidden", className)}>
       <div className="mx-auto max-w-4xl text-center mb-16 md:mb-24">
-        <span className="text-primary font-black uppercase tracking-[0.3em] text-[10px] mb-6 block">
+        <span className="section-eyebrow">
           Enterprise-Grade Security
         </span>
         <h2 className="text-5xl md:text-7xl font-black tracking-tight text-foreground leading-[0.95] mb-8">

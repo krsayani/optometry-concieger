@@ -92,7 +92,7 @@ function Home() {
               Free resume review, salary guidance, offer comparison, and job matching for ODs at every career stage — new grad or 20 years in.
             </p>
             <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 px-2">
-              <Button asChild size="lg" className="h-12 md:h-14 rounded-full border-none bg-accent px-8 md:px-10 text-base md:text-lg font-bold text-primary shadow-elevated transition-all hover:bg-accent/90 hover:shadow-elevated">
+              <Button asChild size="lg" className="h-12 md:h-14 rounded-full border-none bg-accent px-8 md:px-10 text-base md:text-lg font-bold text-accent-foreground shadow-elevated transition-all hover:bg-accent/90 hover:shadow-elevated">
                 <Link to="/for-ods">Get Free Career Help</Link>
               </Button>
               <Button asChild size="lg" className="h-12 md:h-14 rounded-full border border-white/25 bg-white/10 px-8 md:px-10 text-base md:text-lg font-bold text-white backdrop-blur-md transition-all hover:bg-white/20 hover:border-white/40">
@@ -185,7 +185,7 @@ function Home() {
       <section className="bg-primary pt-16 pb-16 md:pt-24 md:pb-32 text-white overflow-hidden border-y border-white/5">
         <div className="container-page">
           <div className="text-center mb-12 md:mb-20">
-            <span className="text-accent font-black uppercase tracking-[0.3em] text-[10px] mb-6 md:mb-8 block">The Journey</span>
+            <span className="section-eyebrow">The Journey</span>
             <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-tight text-white mb-8 md:mb-10">
               The 6-Step <br/><span className="text-accent">OD Career Roadmap</span>
             </h2>
@@ -274,7 +274,7 @@ function Home() {
           className="absolute inset-0 h-full w-full object-cover opacity-[0.03] pointer-events-none"
         />
         <div className="container-page text-center mb-16 max-w-6xl relative z-10">
-           <span className="text-primary font-black uppercase tracking-[0.3em] text-[10px] mb-6 block">For Practices & Employers</span>
+           <span className="section-eyebrow">For Practices & Employers</span>
            <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-tight text-primary mb-8">
              Recruiters send resumes <br/><span className="text-gradient">We send ready-to-hire ODs</span>
            </h2>
@@ -400,7 +400,7 @@ function Home() {
               we are in your corner. 100% free, 100% confidential.
             </p>
             <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4">
-              <Button asChild size="lg" className="h-12 md:h-14 rounded-full px-8 md:px-10 text-base font-bold bg-accent hover:bg-accent/90 text-primary border-none shadow-elevated">
+              <Button asChild size="lg" className="h-12 md:h-14 rounded-full px-8 md:px-10 text-base font-bold bg-accent hover:bg-accent/90 text-accent-foreground border-none shadow-elevated">
                 <Link to="/for-ods">Get Started Now</Link>
               </Button>
               <Button asChild size="lg" className="h-12 md:h-14 rounded-full px-8 md:px-10 text-base font-bold bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20">

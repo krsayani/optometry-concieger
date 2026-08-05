@@ -6,7 +6,7 @@ export const DoctorOwnedSection = () => {
     <section className="bg-card py-16 md:py-24 border-y border-border/50 overflow-hidden relative">
       {/* Decorative Grid */}
       <div className="absolute inset-0 opacity-[0.035] pointer-events-none"
-           style={{ backgroundImage: 'radial-gradient(circle, #000 1px, transparent 1px)', backgroundSize: '36px 36px' }} />
+           style={{ backgroundImage: 'radial-gradient(circle, #051c3f 1px, transparent 1px)', backgroundSize: '36px 36px' }} />
 
       <div className="container-page relative z-10">
         <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
