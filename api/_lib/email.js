@@ -94,18 +94,40 @@ function telHref(phone) {
   return `tel:+${digits}`;
 }
 
+function renderCellValue(value, href) {
+  const shown = displayValue(value);
+  if (!shown) return "";
+
+  const link = href || (/^https?:\/\//i.test(shown) ? shown : null);
+  if (link) {
+    const label =
+      /resume|supabase\.co\/storage/i.test(link) || /resume/i.test(shown)
+        ? "View resume"
+        : shown.length > 64
+          ? `${shown.slice(0, 56)}…`
+          : shown;
+    return `<a href="${escapeHtml(link)}" style="color:${BRAND.teal};font-weight:700;text-decoration:none;" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`;
+  }
+
+  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(shown)) {
+    return `<a href="mailto:${escapeHtml(shown)}" style="color:${BRAND.teal};font-weight:700;text-decoration:none;">${escapeHtml(shown)}</a>`;
+  }
+
+  return escapeHtml(shown);
+}
+
 function renderRows(rows) {
   return rows
-    .map(({ label, value }) => {
-      const shown = displayValue(value);
-      if (!shown) return "";
+    .map(({ label, value, href }) => {
+      const cell = renderCellValue(value, href);
+      if (!cell) return "";
       return `
         <tr>
-          <td style="padding:10px 0;border-bottom:1px solid ${BRAND.border};width:38%;vertical-align:top;font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:${BRAND.muted};">
+          <td style="padding:12px 0;border-bottom:1px solid ${BRAND.border};width:34%;vertical-align:top;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:${BRAND.muted};">
             ${escapeHtml(label)}
           </td>
-          <td style="padding:10px 0 10px 16px;border-bottom:1px solid ${BRAND.border};vertical-align:top;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.5;color:${BRAND.text};font-weight:600;">
-            ${escapeHtml(shown)}
+          <td style="padding:12px 0 12px 18px;border-bottom:1px solid ${BRAND.border};vertical-align:top;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.5;color:${BRAND.text};font-weight:600;">
+            ${cell}
           </td>
         </tr>`;
     })
@@ -119,12 +141,22 @@ function renderSections(sections) {
       if (!rowsHtml.trim()) return "";
       return `
         <tr>
-          <td style="padding:28px 32px 0;">
-            <p style="margin:0 0 12px;font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:${BRAND.navy};">
-              ${escapeHtml(section.title)}
-            </p>
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
-              ${rowsHtml}
+          <td style="padding:22px 32px 0;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;background:${BRAND.cream};border:1px solid ${BRAND.border};border-radius:18px;">
+              <tr>
+                <td style="padding:16px 18px 6px;">
+                  <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:${BRAND.navy};">
+                    ${escapeHtml(section.title)}
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 18px 8px;">
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+                    ${rowsHtml}
+                  </table>
+                </td>
+              </tr>
             </table>
           </td>
         </tr>`;
@@ -198,19 +230,19 @@ export function buildAdminNotificationHtml({
       <td align="center">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;background:${BRAND.white};border-radius:24px;overflow:hidden;border:1px solid ${BRAND.border};">
           <tr>
-            <td style="background:${BRAND.navy};padding:28px 32px;">
+            <td style="background:${BRAND.navy};padding:28px 32px;background-image:linear-gradient(135deg,${BRAND.navy} 0%,#0a2f5c 55%,#164e63 100%);">
               <p style="margin:0 0 10px;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:${BRAND.teal};">
                 Optometry Concierge
               </p>
-              <span style="display:inline-block;background:rgba(42,157,157,0.18);color:${BRAND.teal};font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:6px 10px;border-radius:999px;margin-bottom:12px;">
+              <span style="display:inline-block;background:rgba(42,157,157,0.22);color:#9FE7E7;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:7px 12px;border-radius:999px;margin-bottom:12px;">
                 ${escapeHtml(badge || "New submission")}
               </span>
-              <h1 style="margin:12px 0 8px;font-family:Arial,Helvetica,sans-serif;font-size:26px;line-height:1.25;color:${BRAND.white};font-weight:800;">
+              <h1 style="margin:14px 0 8px;font-family:Arial,Helvetica,sans-serif;font-size:28px;line-height:1.2;color:${BRAND.white};font-weight:800;">
                 ${escapeHtml(title)}
               </h1>
               ${
                 subtitle
-                  ? `<p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.55;color:rgba(255,255,255,0.82);">
+                  ? `<p style="margin:0;max-width:520px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.55;color:rgba(255,255,255,0.86);">
                       ${escapeHtml(subtitle)}
                     </p>`
                   : ""

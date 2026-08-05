@@ -55,7 +55,13 @@ function buildOdEmail(data) {
         { label: "Salary expectation", value: data.salaryExpectation },
         { label: "Job priorities", value: formatList(data.jobPriorities) },
         { label: "Interest in ownership", value: data.interestInOwnership },
-        { label: "Resume", value: data.resumeUrl || "Not uploaded" },
+        data.resumeUrl
+          ? {
+              label: "Resume",
+              value: "View uploaded resume",
+              href: data.resumeUrl,
+            }
+          : { label: "Resume", value: "Not uploaded" },
       ],
     },
   ];
