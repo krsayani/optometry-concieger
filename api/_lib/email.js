@@ -412,29 +412,99 @@ export async function sendAdminEmail({
 
 /**
  * Send an email to a site user via Resend.
- * @param {{ to: string, subject: string, text: string, html?: string }} options
+ * @param {{
+ *   to: string | string[],
+ *   subject: string,
+ *   text: string,
+ *   html?: string,
+ *   cc?: string | string[],
+ *   bcc?: string | string[],
+ *   replyTo?: string,
+ *   replyName?: string,
+ * }} options
  */
-export async function sendUserEmail({ to, subject, text, html }) {
-  const recipient = normalizeEmail(to);
-  if (!recipient) {
+export async function sendUserEmail({
+  to,
+  subject,
+  text,
+  html,
+  cc,
+  bcc,
+  replyTo,
+  replyName,
+}) {
+  const recipients = (Array.isArray(to) ? to : [to])
+    .map(normalizeEmail)
+    .filter(Boolean);
+  if (!recipients.length) {
     throw new Error("Missing recipient email.");
   }
 
-  const data = await sendWithResend({
+  const payload = {
     from: getFromAddress(),
-    to: [recipient],
+    to: recipients,
     subject,
     text,
     html: html || undefined,
-  });
+  };
+
+  const ccList = (Array.isArray(cc) ? cc : cc ? [cc] : [])
+    .map(normalizeEmail)
+    .filter(Boolean);
+  const bccList = (Array.isArray(bcc) ? bcc : bcc ? [bcc] : [])
+    .map(normalizeEmail)
+    .filter(Boolean);
+  if (ccList.length) payload.cc = ccList;
+  if (bccList.length) payload.bcc = bccList;
+
+  const formattedReplyTo = formatReplyTo(replyTo, replyName);
+  if (formattedReplyTo) {
+    payload.replyTo = formattedReplyTo;
+  }
+
+  const data = await sendWithResend(payload);
 
   console.info("[sendUserEmail] Sent", {
     id: data.id,
-    to: recipient,
+    to: recipients,
     subject,
+    cc: ccList,
+    bcc: bccList,
   });
 
   return data;
+}
+
+/** Plain outreach email → simple branded HTML. */
+export function buildPlainOutreachHtml({ subject, body }) {
+  const paragraphs = String(body || "")
+    .split(/\n{2,}/)
+    .map((block) => block.trim())
+    .filter(Boolean)
+    .map(
+      (block) =>
+        `<p style="margin:0 0 16px;font-size:15px;line-height:1.65;color:${BRAND.text};">${escapeHtml(block).replace(/\n/g, "<br/>")}</p>`,
+    )
+    .join("");
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /></head>
+<body style="margin:0;padding:0;background:${BRAND.cream};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <div style="max-width:640px;margin:0 auto;padding:28px 16px;">
+    <div style="background:${BRAND.white};border:1px solid ${BRAND.border};border-radius:16px;overflow:hidden;">
+      <div style="background:${BRAND.navy};padding:18px 24px;">
+        <p style="margin:0;font-size:13px;letter-spacing:0.12em;text-transform:uppercase;color:${BRAND.teal};font-weight:700;">Optometry Concierge</p>
+        <p style="margin:6px 0 0;font-size:18px;font-weight:700;color:${BRAND.white};">${escapeHtml(subject || "Message")}</p>
+      </div>
+      <div style="padding:28px 24px;">${paragraphs}</div>
+    </div>
+    <p style="margin:16px 8px 0;font-size:12px;color:${BRAND.muted};line-height:1.5;">
+      Sent by Optometry Concierge · Admin@optometryconcierge.com
+    </p>
+  </div>
+</body>
+</html>`;
 }
 
 export function getSiteUrl() {

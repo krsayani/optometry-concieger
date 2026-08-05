@@ -20,6 +20,9 @@ function apiDevPlugin() {
         "SUPABASE_SERVICE_ROLE_KEY",
         "VITE_SUPABASE_URL",
         "SUPABASE_URL",
+        "VITE_SUPABASE_PUBLISHABLE_KEY",
+        "SUPABASE_PUBLISHABLE_KEY",
+        "SUPABASE_ANON_KEY",
       ]) {
         if (env[key] && !process.env[key]) {
           process.env[key] = env[key];
@@ -48,6 +51,7 @@ function apiDevPlugin() {
           "intake-notify",
           "account-invite",
           "register-account",
+          "school-outreach-email",
         ]);
         if (!allowed.has(route)) {
           return next();
@@ -63,6 +67,10 @@ function apiDevPlugin() {
           const mockReq = {
             method: "POST",
             body,
+            headers: {
+              authorization: req.headers.authorization || "",
+              "content-type": req.headers["content-type"] || "application/json",
+            },
             on() {},
           };
           const mockRes = {

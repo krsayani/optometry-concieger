@@ -11,12 +11,15 @@ import {
   Building2,
   Copy,
   Check,
+  Send,
+  Loader2,
 } from "lucide-react";
 import {
   listSchoolOutreachSchools,
   listSchoolOutreachClubs,
   updateSchoolOutreachSchool,
   updateSchoolOutreachClub,
+  sendSchoolOutreachEmail,
   SCHOOL_OUTREACH_STATUSES,
   SCHOOL_OUTREACH_OWNERS,
 } from "@/services/admin";
@@ -27,6 +30,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -49,6 +53,29 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/admin/school-outreach")({
   component: AdminSchoolOutreach,
 });
+
+function firstNameFromContact(name) {
+  if (!name) return "";
+  const cleaned = String(name)
+    .replace(/^dr\.?\s+/i, "")
+    .replace(/^professor\s+/i, "")
+    .trim();
+  return cleaned.split(/\s+/)[0] || "";
+}
+
+function personalizeTemplate(template, school) {
+  const first = firstNameFromContact(school?.primary_contact_name) || "there";
+  return {
+    subject: template.subject,
+    body: template.body.replace(/\[First name\]/g, first),
+  };
+}
+
+function todayISODate() {
+  const now = new Date();
+  const tzOffset = now.getTimezoneOffset() * 60000;
+  return new Date(now.getTime() - tzOffset).toISOString().slice(0, 10);
+}
 
 const EMAIL_TEMPLATES = [
   {
@@ -158,6 +185,8 @@ function AdminSchoolOutreach() {
   const [ownerFilter, setOwnerFilter] = useState("All");
   const [selectedSchool, setSelectedSchool] = useState(null);
   const [selectedClub, setSelectedClub] = useState(null);
+  const [compose, setCompose] = useState(null);
+  // compose: { school, templateId, to, cc, subject, body, bccAdmin, markFollowUp }
 
   const { data: schools, isLoading: schoolsLoading } = useQuery({
     queryKey: ["admin-school-outreach-schools"],
@@ -219,6 +248,88 @@ function AdminSchoolOutreach() {
       toast.success("Club updated");
     },
     onError: () => toast.error("Could not update club. Please try again."),
+  });
+
+  const openCompose = (school, templateId = "full") => {
+    const template =
+      EMAIL_TEMPLATES.find((t) => t.id === templateId) || EMAIL_TEMPLATES[0];
+    const personalized = personalizeTemplate(template, school);
+    const alreadyContacted =
+      school.status && school.status !== "Not started";
+    setCompose({
+      school,
+      templateId: template.id,
+      to: school.primary_email || "",
+      cc: "",
+      subject: personalized.subject,
+      body: personalized.body,
+      bccAdmin: true,
+      markFollowUp: alreadyContacted,
+    });
+  };
+
+  const applyComposeTemplate = (templateId) => {
+    setCompose((prev) => {
+      if (!prev) return prev;
+      const template =
+        EMAIL_TEMPLATES.find((t) => t.id === templateId) || EMAIL_TEMPLATES[0];
+      const personalized = personalizeTemplate(template, prev.school);
+      return {
+        ...prev,
+        templateId: template.id,
+        subject: personalized.subject,
+        body: personalized.body,
+      };
+    });
+  };
+
+  const sendMutation = useMutation({
+    mutationFn: async () => {
+      if (!compose) throw new Error("Nothing to send.");
+      if (!compose.to?.trim()) throw new Error("Recipient email is required.");
+
+      const result = await sendSchoolOutreachEmail({
+        to: compose.to.trim(),
+        cc: compose.cc.trim() || undefined,
+        subject: compose.subject.trim(),
+        body: compose.body.trim(),
+        schoolId: compose.school.id,
+        schoolName: compose.school.school,
+        bccAdmin: compose.bccAdmin,
+      });
+
+      const today = todayISODate();
+      const updates = compose.markFollowUp
+        ? {
+            status: "Follow-up sent",
+            follow_up_date: today,
+          }
+        : {
+            status:
+              compose.school.status === "Not started" || !compose.school.status
+                ? "Emailed"
+                : compose.school.status,
+            date_emailed: compose.school.date_emailed || today,
+          };
+
+      await updateSchoolOutreachSchool(compose.school.id, updates);
+      return { result, updates };
+    },
+    onSuccess: ({ updates }) => {
+      queryClient.invalidateQueries({
+        queryKey: ["admin-school-outreach-schools"],
+      });
+      setSelectedSchool((prev) =>
+        prev && compose?.school?.id === prev.id
+          ? { ...prev, ...updates }
+          : prev,
+      );
+      toast.success(`Email sent to ${compose.to}`);
+      setCompose(null);
+    },
+    onError: (err) => {
+      toast.error(err?.message || "Could not send email. Please try again.");
+    },
   });
 
   const schoolStats = useMemo(() => {
@@ -454,14 +565,25 @@ function AdminSchoolOutreach() {
                             {item.date_emailed || "—"}
                           </td>
                           <td className="px-4 py-3 align-top text-right">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="rounded-full"
-                              onClick={() => setSelectedSchool(item)}
-                            >
-                              Open
-                            </Button>
+                            <div className="inline-flex flex-wrap justify-end gap-2">
+                              <Button
+                                size="sm"
+                                className="rounded-full"
+                                disabled={!item.primary_email}
+                                onClick={() => openCompose(item)}
+                              >
+                                <Send className="h-3.5 w-3.5 mr-1.5" />
+                                Email
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="rounded-full"
+                                onClick={() => setSelectedSchool(item)}
+                              >
+                                Open
+                              </Button>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -619,12 +741,24 @@ function AdminSchoolOutreach() {
           {selectedSchool ? (
             <>
               <DialogHeader>
-                <DialogTitle className="text-xl font-black">
-                  {selectedSchool.short_name}
-                </DialogTitle>
-                <DialogDescription className="text-sm leading-relaxed">
-                  {selectedSchool.school}
-                </DialogDescription>
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 pr-6">
+                  <div>
+                    <DialogTitle className="text-xl font-black">
+                      {selectedSchool.short_name}
+                    </DialogTitle>
+                    <DialogDescription className="text-sm leading-relaxed">
+                      {selectedSchool.school}
+                    </DialogDescription>
+                  </div>
+                  <Button
+                    className="rounded-full shrink-0"
+                    disabled={!selectedSchool.primary_email}
+                    onClick={() => openCompose(selectedSchool)}
+                  >
+                    <Send className="h-4 w-4 mr-2" />
+                    Send email
+                  </Button>
+                </div>
               </DialogHeader>
 
               <div className="space-y-5 pt-2">
@@ -911,6 +1045,177 @@ function AdminSchoolOutreach() {
                       })
                     }
                   />
+                </div>
+              </div>
+            </>
+          ) : null}
+        </DialogContent>
+      </Dialog>
+
+      {/* Compose / send email */}
+      <Dialog
+        open={!!compose}
+        onOpenChange={(open) => {
+          if (!open && !sendMutation.isPending) setCompose(null);
+        }}
+      >
+        <DialogContent className="max-w-2xl max-h-[92vh] overflow-y-auto">
+          {compose ? (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-xl font-black flex items-center gap-2">
+                  <Mail className="h-5 w-5 text-primary" />
+                  Send outreach email
+                </DialogTitle>
+                <DialogDescription>
+                  {compose.school.short_name} · from Admin@optometryconcierge.com
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-4 pt-1">
+                <div className="space-y-2">
+                  <Label>Template</Label>
+                  <Select
+                    value={compose.templateId}
+                    onValueChange={applyComposeTemplate}
+                    disabled={sendMutation.isPending}
+                  >
+                    <SelectTrigger className="rounded-xl">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {EMAIL_TEMPLATES.map((t) => (
+                        <SelectItem key={t.id} value={t.id}>
+                          {t.title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>To</Label>
+                    <Input
+                      type="email"
+                      className="rounded-xl"
+                      value={compose.to}
+                      disabled={sendMutation.isPending}
+                      onChange={(e) =>
+                        setCompose((prev) => ({ ...prev, to: e.target.value }))
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>CC (optional)</Label>
+                    <Input
+                      type="text"
+                      className="rounded-xl"
+                      placeholder="comma-separated"
+                      value={compose.cc}
+                      disabled={sendMutation.isPending}
+                      onChange={(e) =>
+                        setCompose((prev) => ({ ...prev, cc: e.target.value }))
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Subject</Label>
+                  <Input
+                    className="rounded-xl"
+                    value={compose.subject}
+                    disabled={sendMutation.isPending}
+                    onChange={(e) =>
+                      setCompose((prev) => ({
+                        ...prev,
+                        subject: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Body</Label>
+                  <Textarea
+                    className="rounded-xl min-h-[280px] font-medium leading-relaxed"
+                    value={compose.body}
+                    disabled={sendMutation.isPending}
+                    onChange={(e) =>
+                      setCompose((prev) => ({ ...prev, body: e.target.value }))
+                    }
+                  />
+                </div>
+
+                <div className="flex flex-col gap-3 rounded-xl border border-border bg-muted/30 p-3">
+                  <label className="flex items-start gap-2.5 cursor-pointer">
+                    <Checkbox
+                      checked={compose.bccAdmin}
+                      disabled={sendMutation.isPending}
+                      onCheckedChange={(v) =>
+                        setCompose((prev) => ({
+                          ...prev,
+                          bccAdmin: Boolean(v),
+                        }))
+                      }
+                      className="mt-0.5"
+                    />
+                    <span className="text-sm font-medium leading-snug">
+                      BCC Admin@optometryconcierge.com so we keep a copy
+                    </span>
+                  </label>
+                  <label className="flex items-start gap-2.5 cursor-pointer">
+                    <Checkbox
+                      checked={compose.markFollowUp}
+                      disabled={sendMutation.isPending}
+                      onCheckedChange={(v) =>
+                        setCompose((prev) => ({
+                          ...prev,
+                          markFollowUp: Boolean(v),
+                        }))
+                      }
+                      className="mt-0.5"
+                    />
+                    <span className="text-sm font-medium leading-snug">
+                      Mark as follow-up sent (otherwise sets status to Emailed)
+                    </span>
+                  </label>
+                </div>
+
+                <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 pt-1">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="rounded-full"
+                    disabled={sendMutation.isPending}
+                    onClick={() => setCompose(null)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    className="rounded-full"
+                    disabled={
+                      sendMutation.isPending ||
+                      !compose.to.trim() ||
+                      !compose.subject.trim() ||
+                      !compose.body.trim()
+                    }
+                    onClick={() => sendMutation.mutate()}
+                  >
+                    {sendMutation.isPending ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Sending…
+                      </>
+                    ) : (
+                      <>
+                        <Send className="h-4 w-4 mr-2" />
+                        Send email
+                      </>
+                    )}
+                  </Button>
                 </div>
               </div>
             </>
