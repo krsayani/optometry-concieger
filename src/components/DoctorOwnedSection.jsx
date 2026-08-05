@@ -3,7 +3,7 @@ import { Stethoscope, Award, ClipboardCheck, HeartPulse } from 'lucide-react';
 
 export const DoctorOwnedSection = () => {
   return (
-    <section className="bg-card py-16 md:py-24 border-y border-border/50 overflow-hidden relative">
+    <section className="bg-card py-12 md:py-24 border-y border-border/50 overflow-hidden relative">
       {/* Decorative Grid */}
       <div className="absolute inset-0 opacity-[0.035] pointer-events-none"
            style={{ backgroundImage: 'radial-gradient(circle, #051c3f 1px, transparent 1px)', backgroundSize: '36px 36px' }} />
@@ -25,7 +25,7 @@ export const DoctorOwnedSection = () => {
               We aren't just another agency. We are optometrists who understand the clinical nuances, the late-night charting, and the value of a perfectly balanced practice.
             </p>
 
-            <div className="grid sm:grid-cols-2 gap-6 md:gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-8">
               {[
                 {
                   icon: Stethoscope,

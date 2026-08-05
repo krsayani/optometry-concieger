@@ -95,25 +95,25 @@ function Contact() {
   return (
     <SiteLayout>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-primary text-white pt-16 pb-20 md:pt-24 md:pb-28">
+      <section className="relative overflow-hidden bg-primary text-white pt-10 pb-12 md:pt-24 md:pb-28">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(42,157,157,0.35),transparent_55%)]" />
         <div className="absolute -left-20 bottom-0 h-64 w-64 rounded-full bg-accent/20 blur-[100px] pointer-events-none" />
         <div className="container-page relative z-10 max-w-3xl">
-          <p className="font-serif text-accent text-xl md:text-2xl italic mb-3">
+          <p className="font-serif text-accent text-lg md:text-2xl italic mb-2 md:mb-3">
             Optometry Concierge
           </p>
-          <h1 className="text-3xl md:text-5xl font-black tracking-tight mb-4 md:mb-6 text-white">
+          <h1 className="text-2xl sm:text-3xl md:text-5xl font-black tracking-tight mb-3 md:mb-6 text-white">
             Contact Us
           </h1>
-          <p className="text-base md:text-lg text-white/80 font-medium leading-relaxed max-w-2xl">
+          <p className="text-sm md:text-lg text-white/80 font-medium leading-relaxed max-w-2xl">
             Have questions about how we work? Whether you are a Doctor looking for
             guidance or a practice looking to hire, we are in your corner.
           </p>
         </div>
       </section>
 
-      <section className="container-page py-12 md:py-20">
-        <div className="grid lg:grid-cols-5 gap-10 lg:gap-14">
+      <section className="container-page py-8 sm:py-12 md:py-20">
+        <div className="grid lg:grid-cols-5 gap-8 lg:gap-14">
           {/* Info column */}
           <div className="lg:col-span-2 space-y-6">
             <div className="rounded-2xl border border-border bg-card p-6 md:p-7 shadow-soft">

@@ -109,30 +109,30 @@ function AuthPage() {
   };
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12 overflow-hidden">
+    <div className="relative flex min-h-screen flex-col items-center justify-center px-4 py-8 sm:py-12 overflow-hidden safe-pb">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(42,157,157,0.12),transparent_55%)] pointer-events-none" />
       <div className="absolute -right-24 bottom-0 h-72 w-72 rounded-full bg-primary/10 blur-[100px] pointer-events-none" />
       <div className="relative z-10 w-full max-w-[520px]">
-        <div className="mb-10 text-center">
+        <div className="mb-6 sm:mb-10 text-center">
           <Link to="/" className="inline-flex items-center gap-3 group">
             <img
               src="/logo.png"
               alt="Optometry Concierge"
-              className="h-12 w-12 rounded-xl object-cover shadow-soft ring-1 ring-border/60 transition-transform group-hover:scale-[1.03]"
+              className="h-11 w-11 sm:h-12 sm:w-12 rounded-xl object-cover shadow-soft ring-1 ring-border/60 transition-transform group-hover:scale-[1.03]"
             />
-            <span className="font-serif text-left text-xl font-semibold tracking-tight text-primary leading-none">
+            <span className="font-serif text-left text-lg sm:text-xl font-semibold tracking-tight text-primary leading-none">
               Optometry
               <span className="block text-accent italic -mt-0.5">Concierge</span>
             </span>
           </Link>
         </div>
 
-        <div className="bg-card/95 backdrop-blur-sm rounded-[2rem] border border-border/80 p-8 md:p-12 shadow-elevated">
-          <div className="text-center mb-10">
-            <h1 className="text-3xl md:text-4xl font-black text-primary tracking-tight">
+        <div className="bg-card/95 backdrop-blur-sm rounded-2xl sm:rounded-[2rem] border border-border/80 p-5 sm:p-8 md:p-12 shadow-elevated">
+          <div className="text-center mb-7 sm:mb-10">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-primary tracking-tight">
               {forgot ? "Reset Password" : "Welcome back"}
             </h1>
-            <p className="mt-3 text-base font-medium text-muted-foreground">
+            <p className="mt-2 sm:mt-3 text-sm sm:text-base font-medium text-muted-foreground">
               {forgot
                 ? "Enter your email and we'll send you a reset link."
                 : "Sign in to your account."}

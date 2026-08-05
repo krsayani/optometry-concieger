@@ -126,6 +126,13 @@
     font-weight: 400;
     letter-spacing: 0.005em;
     line-height: 1.65;
+    overflow-x: hidden;
+  }
+
+  @media (max-width: 767px) {
+    body {
+      background-attachment: scroll;
+    }
   }
 
   h1, h2, h3, h4 {
@@ -183,7 +190,11 @@
   width: 100%;
   margin-inline: auto;
   max-width: 85rem;
-  padding-inline: 1.25rem;
+  padding-inline: 1rem;
+
+  @media (min-width: 480px) {
+    padding-inline: 1.25rem;
+  }
 
   @media (min-width: 768px) {
     padding-inline: 2rem;
@@ -302,4 +313,14 @@
 
 @utility delay-400 {
   animation-delay: 400ms;
+}
+
+@utility safe-pb {
+  padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
+}
+
+@media (max-width: 767px) {
+  .hide-mobile-visual {
+    display: none;
+  }
 }

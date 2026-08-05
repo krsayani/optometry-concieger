@@ -62,12 +62,12 @@ function Home() {
   return (
     <SiteLayout>
       {/* 1. Hero — full-bleed brand composition */}
-      <section className="relative min-h-[88vh] overflow-hidden bg-primary pt-16 pb-20 text-white md:min-h-[92vh] md:pt-28 md:pb-28 flex items-center">
+      <section className="relative min-h-[min(100svh,720px)] overflow-hidden bg-primary pt-12 pb-16 text-white sm:min-h-[78vh] md:min-h-[92vh] md:pt-28 md:pb-28 flex items-center">
         <img
           src="https://images.unsplash.com/photo-1582719471384-894fbb16e074?auto=format&fit=crop&q=80&w=2000"
           alt=""
           aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover opacity-40 animate-kenburns pointer-events-none"
+          className="absolute inset-0 h-full w-full object-cover object-center opacity-40 md:animate-kenburns pointer-events-none"
         />
         <div
           className="absolute inset-0 pointer-events-none"
@@ -78,35 +78,35 @@ function Home() {
         <div className="absolute -right-16 bottom-0 h-[22rem] w-[22rem] rounded-full bg-white/10 blur-[120px] pointer-events-none" />
 
         <div className="container-page relative z-10 w-full">
-          <div className="mx-auto max-w-4xl text-center">
-            <p className="mb-5 md:mb-7 font-serif text-[1.65rem] sm:text-3xl md:text-4xl lg:text-[2.75rem] font-semibold tracking-tight text-white animate-fade-up">
+          <div className="mx-auto max-w-4xl text-center px-1">
+            <p className="mb-4 md:mb-7 font-serif text-[1.45rem] sm:text-3xl md:text-4xl lg:text-[2.75rem] font-semibold tracking-tight text-white animate-fade-up">
               Optometry{" "}
               <span className="text-accent italic">Concierge</span>
             </p>
-            <h1 className="mb-5 md:mb-6 text-[1.7rem] sm:text-4xl font-black leading-[1.12] tracking-tight text-white md:text-5xl lg:text-[3.35rem] animate-fade-up delay-100">
+            <h1 className="mb-4 md:mb-6 text-[1.55rem] sm:text-4xl font-black leading-[1.15] tracking-tight text-white md:text-5xl lg:text-[3.35rem] animate-fade-up delay-100 text-balance">
               From graduation to great offer
-              <span className="block mt-1 md:mt-2 font-serif text-[1.35rem] sm:text-3xl md:text-4xl lg:text-[2.65rem] font-medium tracking-tight text-white/90">
+              <span className="block mt-1.5 md:mt-2 font-serif text-[1.2rem] sm:text-3xl md:text-4xl lg:text-[2.65rem] font-medium tracking-tight text-white/90">
                 with someone in your corner
               </span>
             </h1>
-            <p className="mx-auto mb-9 max-w-xl text-[0.95rem] font-medium leading-relaxed text-white/80 md:text-lg animate-fade-up delay-200">
+            <p className="mx-auto mb-7 md:mb-9 max-w-xl text-sm sm:text-[0.95rem] font-medium leading-relaxed text-white/80 md:text-lg animate-fade-up delay-200">
               Free resume review, salary guidance, offer comparison, and job matching for ODs at every career stage.
             </p>
-            <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 px-2 animate-fade-up delay-300">
+            <div className="flex w-full flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 animate-fade-up delay-300">
               <Button
                 asChild
                 size="lg"
-                className="h-12 md:h-14 rounded-full border-none bg-accent px-8 md:px-10 text-base md:text-lg font-bold text-accent-foreground shadow-elevated transition-all duration-300 hover:bg-accent/90 hover:scale-[1.02]"
+                className="h-12 md:h-14 w-full sm:w-auto rounded-full border-none bg-accent px-6 md:px-10 text-[0.95rem] md:text-lg font-bold text-accent-foreground shadow-elevated transition-all duration-300 hover:bg-accent/90 hover:scale-[1.02]"
               >
                 <Link to="/for-ods" hash="intake">
                   Get Free Career Help
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <ArrowRight className="ml-2 h-5 w-5 shrink-0" />
                 </Link>
               </Button>
               <Button
                 asChild
                 size="lg"
-                className="h-12 md:h-14 rounded-full border border-white/50 bg-white/15 px-8 md:px-10 text-base md:text-lg font-bold text-white backdrop-blur-md transition-all duration-300 hover:bg-white/25 hover:border-white/70"
+                className="h-12 md:h-14 w-full sm:w-auto rounded-full border border-white/50 bg-white/15 px-6 md:px-10 text-[0.95rem] md:text-lg font-bold text-white backdrop-blur-md transition-all duration-300 hover:bg-white/25 hover:border-white/70"
               >
                 <Link to="/for-practices" hash="intake">Hire an OD</Link>
               </Button>
@@ -114,22 +114,22 @@ function Home() {
           </div>
         </div>
 
-        <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-background to-transparent pointer-events-none" />
+        <div className="absolute bottom-0 inset-x-0 h-16 md:h-24 bg-gradient-to-t from-background to-transparent pointer-events-none" />
       </section>
 
       {/* 2. Trust strip */}
       <div className="relative z-20 border-b border-border/50 bg-card/80 backdrop-blur-md -mt-px">
-        <div className="container-page py-5 md:py-6">
-          <div className="mx-auto flex max-w-5xl flex-col items-center gap-3 text-center text-[11px] font-bold uppercase tracking-[0.14em] text-primary/70 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-x-8 sm:gap-y-2 md:tracking-[0.13em]">
+        <div className="container-page py-4 md:py-6">
+          <div className="mx-auto grid max-w-5xl grid-cols-2 gap-x-3 gap-y-3 text-center text-[10px] font-bold uppercase tracking-[0.12em] text-primary/70 sm:flex sm:flex-wrap sm:justify-center sm:gap-x-8 sm:gap-y-2 sm:text-[11px] md:tracking-[0.13em]">
             {[
               "Doctor owned and led",
               "Free for all ODs",
               "Only pay when you hire",
               "Private practice specialists",
             ].map((label) => (
-              <span key={label} className="inline-flex items-center gap-2">
+              <span key={label} className="inline-flex items-center justify-center gap-1.5 sm:gap-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-accent shrink-0" />
-                {label}
+                <span className="leading-snug">{label}</span>
               </span>
             ))}
           </div>
@@ -244,9 +244,8 @@ function Home() {
             </div>
 
             {/* Mobile Roadmap (Stacked) */}
-            <div className="lg:hidden max-w-lg mx-auto space-y-8 mt-12 relative">
-               {/* Vertical Line */}
-               <div className="absolute left-[39px] top-4 bottom-4 w-0.5 bg-white/10 z-0" />
+            <div className="lg:hidden max-w-lg mx-auto space-y-5 mt-8 relative px-1">
+               <div className="absolute left-[22px] top-3 bottom-3 w-0.5 bg-white/10 z-0" />
 
                {[
                 { step: "01", title: "Create Your Free Profile", desc: "Create your free, confidential profile in minutes." },
@@ -256,31 +255,26 @@ function Home() {
                 { step: "05", title: "Interview Prep & Offer Guidance", desc: "One-on-one prep and guidance from our team.", match: true },
                 { step: "06", title: "Sign With Confidence", desc: "Sign your contract with absolute confidence.", match: true }
               ].map((item, i) => (
-                <div key={i} className="flex items-start gap-6 relative z-10 px-4">
+                <div key={i} className="flex items-start gap-4 relative z-10">
                   <div className={cn(
-                    "h-20 w-20 shrink-0 rounded-full flex items-center justify-center font-black text-xl shadow-elevated",
+                    "h-11 w-11 shrink-0 rounded-full flex items-center justify-center font-black text-sm shadow-elevated",
                     item.match ? "bg-white text-primary" : "bg-accent text-primary"
                   )}>
                     {item.step}
                   </div>
-                  <div className="pt-2">
-                    <h4 className="text-xl font-black mb-2">{item.title}</h4>
+                  <div className="pt-1 min-w-0">
+                    <h4 className="text-base sm:text-lg font-black mb-1 leading-snug">{item.title}</h4>
                     <p className="text-sm opacity-70 font-medium leading-relaxed">{item.desc}</p>
                   </div>
                 </div>
               ))}
             </div>
-
-            {/* Desktop Version (Already updated above to hidden on lg) */}
-            <div className="hidden lg:grid grid-cols-6 gap-12 mt-24 relative z-10">
-               {/* This was the old loop, we'll keep it for desktop if needed or just use the mobile one above with grid lg:grid-cols-6 */}
-            </div>
           </div>
 
-          <div className="mt-20 text-center">
-                 <Button asChild size="lg" className="rounded-full px-12 h-18 text-xl font-black bg-white text-primary shadow-elevated transition-all hover:scale-105 hover:bg-white/90">
-               <Link to="/for-ods" hash="intake">Get Started Today</Link>
-             </Button>
+          <div className="mt-12 md:mt-20 text-center px-1">
+            <Button asChild size="lg" className="rounded-full w-full sm:w-auto px-8 md:px-12 h-12 md:h-14 text-base md:text-xl font-black bg-white text-primary shadow-elevated transition-all hover:scale-105 hover:bg-white/90">
+              <Link to="/for-ods" hash="intake">Get Started Today</Link>
+            </Button>
           </div>
         </div>
       </section>
@@ -429,14 +423,14 @@ function Home() {
             Whether you are looking for your first job or your next major career move,
             we are in your corner. 100% free, 100% confidential.
           </p>
-          <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4">
-            <Button asChild size="lg" className="h-12 md:h-14 rounded-full px-8 md:px-10 text-base font-bold bg-accent hover:bg-accent/90 text-accent-foreground border-none shadow-elevated transition-transform hover:scale-[1.02]">
+          <div className="flex w-full flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4">
+            <Button asChild size="lg" className="h-12 md:h-14 w-full sm:w-auto rounded-full px-8 md:px-10 text-base font-bold bg-accent hover:bg-accent/90 text-accent-foreground border-none shadow-elevated transition-transform hover:scale-[1.02]">
               <Link to="/for-ods" hash="intake">
                 Get Started Now
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
-            <Button asChild size="lg" className="h-12 md:h-14 rounded-full px-8 md:px-10 text-base font-bold bg-white/10 backdrop-blur-md border border-white/25 text-white hover:bg-white/20">
+            <Button asChild size="lg" className="h-12 md:h-14 w-full sm:w-auto rounded-full px-8 md:px-10 text-base font-bold bg-white/10 backdrop-blur-md border border-white/25 text-white hover:bg-white/20">
               <Link to="/contact">Talk to a Recruiter</Link>
             </Button>
           </div>

@@ -78,12 +78,12 @@ function HowItWorks() {
   return (
     <SiteLayout>
       {/* Hero Section - Dark (Primary) */}
-      <section className="bg-primary pt-16 pb-12 md:pt-24 md:pb-24 text-white overflow-hidden relative border-b border-white/5">
+      <section className="bg-primary pt-10 pb-10 md:pt-24 md:pb-24 text-white overflow-hidden relative border-b border-white/5">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,#2a9d9d_0%,transparent_50%)] opacity-[0.12]" />
         <div className="container-page relative z-10 text-center max-w-4xl mx-auto">
           <span className="section-eyebrow">The Master Plan</span>
-          <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-8 leading-[1.15] md:leading-[1.05] text-white">The Methodology</h1>
-          <p className="text-lg md:text-xl opacity-90 font-medium leading-relaxed max-w-2xl mx-auto mb-12">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-black tracking-tight mb-4 md:mb-8 leading-[1.15] md:leading-[1.05] text-white">The Methodology</h1>
+          <p className="text-sm sm:text-lg md:text-xl opacity-90 font-medium leading-relaxed max-w-2xl mx-auto mb-6 md:mb-12 px-1">
             We've refined clinical recruitment into a transparent, low-friction framework
             built for the modern Doctor and practice owner.
           </p>
@@ -91,24 +91,24 @@ function HowItWorks() {
       </section>
 
       {/* Tabs Section - Large Selector */}
-      <section className="bg-background -mt-8 relative z-20 pt-12 pb-20 md:pt-20 md:pb-32">
+      <section className="bg-background -mt-6 md:-mt-8 relative z-20 pt-8 pb-16 md:pt-20 md:pb-32">
         <div className="container-page">
           <Tabs defaultValue="ods" className="w-full">
-            <div className="flex justify-center mb-16">
-              <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 gap-1.5 max-w-lg h-auto sm:h-14 items-stretch rounded-full bg-muted/50 p-1.5 border border-border shadow-elevated backdrop-blur-xl">
+            <div className="flex justify-center mb-10 md:mb-16">
+              <TabsList className="grid w-full grid-cols-2 gap-1 max-w-lg h-auto sm:h-14 items-stretch rounded-2xl sm:rounded-full bg-muted/50 p-1 sm:p-1.5 border border-border shadow-elevated backdrop-blur-xl">
                 <TabsTrigger
                   value="ods"
-                  className="rounded-full h-full w-full min-h-[3.5rem] sm:min-h-0 flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.15em] data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-elevated transition-all"
+                  className="rounded-xl sm:rounded-full h-full w-full min-h-[3rem] sm:min-h-0 flex items-center justify-center gap-1.5 sm:gap-3 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.15em] px-2 data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-elevated transition-all"
                 >
-                  <GraduationCap className="h-3.5 w-3.5" />
-                  For Optometrists
+                  <GraduationCap className="h-3.5 w-3.5 shrink-0" />
+                  <span className="leading-tight text-center">For Optometrists</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="practices"
-                  className="rounded-full h-full w-full min-h-[3.5rem] sm:min-h-0 flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.15em] data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-elevated transition-all"
+                  className="rounded-xl sm:rounded-full h-full w-full min-h-[3rem] sm:min-h-0 flex items-center justify-center gap-1.5 sm:gap-3 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.15em] px-2 data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-elevated transition-all"
                 >
-                  <Building2 className="h-3.5 w-3.5" />
-                  For Practices
+                  <Building2 className="h-3.5 w-3.5 shrink-0" />
+                  <span className="leading-tight text-center">For Practices</span>
                 </TabsTrigger>
               </TabsList>
             </div>

@@ -24,14 +24,14 @@ function BrandLogo({ onClick }) {
     <Link
       to="/"
       onClick={onClick}
-      className="group flex items-center shrink-0 transition-opacity hover:opacity-90"
+      className="group flex items-center min-w-0 shrink transition-opacity hover:opacity-90"
     >
       <img
         src="/logo.png"
         alt="Optometry Concierge"
-        className="h-10 w-10 md:h-11 md:w-11 rounded-lg object-cover shadow-sm ring-1 ring-border/60 transition-transform duration-300 group-hover:scale-[1.03]"
+        className="h-9 w-9 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded-lg object-cover shadow-sm ring-1 ring-border/60 transition-transform duration-300 group-hover:scale-[1.03] shrink-0"
       />
-      <span className="ml-2.5 font-serif text-[1.05rem] md:text-lg font-semibold tracking-tight text-primary leading-none">
+      <span className="ml-2 md:ml-2.5 font-serif text-[0.95rem] sm:text-[1.05rem] md:text-lg font-semibold tracking-tight text-primary leading-none truncate">
         Optometry
         <span className="block text-accent italic -mt-0.5">Concierge</span>
       </span>
@@ -110,43 +110,43 @@ export function Navbar() {
         </div>
       </div>
 
-      <nav className="container-page flex h-14 md:h-16 items-center justify-between gap-4">
-        <div className="flex items-center gap-8">
-          <BrandLogo />
-        </div>
+      <nav className="container-page flex h-14 md:h-16 items-center justify-between gap-3">
+        <BrandLogo />
 
         <div className="hidden items-center gap-4 md:flex">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-5">
             <NavItems />
           </div>
 
           <div className="flex items-center gap-3 ml-2">
             {loading ? (
-              <div className="h-11 w-24 animate-pulse rounded-xl bg-muted" />
+              <div className="h-10 w-24 animate-pulse rounded-full bg-muted" />
             ) : user ? (
-            <>
-              {isSuperAdmin ? (
-                <Button asChild size="sm" variant="ghost">
-                  <Link to="/admin">Admin</Link>
+              <>
+                {isSuperAdmin ? (
+                  <Button asChild size="sm" variant="ghost">
+                    <Link to="/admin">Admin</Link>
+                  </Button>
+                ) : (
+                  <Button asChild size="sm" variant="ghost">
+                    <Link to="/dashboard">Dashboard</Link>
+                  </Button>
+                )}
+                <Link
+                  to="/profile"
+                  className="flex items-center hover:opacity-80 transition-opacity ml-1"
+                >
+                  <UserAvatar
+                    name={profile?.full_name}
+                    url={profile?.avatar_url}
+                    className="h-9 w-9 border border-border"
+                  />
+                </Link>
+                <Button size="sm" variant="ghost" onClick={handleSignOut}>
+                  <LogOut className="h-4 w-4" /> Logout
                 </Button>
-              ) : (
-                <Button asChild size="sm" variant="ghost">
-                  <Link to="/dashboard">Dashboard</Link>
-                </Button>
-              )}
-              <Link to="/profile" className="flex items-center hover:opacity-80 transition-opacity ml-2">
-                <UserAvatar
-                  name={profile?.full_name}
-                  url={profile?.avatar_url}
-                  className="h-9 w-9 border border-border"
-                />
-              </Link>
-              <Button size="sm" variant="ghost" onClick={handleSignOut}>
-                <LogOut className="h-4 w-4" /> Logout
-              </Button>
-            </>
-          ) : (
-            <>
+              </>
+            ) : (
               <Button
                 asChild
                 className="h-10 rounded-full px-6 text-sm font-bold bg-primary text-white hover:bg-primary/90 border-none shadow-soft transition-transform hover:scale-[1.02]"
@@ -155,27 +155,54 @@ export function Navbar() {
                   Log In
                 </Link>
               </Button>
-            </>
-          )}
+            )}
+          </div>
         </div>
-      </div>
 
-        {/* Mobile */}
-        <div className="md:hidden">
+        {/* Mobile actions */}
+        <div className="flex items-center gap-1.5 md:hidden">
+          {!loading && !user ? (
+            <Button
+              asChild
+              size="sm"
+              className="h-9 rounded-full px-4 text-xs font-bold bg-primary text-white"
+            >
+              <Link to="/auth" search={{ mode: "login" }}>
+                Log In
+              </Link>
+            </Button>
+          ) : null}
+          {!loading && user ? (
+            <Link to="/profile" className="mr-0.5">
+              <UserAvatar
+                name={profile?.full_name}
+                url={profile?.avatar_url}
+                className="h-8 w-8 border border-border"
+              />
+            </Link>
+          ) : null}
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <Button size="icon" variant="ghost" aria-label="Open menu">
+              <Button
+                size="icon"
+                variant="ghost"
+                aria-label="Open menu"
+                className="h-10 w-10 shrink-0"
+              >
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-72 flex flex-col p-0">
+            <SheetContent
+              side="right"
+              className="w-[min(100vw-2rem,20rem)] flex flex-col p-0"
+            >
               <SheetTitle className="sr-only">Menu</SheetTitle>
               <div className="flex flex-col h-full">
-                <div className="p-6 border-b border-border">
+                <div className="p-5 border-b border-border">
                   <BrandLogo onClick={() => setOpen(false)} />
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-6 space-y-8">
+                <div className="flex-1 overflow-y-auto p-5 space-y-6">
                   {user ? (
                     <Link
                       to="/profile"
@@ -187,72 +214,86 @@ export function Navbar() {
                         url={profile?.avatar_url}
                         className="h-10 w-10 border border-border"
                       />
-                      <div className="leading-tight">
-                        <p className="text-sm font-semibold text-foreground">
+                      <div className="leading-tight min-w-0">
+                        <p className="text-sm font-semibold text-foreground truncate">
                           {profile?.full_name || "User"}
                         </p>
                         <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">
-                          {role === 'super_admin' ? 'Administrator' : role}
+                          {role === "super_admin" ? "Administrator" : role}
                         </p>
                       </div>
                     </Link>
                   ) : null}
 
-                  <div className="flex flex-col gap-6">
-                    <div className="flex flex-col gap-3">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 px-1">Navigation</p>
-                      {navLinks
-                        .filter((l) => l.show)
-                        .map((l) => (
-                          <Link
-                            key={l.to}
-                            to={l.to}
-                            hash={l.hash}
-                            onClick={() => setOpen(false)}
-                            className={cn(
-                              "flex items-center px-1 text-base font-semibold transition-colors hover:text-primary",
-                              pathname.startsWith(l.to) ? "text-primary" : "text-muted-foreground",
-                            )}
-                          >
-                            {l.label}
-                          </Link>
-                        ))}
-                      {user && (
+                  <div className="flex flex-col gap-1">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 px-3 mb-1">
+                      Navigation
+                    </p>
+                    {navLinks
+                      .filter((l) => l.show)
+                      .map((l) => (
                         <Link
-                          to={isSuperAdmin ? "/admin" : "/dashboard"}
+                          key={l.to}
+                          to={l.to}
+                          {...(l.hash ? { hash: l.hash } : {})}
                           onClick={() => setOpen(false)}
-                          className="flex items-center px-1 text-base font-semibold text-muted-foreground hover:text-primary transition-colors"
+                          className={cn(
+                            "flex items-center rounded-xl px-3 py-3 text-base font-semibold transition-colors hover:bg-muted/60",
+                            pathname.startsWith(l.to)
+                              ? "text-primary bg-primary/5"
+                              : "text-foreground/80",
+                          )}
                         >
-                          {isSuperAdmin ? "Admin Panel" : "Dashboard"}
+                          {l.label}
                         </Link>
-                      )}
-                    </div>
+                      ))}
+                    {user && (
+                      <Link
+                        to={isSuperAdmin ? "/admin" : "/dashboard"}
+                        onClick={() => setOpen(false)}
+                        className="flex items-center rounded-xl px-3 py-3 text-base font-semibold text-foreground/80 hover:bg-muted/60 transition-colors"
+                      >
+                        {isSuperAdmin ? "Admin Panel" : "Dashboard"}
+                      </Link>
+                    )}
                   </div>
                 </div>
 
-                <div className="p-6 border-t border-border bg-muted/20 mt-auto">
+                <div className="p-5 border-t border-border bg-muted/20 mt-auto safe-pb">
                   <div className="flex flex-col gap-2">
                     {user ? (
-                      <Button variant="outline" onClick={handleSignOut} className="w-full">
+                      <Button
+                        variant="outline"
+                        onClick={handleSignOut}
+                        className="w-full h-11 rounded-full"
+                      >
                         <LogOut className="h-4 w-4 mr-2" /> Logout
                       </Button>
                     ) : (
                       <>
-                        <Button asChild variant="outline" className="w-full">
+                        <Button
+                          asChild
+                          className="w-full h-11 rounded-full font-bold"
+                        >
+                          <Link
+                            to="/for-ods"
+                            hash="intake"
+                            onClick={() => setOpen(false)}
+                          >
+                            Get Free Career Help
+                          </Link>
+                        </Button>
+                        <Button
+                          asChild
+                          variant="outline"
+                          className="w-full h-11 rounded-full"
+                        >
                           <Link
                             to="/auth"
                             search={{ mode: "login" }}
                             onClick={() => setOpen(false)}
                           >
-                            Login
-                          </Link>
-                        </Button>
-                        <Button asChild className="w-full">
-                          <Link
-                            to="/get-started"
-                            onClick={() => setOpen(false)}
-                          >
-                            Get started
+                            Log In
                           </Link>
                         </Button>
                       </>

@@ -45,10 +45,10 @@ function FAQItem({ question, answer }) {
     )}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center justify-between p-6 md:p-8 text-left outline-none"
+        className="flex w-full items-center justify-between gap-3 p-4 sm:p-6 md:p-8 text-left outline-none"
       >
         <span className={cn(
-          "text-lg md:text-xl font-black tracking-tight transition-colors",
+          "text-base sm:text-lg md:text-xl font-black tracking-tight transition-colors pr-2",
           isOpen ? "text-primary" : "text-foreground group-hover:text-primary"
         )}>
           {question}
@@ -88,13 +88,13 @@ function ForODs() {
   return (
     <SiteLayout>
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-primary pt-10 pb-20 md:pt-12 md:pb-24 border-b border-border/30 text-white">
+      <section className="relative overflow-hidden bg-primary pt-8 pb-14 md:pt-12 md:pb-24 border-b border-border/30 text-white">
         {/* Background Image */}
         <img
           src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80&w=1600"
           alt=""
           aria-hidden="true"
-          className="absolute inset-0 w-full h-full object-cover opacity-45 animate-kenburns"
+          className="absolute inset-0 w-full h-full object-cover opacity-45 md:animate-kenburns"
         />
         <div
           className="absolute inset-0"
@@ -103,36 +103,36 @@ function ForODs() {
         <div className="absolute top-0 right-0 w-1/3 h-full bg-accent/15 blur-[120px] pointer-events-none" />
 
         <div className="container-page relative z-10">
-          <div className="grid lg:grid-cols-2 gap-20 items-center">
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-20 items-center">
             <div>
-              <p className="font-serif text-accent text-xl md:text-2xl italic mb-6">
+              <p className="font-serif text-accent text-lg md:text-2xl italic mb-4 md:mb-6">
                 Optometry Concierge
               </p>
-              <div className="flex flex-wrap items-center gap-4 mb-10">
+              <div className="flex flex-wrap items-center gap-3 mb-6 md:mb-10">
                 {/* Audience Toggle */}
-                <div className="inline-flex p-1.5 bg-white/10 rounded-2xl border border-white/20 backdrop-blur-md shadow-inner">
+                <div className="inline-flex w-full sm:w-auto p-1 sm:p-1.5 bg-white/10 rounded-2xl border border-white/20 backdrop-blur-md shadow-inner">
                   <button
                     onClick={() => setAudience("new-grad")}
                     className={cn(
-                      "flex items-center gap-2 px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all",
+                      "flex flex-1 sm:flex-initial items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-8 py-2.5 sm:py-3 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-wider sm:tracking-widest transition-all",
                       audience === "new-grad"
                         ? "bg-accent text-primary shadow-elevated"
                         : "text-white/60 hover:text-white hover:bg-white/10"
                     )}
                   >
-                    <GraduationCap className="h-4 w-4" />
+                    <GraduationCap className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
                     New Grad
                   </button>
                   <button
                     onClick={() => setAudience("experienced")}
                     className={cn(
-                      "flex items-center gap-2 px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all",
+                      "flex flex-1 sm:flex-initial items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-8 py-2.5 sm:py-3 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-wider sm:tracking-widest transition-all",
                       audience === "experienced"
                         ? "bg-accent text-primary shadow-elevated"
                         : "text-white/60 hover:text-white hover:bg-white/10"
                     )}
                   >
-                    <Briefcase className="h-4 w-4" />
+                    <Briefcase className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
                     Experienced OD
                   </button>
                 </div>
@@ -140,47 +140,47 @@ function ForODs() {
 
               {audience === "new-grad" ? (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-tight md:leading-[1.1] text-white mb-6">
+                  <h1 className="text-[1.65rem] sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-tight md:leading-[1.1] text-white mb-4 md:mb-6 text-balance">
                     Graduating OD?
                     <br />
                     <span className="font-serif italic font-semibold text-accent">
                       Don't sign your first contract blind
                     </span>
                   </h1>
-                  <p className="mt-6 text-base md:text-lg text-white/80 leading-relaxed max-w-xl font-medium">
+                  <p className="mt-4 md:mt-6 text-sm md:text-lg text-white/80 leading-relaxed max-w-xl font-medium">
                     We've walked in your shoes. Get clinical-first mentorship, salary transparency, and direct introductions to the best private practices.
                   </p>
                 </div>
               ) : (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-tight md:leading-[1.1] text-white mb-6">
+                  <h1 className="text-[1.65rem] sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-tight md:leading-[1.1] text-white mb-4 md:mb-6 text-balance">
                     Ready for a change?
                     <br />
                     <span className="font-serif italic font-semibold text-accent">
                       We'll handle the search, you keep your career private
                     </span>
                   </h1>
-                  <p className="mt-6 text-base md:text-lg text-white/80 leading-relaxed max-w-xl font-medium">
+                  <p className="mt-4 md:mt-6 text-sm md:text-lg text-white/80 leading-relaxed max-w-xl font-medium">
                     100% identity-stealth job matching. Find a practice that values your clinical expertise without the friction of public job boards.
                   </p>
                 </div>
               )}
 
-              <div className="mt-10 flex flex-wrap gap-4 items-center">
-                <Button size="lg" className="rounded-full px-10 h-14 text-lg font-black bg-accent text-primary border-none shadow-elevated transition-all hover:scale-105 active:scale-95 hover:bg-accent/90" asChild>
+              <div className="mt-7 md:mt-10 flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 items-stretch sm:items-center">
+                <Button size="lg" className="rounded-full w-full sm:w-auto px-6 md:px-10 h-12 md:h-14 text-base md:text-lg font-black bg-accent text-primary border-none shadow-elevated transition-all hover:scale-105 active:scale-95 hover:bg-accent/90" asChild>
                   <a href="#intake">
                     {audience === "new-grad" ? "Start Free Profile" : "Sign Up Stealthily"}
                   </a>
                 </Button>
-                <div className="flex flex-col">
-                   <span className="text-xs font-black uppercase tracking-widest text-accent mb-1">Colleague Support</span>
-                   <span className="text-sm font-bold text-white/70">Free & Confidential</span>
+                <div className="flex flex-col text-center sm:text-left">
+                   <span className="text-[10px] md:text-xs font-black uppercase tracking-widest text-accent mb-0.5">Colleague Support</span>
+                   <span className="text-xs md:text-sm font-bold text-white/70">Free & Confidential</span>
                 </div>
               </div>
             </div>
 
-            {/* Visual Side */}
-            <div className="relative lg:pl-10 mt-12 lg:mt-0">
+            {/* Visual Side — desktop/tablet */}
+            <div className="relative lg:pl-10 mt-4 lg:mt-0 hidden sm:block">
                <div className="absolute -inset-10 md:-inset-20 bg-accent/10 rounded-full blur-[80px] md:blur-[120px] opacity-50 -z-10" />
 
                <div className="relative group max-w-[500px] mx-auto lg:max-w-none">
@@ -266,21 +266,21 @@ function ForODs() {
       </section>
 
       {/* Create Profile Form — top of page */}
-      <section id="intake" className="container-page py-14 md:py-20 bg-muted/40 rounded-[2rem] md:rounded-[3rem] my-10 md:my-14 scroll-mt-24">
+      <section id="intake" className="container-page py-10 sm:py-14 md:py-20 bg-muted/40 rounded-2xl md:rounded-[3rem] my-6 md:my-14 scroll-mt-20 md:scroll-mt-24">
          <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-10 md:mb-14">
+            <div className="text-center mb-7 md:mb-14">
               <span className="section-eyebrow">Get Started</span>
-              <h2 className="text-3xl md:text-5xl font-black tracking-tight text-foreground leading-tight mb-4">
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-black tracking-tight text-foreground leading-tight mb-3 md:mb-4">
                 Create a <span className="text-gradient">Profile</span>
               </h2>
-              <p className="mt-2 text-base text-muted-foreground font-medium max-w-2xl mx-auto leading-relaxed">
+              <p className="mt-2 text-sm md:text-base text-muted-foreground font-medium max-w-2xl mx-auto leading-relaxed px-1">
                 Take the first step toward your next chapter. Our onboarding process is 100% confidential and takes less than 5 minutes.
               </p>
             </div>
 
-            <div className="bg-card border border-border rounded-2xl md:rounded-[2.5rem] p-6 md:p-12 shadow-elevated">
+            <div className="bg-card border border-border rounded-xl sm:rounded-2xl md:rounded-[2.5rem] p-4 sm:p-6 md:p-12 shadow-elevated">
                <ODIntakeForm />
-               <div className="text-sm text-left border-t border-border mt-12 pt-8">
+               <div className="text-sm text-left border-t border-border mt-8 md:mt-12 pt-6 md:pt-8">
                   <p className="font-black text-foreground uppercase tracking-widest flex items-center gap-3 mb-3">
                     <ShieldCheck className="h-5 w-5 text-primary" />
                     100% Confidentiality Guarantee
