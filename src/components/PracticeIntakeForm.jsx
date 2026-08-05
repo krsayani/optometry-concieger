@@ -76,10 +76,10 @@ const schema = z.object({
   mentorshipAvailable: z.string().min(1, "Required"),
 
   // Step 4: Final
-  equipmentTech: z.string().min(5, "Please describe your equipment"),
+  equipmentTech: z.string().optional(),
   ownershipTrack: z.string().min(1, "Required"),
   urgency: z.string().min(1, "Required"),
-  anythingElse: z.string().min(20, "Please describe your practice culture"),
+  anythingElse: z.string().optional(),
   agreeToFee: z.boolean().refine(v => v === true, "You must agree to the fee terms to proceed"),
   agreeToTerms: z.boolean().refine(v => v === true, "You must agree to proceed"),
 });
@@ -667,11 +667,11 @@ export function PracticeIntakeForm() {
         {step === 4 && (
           <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
              <div className="space-y-2">
-                <Label htmlFor="equipmentTech">Major Equipment / Tech</Label>
+                <Label htmlFor="equipmentTech">Major Equipment / Tech (Optional)</Label>
                 <Textarea id="equipmentTech" {...register("equipmentTech")} placeholder="OCT, Optos, Visual Field, EHR, etc." />
              </div>
              <div className="space-y-2">
-                <Label htmlFor="anythingElse">Practice Culture / Vibe</Label>
+                <Label htmlFor="anythingElse">Practice Culture / Vibe (Optional)</Label>
                 <Textarea id="anythingElse" {...register("anythingElse")} placeholder="Describe your team, patient base, and why an OD should join you." />
              </div>
 
