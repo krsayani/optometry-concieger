@@ -86,25 +86,29 @@ function ForPractices() {
         {/* Background Image */}
         <img
           src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80&w=1600"
-          alt="Professional Retinal Scan"
-          className="absolute inset-0 w-full h-full object-cover opacity-100 mix-blend-overlay"
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full object-cover opacity-45 animate-kenburns"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/80 to-background/20" />
-
-        {/* Background Accents */}
-        <div className="absolute top-0 left-0 w-1/3 h-full bg-accent/5 blur-[120px] -z-10" />
-        <div className="absolute bottom-0 right-0 w-1/4 h-1/2 bg-accent/5 blur-[100px] -z-10" />
+        <div
+          className="absolute inset-0"
+          style={{ background: "var(--gradient-hero)" }}
+        />
+        <div className="absolute top-0 left-0 w-1/3 h-full bg-accent/15 blur-[120px] pointer-events-none" />
 
         <div className="container-page relative z-10">
           <div className="grid lg:grid-cols-2 gap-20 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 mb-8 backdrop-blur-sm">
-                     <span className="text-[10px] font-black uppercase tracking-[0.2em] text-accent">Doctor owned and led</span>
-              </div>
+              <p className="font-serif text-accent text-xl md:text-2xl italic mb-6">
+                Optometry Concierge
+              </p>
 
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-tight md:leading-[1.1] text-white mb-6">
-                Recruiters send resumes <br />
-                <span className="text-accent underline decoration-4 underline-offset-8">We send ready-to-hire ODs</span>
+                Recruiters send resumes
+                <br />
+                <span className="font-serif italic font-semibold text-accent">
+                  We send ready-to-hire ODs
+                </span>
               </h1>
 
               <p className="mt-6 text-base md:text-lg text-white/80 font-medium leading-relaxed max-w-xl">

@@ -21,15 +21,19 @@ import { cn } from "@/lib/utils";
 
 function BrandLogo({ onClick }) {
   return (
-    <Link to="/" onClick={onClick} className="flex items-center shrink-0">
+    <Link
+      to="/"
+      onClick={onClick}
+      className="group flex items-center shrink-0 transition-opacity hover:opacity-90"
+    >
       <img
         src="/logo.png"
         alt="Optometry Concierge"
-        className="h-10 w-10 md:h-11 md:w-11 rounded-lg object-cover shadow-sm ring-1 ring-border/60"
+        className="h-10 w-10 md:h-11 md:w-11 rounded-lg object-cover shadow-sm ring-1 ring-border/60 transition-transform duration-300 group-hover:scale-[1.03]"
       />
-      <span className="ml-2.5 font-display text-sm md:text-base font-extrabold tracking-tighter uppercase text-primary leading-tight">
+      <span className="ml-2.5 font-serif text-[1.05rem] md:text-lg font-semibold tracking-tight text-primary leading-none">
         Optometry
-        <span className="block text-accent -mt-0.5">Concierge</span>
+        <span className="block text-accent italic -mt-0.5">Concierge</span>
       </span>
     </Link>
   );
@@ -62,23 +66,24 @@ export function Navbar() {
       {navLinks
         .filter((l) => l.show)
         .map((l) => (
-          <Button
+          <Link
             key={l.to}
-            asChild
-            variant="outline"
+            to={l.to}
+            {...(l.hash ? { hash: l.hash } : {})}
+            onClick={onClick}
             className={cn(
-              "h-9 rounded-xl px-5 text-sm font-bold border-primary/20 text-primary hover:bg-primary/5 hover:text-primary transition-all",
-              pathname.startsWith(l.to) && "bg-primary/5 border-primary/40",
+              "group relative px-1 py-1 text-sm font-semibold text-primary/70 transition-colors hover:text-primary",
+              pathname.startsWith(l.to) && "text-primary",
             )}
           >
-            <Link
-              to={l.to}
-              {...(l.hash ? { hash: l.hash } : {})}
-              onClick={onClick}
-            >
-              {l.label}
-            </Link>
-          </Button>
+            {l.label}
+            <span
+              className={cn(
+                "absolute -bottom-1 left-0 h-0.5 w-full origin-left scale-x-0 rounded-full bg-accent transition-transform duration-300 group-hover:scale-x-100",
+                pathname.startsWith(l.to) && "scale-x-100",
+              )}
+            />
+          </Link>
         ))}
     </>
   );
@@ -142,9 +147,11 @@ export function Navbar() {
             </>
           ) : (
             <>
-              <Button asChild className="h-10 rounded-xl px-6 text-sm font-black bg-primary text-white hover:bg-primary/90 border-none shadow-soft flex items-center gap-2">
+              <Button
+                asChild
+                className="h-10 rounded-full px-6 text-sm font-bold bg-primary text-white hover:bg-primary/90 border-none shadow-soft transition-transform hover:scale-[1.02]"
+              >
                 <Link to="/auth" search={{ mode: "login" }}>
-                  <UserIcon className="h-4 w-4 text-accent" />
                   Log In
                 </Link>
               </Button>

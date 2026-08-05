@@ -15,8 +15,11 @@ export const DoctorOwnedSection = () => {
                <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">A Colleague-Driven Network</span>
             </div>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-tight text-primary mb-5 md:mb-7 text-balance">
-              Doctor <br />
-              <span className="text-accent">owned and led</span>
+              Doctor
+              <br />
+              <span className="font-serif italic font-semibold text-accent">
+                owned and led
+              </span>
             </h2>
             <p className="text-sm md:text-base text-muted-foreground font-medium mb-7 md:mb-9 leading-relaxed max-w-xl">
               We aren't just another agency. We are optometrists who understand the clinical nuances, the late-night charting, and the value of a perfectly balanced practice.

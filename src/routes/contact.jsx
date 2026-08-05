@@ -95,14 +95,17 @@ function Contact() {
   return (
     <SiteLayout>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-primary text-white pt-14 pb-16 md:pt-20 md:pb-24">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,#2a9d9d_0%,transparent_50%)] opacity-20" />
+      <section className="relative overflow-hidden bg-primary text-white pt-16 pb-20 md:pt-24 md:pb-28">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(42,157,157,0.35),transparent_55%)]" />
+        <div className="absolute -left-20 bottom-0 h-64 w-64 rounded-full bg-accent/20 blur-[100px] pointer-events-none" />
         <div className="container-page relative z-10 max-w-3xl">
-          <span className="section-eyebrow text-accent !mb-4">Get in Touch</span>
+          <p className="font-serif text-accent text-xl md:text-2xl italic mb-3">
+            Optometry Concierge
+          </p>
           <h1 className="text-3xl md:text-5xl font-black tracking-tight mb-4 md:mb-6 text-white">
             Contact Us
           </h1>
-          <p className="text-base md:text-lg text-white/85 font-medium leading-relaxed max-w-2xl">
+          <p className="text-base md:text-lg text-white/80 font-medium leading-relaxed max-w-2xl">
             Have questions about how we work? Whether you are a Doctor looking for
             guidance or a practice looking to hire, we are in your corner.
           </p>

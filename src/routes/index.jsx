@@ -61,79 +61,94 @@ function Home() {
 
   return (
     <SiteLayout>
-      {/* 1. Hero Section - Dark Background */}
-      <section className="relative overflow-hidden bg-primary pt-14 pb-14 text-white md:pt-24 md:pb-20">
+      {/* 1. Hero — full-bleed brand composition */}
+      <section className="relative min-h-[88vh] overflow-hidden bg-primary pt-16 pb-20 text-white md:min-h-[92vh] md:pt-28 md:pb-28 flex items-center">
         <img
-          src="https://images.unsplash.com/photo-1582719471384-894fbb16e074?auto=format&fit=crop&q=80&w=1600"
-          alt="Optometry phoropter equipment"
-          className="absolute inset-0 h-full w-full object-cover opacity-25 mix-blend-overlay pointer-events-none"
+          src="https://images.unsplash.com/photo-1582719471384-894fbb16e074?auto=format&fit=crop&q=80&w=2000"
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-cover opacity-40 animate-kenburns pointer-events-none"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/85 via-primary/55 to-primary/90" />
-        <div className="absolute left-1/4 top-0 h-96 w-96 rounded-full bg-accent/20 blur-[150px] -z-10 animate-pulse-slow" />
-        <div className="absolute bottom-0 right-1/4 h-96 w-96 rounded-full bg-white/10 blur-[150px] -z-10" />
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: "var(--gradient-hero)" }}
+        />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(42,157,157,0.22),transparent_55%)] pointer-events-none" />
+        <div className="absolute -left-24 top-1/4 h-[28rem] w-[28rem] rounded-full bg-accent/25 blur-[140px] animate-pulse-slow pointer-events-none" />
+        <div className="absolute -right-16 bottom-0 h-[22rem] w-[22rem] rounded-full bg-white/10 blur-[120px] pointer-events-none" />
 
-        <div className="container-page relative z-10">
-          <div className="mx-auto max-w-4xl text-center animate-fade-up">
-            <div className="mb-6 md:mb-8 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 md:px-5 md:py-2.5 backdrop-blur-md">
-              <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-              <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.18em] text-accent">Doctor owned and led</span>
-            </div>
-            <h1 className="mb-5 md:mb-7 text-[1.85rem] sm:text-4xl font-black leading-[1.15] tracking-tight text-white md:text-5xl lg:text-[3.5rem]">
-              From graduation to{" "}
-              <br className="hidden md:block" />
-              great offer{" "}
-              <span className="text-accent underline decoration-accent/60 decoration-[3px] underline-offset-[6px] md:underline-offset-8">
-                with someone
-              </span>{" "}
-              <br className="hidden md:block" />
-              in your corner
-            </h1>
-            <p className="mx-auto mb-8 max-w-2xl text-[0.95rem] font-medium leading-relaxed text-white/85 md:text-lg">
-              Free resume review, salary guidance, offer comparison, and job matching for ODs at every career stage — new grad or 20 years in.
+        <div className="container-page relative z-10 w-full">
+          <div className="mx-auto max-w-4xl text-center">
+            <p className="mb-5 md:mb-7 font-serif text-[1.65rem] sm:text-3xl md:text-4xl lg:text-[2.75rem] font-semibold tracking-tight text-white animate-fade-up">
+              Optometry{" "}
+              <span className="text-accent italic">Concierge</span>
             </p>
-            <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 px-2">
-              <Button asChild size="lg" className="h-12 md:h-14 rounded-full border-none bg-accent px-8 md:px-10 text-base md:text-lg font-bold text-accent-foreground shadow-elevated transition-all hover:bg-accent/90 hover:shadow-elevated">
-                <Link to="/for-ods" hash="intake">Get Free Career Help</Link>
+            <h1 className="mb-5 md:mb-6 text-[1.7rem] sm:text-4xl font-black leading-[1.12] tracking-tight text-white md:text-5xl lg:text-[3.35rem] animate-fade-up delay-100">
+              From graduation to great offer
+              <span className="block mt-1 md:mt-2 font-serif text-[1.35rem] sm:text-3xl md:text-4xl lg:text-[2.65rem] font-medium tracking-tight text-white/90">
+                with someone in your corner
+              </span>
+            </h1>
+            <p className="mx-auto mb-9 max-w-xl text-[0.95rem] font-medium leading-relaxed text-white/80 md:text-lg animate-fade-up delay-200">
+              Free resume review, salary guidance, offer comparison, and job matching for ODs at every career stage.
+            </p>
+            <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 px-2 animate-fade-up delay-300">
+              <Button
+                asChild
+                size="lg"
+                className="h-12 md:h-14 rounded-full border-none bg-accent px-8 md:px-10 text-base md:text-lg font-bold text-accent-foreground shadow-elevated transition-all duration-300 hover:bg-accent/90 hover:scale-[1.02]"
+              >
+                <Link to="/for-ods" hash="intake">
+                  Get Free Career Help
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
               </Button>
-              <Button asChild size="lg" className="h-12 md:h-14 rounded-full border border-white/25 bg-white/10 px-8 md:px-10 text-base md:text-lg font-bold text-white backdrop-blur-md transition-all hover:bg-white/20 hover:border-white/40">
+              <Button
+                asChild
+                size="lg"
+                className="h-12 md:h-14 rounded-full border border-white/30 bg-white/8 px-8 md:px-10 text-base md:text-lg font-bold text-white backdrop-blur-md transition-all duration-300 hover:bg-white/16 hover:border-white/50"
+              >
                 <Link to="/for-practices" hash="intake">Hire an OD</Link>
               </Button>
             </div>
           </div>
         </div>
+
+        <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-background to-transparent pointer-events-none" />
       </section>
 
-      {/* 2. Meet the Founders */}
-      <MeetTheFoundersSection />
-
-      {/* 3. Trust Bar - Social Proof */}
-      <div className="relative z-20 -mt-5 mx-4 md:mx-auto max-w-5xl rounded-2xl border border-border/60 bg-card/95 py-6 md:py-7 px-5 md:px-8 shadow-card backdrop-blur-sm">
-        <div className="mx-auto flex w-fit max-w-full flex-col items-start gap-4 text-[11px] font-bold uppercase tracking-[0.14em] text-primary/75 md:mx-0 md:w-full md:max-w-none md:flex-row md:items-center md:justify-between md:gap-3 md:tracking-[0.12em]">
-          <div className="flex items-center gap-2.5">
-            <div className="h-1.5 w-1.5 rounded-full bg-accent shrink-0" />
-            <span>Doctor owned and led</span>
-          </div>
-          <div className="flex items-center gap-2.5">
-            <div className="h-1.5 w-1.5 rounded-full bg-accent shrink-0" />
-            <span>Free for All ODs — New Grad or Experienced</span>
-          </div>
-          <div className="flex items-center gap-2.5">
-            <div className="h-1.5 w-1.5 rounded-full bg-accent shrink-0" />
-            <span>Only Pay When You Hire</span>
-          </div>
-          <div className="flex items-center gap-2.5">
-            <div className="h-1.5 w-1.5 rounded-full bg-accent shrink-0" />
-            <span>Private Practice Specialists</span>
+      {/* 2. Trust strip */}
+      <div className="relative z-20 border-b border-border/50 bg-card/80 backdrop-blur-md -mt-px">
+        <div className="container-page py-5 md:py-6">
+          <div className="mx-auto flex max-w-5xl flex-col items-center gap-3 text-center text-[11px] font-bold uppercase tracking-[0.14em] text-primary/70 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-x-8 sm:gap-y-2 md:tracking-[0.13em]">
+            {[
+              "Doctor owned and led",
+              "Free for all ODs",
+              "Only pay when you hire",
+              "Private practice specialists",
+            ].map((label) => (
+              <span key={label} className="inline-flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-accent shrink-0" />
+                {label}
+              </span>
+            ))}
           </div>
         </div>
       </div>
+
+      {/* 3. Meet the Founders */}
+      <MeetTheFoundersSection />
 
       {/* 4. Value Proposition Section - For ODs */}
       <section className="relative bg-background pt-16 pb-16 md:pt-28 md:pb-28 overflow-hidden">
         <div className="container-page text-center mb-10 md:mb-14 max-w-6xl relative z-10">
            <span className="section-eyebrow">Your Career Partner</span>
            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-tight text-primary">
-             We are not a job board <br/><span className="text-gradient">We are your career concierge</span>
+             We are not a job board
+             <br />
+             <span className="font-serif italic font-semibold text-accent">
+               We are your career concierge
+             </span>
            </h2>
         </div>
 
@@ -170,8 +185,12 @@ function Home() {
                desc: "Skip the applications and get your profile in front of decision makers."
              }
            ].map((item, i) => (
-             <div key={i} className="p-6 md:p-8 rounded-2xl md:rounded-3xl bg-card border border-border/80 group hover:border-accent/40 hover:shadow-card hover:-translate-y-0.5 transition-all duration-300 text-left flex flex-col shadow-soft">
-                <div className="h-12 w-12 md:h-14 md:w-14 rounded-xl md:rounded-2xl bg-primary/5 text-primary flex items-center justify-center mb-5 md:mb-6 group-hover:bg-accent group-hover:text-white transition-colors duration-300">
+             <div
+               key={i}
+               className="feature-tile feature-tile-hover p-6 md:p-8 text-left flex flex-col group"
+             >
+                <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-accent/0 to-transparent group-hover:via-accent transition-all duration-500" />
+                <div className="h-12 w-12 md:h-14 md:w-14 rounded-xl md:rounded-2xl bg-primary/[0.06] text-primary flex items-center justify-center mb-5 md:mb-6 group-hover:bg-accent group-hover:text-white transition-colors duration-300">
                    <item.icon className="h-6 w-6 md:h-7 md:w-7" />
                 </div>
                 <h3 className="text-lg md:text-xl font-bold text-primary mb-2 md:mb-3 tracking-tight">{item.title}</h3>
@@ -276,7 +295,11 @@ function Home() {
         <div className="container-page text-center mb-16 max-w-6xl relative z-10">
            <span className="section-eyebrow">For Practices & Employers</span>
            <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-tight text-primary mb-8">
-             Recruiters send resumes <br/><span className="text-gradient">We send ready-to-hire ODs</span>
+             Recruiters send resumes
+             <br />
+             <span className="font-serif italic font-semibold text-accent">
+               We send ready-to-hire ODs
+             </span>
            </h2>
         </div>
 
@@ -298,11 +321,14 @@ function Home() {
                desc: "Skip the noise of job boards and the high commissions of traditional agencies."
              }
            ].map((item, i) => (
-             <div key={i} className="p-10 rounded-[3rem] bg-white border border-border group hover:border-primary/30 transition-all text-left flex flex-col shadow-soft">
-                <div className="h-16 w-16 rounded-2xl bg-muted text-primary flex items-center justify-center mb-8 shadow-sm group-hover:bg-primary group-hover:text-white transition-colors">
-                   <item.icon className="h-8 w-8" />
+             <div
+               key={i}
+               className="feature-tile feature-tile-hover p-8 md:p-10 text-left flex flex-col group"
+             >
+                <div className="h-14 w-14 md:h-16 md:w-16 rounded-2xl bg-primary/[0.06] text-primary flex items-center justify-center mb-7 md:mb-8 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                   <item.icon className="h-7 w-7 md:h-8 md:w-8" />
                 </div>
-                <h3 className="text-2xl font-black text-primary mb-4 tracking-tight leading-tight">{item.title}</h3>
+                <h3 className="text-xl md:text-2xl font-black text-primary mb-3 md:mb-4 tracking-tight leading-tight">{item.title}</h3>
                 <p className="text-muted-foreground font-medium leading-relaxed">{item.desc}</p>
              </div>
            ))}
@@ -367,8 +393,8 @@ function Home() {
                     <Star key={s} className="h-3.5 w-3.5 fill-accent text-accent" />
                   ))}
                 </div>
-                <p className="font-sans text-[0.95rem] md:text-base font-medium text-white/90 leading-relaxed mb-6 flex-1">
-                  "{item.quote}"
+                <p className="font-serif text-[1.02rem] md:text-[1.08rem] font-medium text-white/90 leading-relaxed mb-6 flex-1 tracking-tight">
+                  “{item.quote}”
                 </p>
                 <div className="pt-4 border-t border-white/10">
                   <p className="font-display font-bold text-sm md:text-[0.95rem] text-white tracking-tight">
@@ -386,30 +412,33 @@ function Home() {
         </div>
       </section>
 
-      {/* 8. Final CTA */}
-      <section className="container-page pb-14 pt-10 md:pb-20 md:pt-16">
-        <div className="relative overflow-hidden rounded-2xl md:rounded-3xl border border-white/10 p-8 text-center shadow-elevated md:p-16 lg:p-20 bg-primary text-white">
-          <div className="absolute inset-0 z-0 opacity-30">
-            <div className="absolute -left-20 -top-20 h-[500px] w-[500px] rounded-full bg-accent/20 blur-[140px] animate-pulse-slow" />
-            <div className="absolute -right-20 -bottom-20 h-[500px] w-[500px] rounded-full bg-accent/20 blur-[140px] animate-pulse-slow delay-700" />
-          </div>
-
-          <div className="relative z-10 max-w-3xl mx-auto">
-            <h2 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-tight mb-4 md:mb-6">
-              Start your next <span className="text-accent">chapter today</span>
-            </h2>
-            <p className="mx-auto text-sm md:text-base text-white/85 font-medium leading-relaxed mb-8 md:mb-10 max-w-xl">
-              Whether you are looking for your first job or your next major career move,
-              we are in your corner. 100% free, 100% confidential.
-            </p>
-            <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4">
-              <Button asChild size="lg" className="h-12 md:h-14 rounded-full px-8 md:px-10 text-base font-bold bg-accent hover:bg-accent/90 text-accent-foreground border-none shadow-elevated">
-                <Link to="/for-ods" hash="intake">Get Started Now</Link>
-              </Button>
-              <Button asChild size="lg" className="h-12 md:h-14 rounded-full px-8 md:px-10 text-base font-bold bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20">
-                <Link to="/contact">Talk to a Recruiter</Link>
-              </Button>
-            </div>
+      {/* 8. Final CTA — full-bleed */}
+      <section className="relative overflow-hidden bg-primary text-white pt-16 pb-16 md:pt-24 md:pb-28">
+        <div className="absolute inset-0 opacity-40 pointer-events-none">
+          <div className="absolute -left-20 -top-20 h-[500px] w-[500px] rounded-full bg-accent/30 blur-[140px] animate-pulse-slow" />
+          <div className="absolute -right-20 bottom-0 h-[420px] w-[420px] rounded-full bg-accent/20 blur-[120px] animate-pulse-slow delay-200" />
+        </div>
+        <div className="container-page relative z-10 max-w-3xl mx-auto text-center">
+          <p className="font-serif text-accent text-xl md:text-2xl mb-4 italic">
+            Optometry Concierge
+          </p>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-tight mb-4 md:mb-6">
+            Start your next chapter today
+          </h2>
+          <p className="mx-auto text-sm md:text-base text-white/80 font-medium leading-relaxed mb-8 md:mb-10 max-w-xl">
+            Whether you are looking for your first job or your next major career move,
+            we are in your corner. 100% free, 100% confidential.
+          </p>
+          <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4">
+            <Button asChild size="lg" className="h-12 md:h-14 rounded-full px-8 md:px-10 text-base font-bold bg-accent hover:bg-accent/90 text-accent-foreground border-none shadow-elevated transition-transform hover:scale-[1.02]">
+              <Link to="/for-ods" hash="intake">
+                Get Started Now
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
+            <Button asChild size="lg" className="h-12 md:h-14 rounded-full px-8 md:px-10 text-base font-bold bg-white/10 backdrop-blur-md border border-white/25 text-white hover:bg-white/20">
+              <Link to="/contact">Talk to a Recruiter</Link>
+            </Button>
           </div>
         </div>
       </section>

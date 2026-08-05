@@ -17,7 +17,9 @@
 
   --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Fraunces", Georgia, "Times New Roman", serif;
   --font-family-display: var(--font-display);
+  --font-family-serif: var(--font-serif);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -52,8 +54,8 @@
 :root {
   --radius: 1.25rem;
 
-  /* Soft cool off-white, tinted toward brand navy */
-  --background: #f5f7fa;
+  /* Soft cool off-white with a slight navy cast */
+  --background: #f3f6f9;
   --foreground: #0e1a2b;
 
   --card: #ffffff;
@@ -91,6 +93,16 @@
 
   --gradient-dark: linear-gradient(145deg, #051c3f 0%, #0a2a56 55%, #123a68 100%);
   --gradient-primary: linear-gradient(135deg, #2a9d9d 0%, #1f7f8a 55%, #165e75 100%);
+  --gradient-hero: linear-gradient(
+    165deg,
+    rgba(5, 28, 63, 0.92) 0%,
+    rgba(5, 28, 63, 0.72) 42%,
+    rgba(10, 42, 86, 0.88) 100%
+  );
+  --gradient-mesh:
+    radial-gradient(ellipse 80% 60% at 10% -10%, rgba(42, 157, 157, 0.14), transparent 55%),
+    radial-gradient(ellipse 60% 50% at 100% 0%, rgba(5, 28, 63, 0.08), transparent 50%),
+    radial-gradient(ellipse 50% 40% at 50% 100%, rgba(42, 157, 157, 0.08), transparent 55%);
 }
 
 @layer base {
@@ -107,6 +119,8 @@
 
   body {
     background-color: var(--color-background);
+    background-image: var(--gradient-mesh);
+    background-attachment: fixed;
     color: var(--color-foreground);
     font-family: var(--font-sans);
     font-weight: 400;
@@ -183,6 +197,10 @@
   color: transparent;
 }
 
+@utility font-serif {
+  font-family: var(--font-serif);
+}
+
 @utility section-eyebrow {
   display: block;
   margin-bottom: 1rem;
@@ -202,6 +220,29 @@
   transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
 }
 
+@utility feature-tile {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--color-border) 80%, transparent);
+  background: color-mix(in srgb, var(--color-card) 92%, white);
+  border-radius: 1.5rem;
+  box-shadow: var(--shadow-soft);
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.3s ease,
+    background 0.3s ease;
+}
+
+@utility feature-tile-hover {
+  &:hover {
+    border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
+    box-shadow: var(--shadow-card);
+    transform: translateY(-3px);
+    background: var(--color-card);
+  }
+}
+
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
@@ -213,8 +254,18 @@
 }
 
 @keyframes fade-up {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes kenburns {
+  from { transform: scale(1.05) translate3d(0, 0, 0); }
+  to { transform: scale(1.14) translate3d(-1.5%, -1%, 0); }
+}
+
+@keyframes shimmer-line {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
 }
 
 @utility animate-float {
@@ -230,5 +281,25 @@
 }
 
 @utility animate-fade-up {
-  animation: fade-up 0.6s ease-out both;
+  animation: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@utility animate-kenburns {
+  animation: kenburns 22s ease-out both;
+}
+
+@utility delay-100 {
+  animation-delay: 100ms;
+}
+
+@utility delay-200 {
+  animation-delay: 200ms;
+}
+
+@utility delay-300 {
+  animation-delay: 300ms;
+}
+
+@utility delay-400 {
+  animation-delay: 400ms;
 }

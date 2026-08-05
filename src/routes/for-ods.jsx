@@ -92,22 +92,23 @@ function ForODs() {
         {/* Background Image */}
         <img
           src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80&w=1600"
-          alt="Optometry Eye Exam"
-          className="absolute inset-0 w-full h-full object-cover opacity-100 mix-blend-overlay"
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full object-cover opacity-45 animate-kenburns"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/80 to-transparent" />
-
-        <div className="absolute top-0 right-0 w-1/3 h-full bg-accent/5 blur-[120px] -z-10" />
-        <div className="absolute bottom-0 left-0 w-1/4 h-1/2 bg-primary/5 blur-[100px] -z-10" />
+        <div
+          className="absolute inset-0"
+          style={{ background: "var(--gradient-hero)" }}
+        />
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-accent/15 blur-[120px] pointer-events-none" />
 
         <div className="container-page relative z-10">
           <div className="grid lg:grid-cols-2 gap-20 items-center">
             <div>
-              <div className="flex flex-wrap items-center gap-4 mb-12">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm">
-                   <span className="text-[10px] font-black uppercase tracking-[0.2em] text-accent">Doctor owned and led</span>
-                </div>
-
+              <p className="font-serif text-accent text-xl md:text-2xl italic mb-6">
+                Optometry Concierge
+              </p>
+              <div className="flex flex-wrap items-center gap-4 mb-10">
                 {/* Audience Toggle */}
                 <div className="inline-flex p-1.5 bg-white/10 rounded-2xl border border-white/20 backdrop-blur-md shadow-inner">
                   <button
@@ -140,8 +141,11 @@ function ForODs() {
               {audience === "new-grad" ? (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
                   <h1 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-tight md:leading-[1.1] text-white mb-6">
-                    Graduating OD? <br />
-                    <span className="text-accent underline decoration-4 underline-offset-8">Don't sign your first contract blind</span>
+                    Graduating OD?
+                    <br />
+                    <span className="font-serif italic font-semibold text-accent">
+                      Don't sign your first contract blind
+                    </span>
                   </h1>
                   <p className="mt-6 text-base md:text-lg text-white/80 leading-relaxed max-w-xl font-medium">
                     We've walked in your shoes. Get clinical-first mentorship, salary transparency, and direct introductions to the best private practices.
@@ -150,8 +154,11 @@ function ForODs() {
               ) : (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
                   <h1 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-tight md:leading-[1.1] text-white mb-6">
-                    Ready for a change? <br />
-                    <span className="text-accent underline decoration-4 underline-offset-8">We'll handle the search, you keep your career private</span>
+                    Ready for a change?
+                    <br />
+                    <span className="font-serif italic font-semibold text-accent">
+                      We'll handle the search, you keep your career private
+                    </span>
                   </h1>
                   <p className="mt-6 text-base md:text-lg text-white/80 leading-relaxed max-w-xl font-medium">
                     100% identity-stealth job matching. Find a practice that values your clinical expertise without the friction of public job boards.

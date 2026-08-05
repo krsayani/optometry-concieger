@@ -109,27 +109,28 @@ function AuthPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 py-12">
-      <div className="w-full max-w-[520px]">
-        {/* Brand Logo */}
+    <div className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12 overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(42,157,157,0.12),transparent_55%)] pointer-events-none" />
+      <div className="absolute -right-24 bottom-0 h-72 w-72 rounded-full bg-primary/10 blur-[100px] pointer-events-none" />
+      <div className="relative z-10 w-full max-w-[520px]">
         <div className="mb-10 text-center">
-          <Link to="/" className="inline-flex items-center gap-3">
+          <Link to="/" className="inline-flex items-center gap-3 group">
             <img
               src="/logo.png"
               alt="Optometry Concierge"
-              className="h-12 w-12 rounded-xl object-cover shadow-soft ring-1 ring-border/60"
+              className="h-12 w-12 rounded-xl object-cover shadow-soft ring-1 ring-border/60 transition-transform group-hover:scale-[1.03]"
             />
-            <span className="text-xl font-black uppercase tracking-tighter text-primary leading-tight text-left">
+            <span className="font-serif text-left text-xl font-semibold tracking-tight text-primary leading-none">
               Optometry
-              <span className="block text-accent">Concierge</span>
+              <span className="block text-accent italic -mt-0.5">Concierge</span>
             </span>
           </Link>
         </div>
 
-        <div className="bg-card rounded-[2.5rem] border border-border p-8 md:p-12 shadow-elevated">
+        <div className="bg-card/95 backdrop-blur-sm rounded-[2rem] border border-border/80 p-8 md:p-12 shadow-elevated">
           <div className="text-center mb-10">
-            <h1 className="text-4xl font-black text-primary tracking-tight">
-              {forgot ? "Reset Password" : "Welcome Back!"}
+            <h1 className="text-3xl md:text-4xl font-black text-primary tracking-tight">
+              {forgot ? "Reset Password" : "Welcome back"}
             </h1>
             <p className="mt-3 text-base font-medium text-muted-foreground">
               {forgot
