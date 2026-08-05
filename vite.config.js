@@ -17,6 +17,9 @@ function apiDevPlugin() {
         "RESEND_API_KEY",
         "CONTACT_TO_EMAIL",
         "CONTACT_FROM_EMAIL",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "VITE_SUPABASE_URL",
+        "SUPABASE_URL",
       ]) {
         if (env[key] && !process.env[key]) {
           process.env[key] = env[key];
@@ -40,7 +43,12 @@ function apiDevPlugin() {
         }
 
         const route = url.replace(/^\/api\//, "").replace(/\/$/, "");
-        const allowed = new Set(["contact", "intake-notify", "account-invite"]);
+        const allowed = new Set([
+          "contact",
+          "intake-notify",
+          "account-invite",
+          "register-account",
+        ]);
         if (!allowed.has(route)) {
           return next();
         }

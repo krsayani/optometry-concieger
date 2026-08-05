@@ -350,7 +350,7 @@ function getResendClient() {
 function getFromAddress() {
   return (
     process.env.CONTACT_FROM_EMAIL ||
-    "Optometry Concierge <notifications@optometryconcierge.com>"
+    "Optometry Concierge <Admin@optometryconcierge.com>"
   );
 }
 
@@ -507,6 +507,65 @@ export function buildAccountInviteHtml({
             <td style="padding:0 32px 28px;">
               <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;color:${BRAND.muted};">
                 Questions? Reply to this email or contact Admin@optometryconcierge.com.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+/**
+ * Branded "your account is ready" email after password setup.
+ */
+export function buildAccountReadyHtml({ name, type, dashboardUrl }) {
+  const isPractice = type === "practice";
+  const audience = isPractice ? "practice" : "career";
+  const greetingName = String(name || "").trim() || "there";
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Your Optometry Concierge account is ready</title>
+</head>
+<body style="margin:0;padding:0;background:${BRAND.cream};">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${BRAND.cream};padding:24px 12px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;background:${BRAND.white};border-radius:24px;overflow:hidden;border:1px solid ${BRAND.border};">
+          <tr>
+            <td style="background:${BRAND.navy};padding:28px 32px;">
+              <p style="margin:0 0 10px;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:${BRAND.teal};">
+                Optometry Concierge
+              </p>
+              <h1 style="margin:0 0 8px;font-family:Arial,Helvetica,sans-serif;font-size:26px;line-height:1.25;color:${BRAND.white};font-weight:800;">
+                Your account is ready
+              </h1>
+              <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.55;color:rgba(255,255,255,0.82);">
+                You can sign in anytime to access your ${audience} dashboard.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:28px 32px;">
+              <p style="margin:0 0 14px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:${BRAND.text};">
+                Hi ${escapeHtml(greetingName)},
+              </p>
+              <p style="margin:0 0 18px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:${BRAND.text};">
+                Your Optometry Concierge account is confirmed. Open your dashboard to review your profile and next steps.
+              </p>
+              <p style="margin:0 0 22px;text-align:center;">
+                <a href="${escapeHtml(dashboardUrl)}" style="display:inline-block;background:${BRAND.teal};color:${BRAND.white};text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:700;padding:14px 28px;border-radius:999px;">
+                  Open dashboard
+                </a>
+              </p>
+              <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;color:${BRAND.muted};">
+                Questions? Contact Admin@optometryconcierge.com.
               </p>
             </td>
           </tr>

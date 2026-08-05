@@ -173,34 +173,86 @@ function CreateAccountPage() {
         readPendingIntake()?.data?.firstName ||
         readPendingIntake()?.data?.contactName ||
         "Member";
+      const trimmedEmail = email.trim().toLowerCase();
 
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: email.trim(),
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`,
-          data: {
-            full_name: fullName,
-            role: accountType === "practice" ? "employer" : "od",
-          },
-        },
-      });
+      // Prefer server registration so Supabase does not send its default
+      // "Confirm your email" from noreply@mail.app.supabase.io.
+      let userId = null;
+      let hasSession = false;
 
-      if (authError) {
-        if (isExistingAccountError(authError)) {
-          toast.error("An account already exists for this email.", {
-            description: "Sign in, or use Forgot password on the sign-in page.",
+      const registerRes = await fetch("/api/register-account", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: trimmedEmail,
+          password,
+          name: fullName,
+          type: accountType,
+          origin: window.location.origin,
+        }),
+      }).catch(() => null);
+
+      const registerPayload = registerRes
+        ? await registerRes.json().catch(() => ({}))
+        : { useClientSignup: true };
+
+      if (registerRes?.ok && registerPayload?.userId) {
+        userId = registerPayload.userId;
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email: trimmedEmail,
+          password,
+        });
+        if (signInError) throw signInError;
+        hasSession = true;
+      } else if (
+        registerPayload?.code === "USER_EXISTS" ||
+        registerRes?.status === 409
+      ) {
+        toast.error("An account already exists for this email.", {
+          description: "Sign in, or use Forgot password on the sign-in page.",
+        });
+        navigate({
+          to: "/auth",
+          search: { mode: "login" },
+        });
+        return;
+      } else if (registerPayload?.useClientSignup || !registerRes) {
+        const { data: authData, error: authError } =
+          await supabase.auth.signUp({
+            email: trimmedEmail,
+            password,
+            options: {
+              emailRedirectTo: `${window.location.origin}/dashboard`,
+              data: {
+                full_name: fullName,
+                role: accountType === "practice" ? "employer" : "od",
+              },
+            },
           });
-          navigate({
-            to: "/auth",
-            search: { mode: "login" },
-          });
-          return;
+
+        if (authError) {
+          if (isExistingAccountError(authError)) {
+            toast.error("An account already exists for this email.", {
+              description:
+                "Sign in, or use Forgot password on the sign-in page.",
+            });
+            navigate({
+              to: "/auth",
+              search: { mode: "login" },
+            });
+            return;
+          }
+          throw authError;
         }
-        throw authError;
+
+        userId = authData.user?.id || null;
+        hasSession = Boolean(authData.session);
+      } else {
+        throw new Error(
+          registerPayload?.error || "We couldn't create your account.",
+        );
       }
 
-      const userId = authData.user?.id;
       if (userId) {
         try {
           await finishPendingIntake(userId);
@@ -210,15 +262,15 @@ function CreateAccountPage() {
       }
 
       toast.success("Account created!", {
-        description: "You can now access your dashboard.",
+        description: hasSession
+          ? "You can now access your dashboard."
+          : "Check your email to confirm, then sign in.",
       });
 
-      if (authData.session) {
-        navigate({ to: "/dashboard" });
-      } else {
-        toast.info("Check your email if asked to verify, then sign in.");
-        navigate({ to: "/auth", search: { mode: "login" } });
-      }
+      navigate({
+        to: hasSession ? "/dashboard" : "/auth",
+        ...(hasSession ? {} : { search: { mode: "login" } }),
+      });
     } catch (error) {
       console.error(error);
       toast.error(
