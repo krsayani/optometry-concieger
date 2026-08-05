@@ -49,7 +49,6 @@ export function Footer() {
               <Link to="/about" className="text-sm font-bold hover:text-accent transition-colors">About Us</Link>
               <Link to="/contact" className="text-sm font-bold hover:text-accent transition-colors">Contact Us</Link>
               <Link to="/privacy" className="text-sm font-bold hover:text-accent transition-colors">Privacy Model</Link>
-              <Link to="/resources" className="text-xs font-bold opacity-50 cursor-not-allowed">Job Board (Soon)</Link>
             </nav>
           </div>
 
