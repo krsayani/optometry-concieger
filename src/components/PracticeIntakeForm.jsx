@@ -348,7 +348,7 @@ export function PracticeIntakeForm() {
         </div>
         <h2 className="text-3xl font-bold mb-4">Request Received</h2>
         <p className="text-muted-foreground max-w-md mx-auto mb-8">
-          Thank you for trusting Optometry Concierge with your search. A team member will review your practice requirements and reach out within 48 business hours.
+          Thank you for trusting Optometry Concierge with your search. A team member will review your practice requirements and contact you within 48 business hours by email or phone.
         </p>
 
         <div className="p-6 rounded-2xl bg-muted border border-border inline-block text-left mb-8">
@@ -356,7 +356,7 @@ export function PracticeIntakeForm() {
            <ul className="space-y-2 text-sm">
               <li className="flex gap-2"><span>1.</span> <span>We audit your requirements against our OD network.</span></li>
               <li className="flex gap-2"><span>2.</span> <span>We clinically vet potential matches for your culture.</span></li>
-              <li className="flex gap-2"><span>3.</span> <span>You'll get a call to discuss the top candidates.</span></li>
+              <li className="flex gap-2"><span>3.</span> <span>We'll contact you to discuss the top candidates.</span></li>
            </ul>
         </div>
 

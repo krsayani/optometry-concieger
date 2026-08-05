@@ -246,7 +246,7 @@ function ODDashboard({ isNested }) {
                 <TimelineStep
                     icon={Lock}
                     title="Consent-Based Introductions"
-                    desc="We'll call you when we find a match that fits your goals perfectly."
+                    desc="We'll contact you when we find a match that fits your goals perfectly."
                     active={['Consent Requested', 'Introduced'].includes(intake?.status)}
                     completed={intake?.status === 'Hired'}
                     date={['Consent Requested', 'Introduced', 'Hired'].includes(intake?.status) ? formatDate(intake?.status_updated_at) : ""}

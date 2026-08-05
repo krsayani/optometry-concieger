@@ -151,7 +151,7 @@ function HowItWorks() {
                     step="02"
                     icon={UserCheck}
                     title="Verified Intake"
-                    desc="We review your profile and add you to our verified candidate pool — you'll receive a confirmation and may follow up with a brief call."
+                    desc="We review your profile and add you to our verified candidate pool — you'll receive a confirmation and we may follow up by email or phone."
                   />
                   <StepCard
                     step="03"
@@ -165,7 +165,7 @@ function HowItWorks() {
                     phaseLabel="Phase 2: When We Have a Match"
                     isDark={true}
                     title="The Match Alert"
-                    desc="We reach out to you with details about the opportunity — location, setting, salary, and practice type — before sharing your name with anyone."
+                    desc="We contact you by email or phone with details about the opportunity — location, setting, salary, and practice type — before sharing your name with anyone."
                   />
                   <StepCard
                     step="05"

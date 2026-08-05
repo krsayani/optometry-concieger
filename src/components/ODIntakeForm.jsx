@@ -476,14 +476,14 @@ export function ODIntakeForm() {
         <p className="text-muted-foreground max-w-md mx-auto mb-8">
           {hasExistingProfile
             ? "You have already created a career profile. Please visit your dashboard to view or edit it."
-            : "Thank you for trusting Optometry Concierge with your career. A team member will review your profile and reach out within 48 business hours."}
+            : "Thank you for trusting Optometry Concierge with your career. A team member will review your profile and contact you within 48 business hours by email or phone."}
         </p>
         <div className="p-6 rounded-2xl bg-muted border border-border inline-block text-left">
            <h4 className="font-bold text-sm uppercase tracking-widest mb-3">Next Steps</h4>
            <ul className="space-y-2 text-sm">
               <li className="flex gap-2"><span>1.</span> <span>We build your verified career profile.</span></li>
               <li className="flex gap-2"><span>2.</span> <span>We begin matching you with top practices.</span></li>
-              <li className="flex gap-2"><span>3.</span> <span>You'll get a call when we have a match.</span></li>
+              <li className="flex gap-2"><span>3.</span> <span>We'll contact you when we have a match.</span></li>
            </ul>
         </div>
       </div>

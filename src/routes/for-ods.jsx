@@ -315,7 +315,7 @@ function ForODs() {
                  { title: "Profile Creation" },
                  { title: "Career Profile" },
                  { title: "Match Search" },
-                 { title: "The Call" },
+                 { title: "We Contact You" },
                  { title: "Prep & Guide" },
                  { title: "Sign " },
                ]}
@@ -327,7 +327,7 @@ function ForODs() {
                { step: "01", title: "Create Your Free Profile", desc: "Create your free, confidential profile in minutes." },
                { step: "02", title: "We Build Your Career Profile", desc: "We build your clinical career profile for you." },
                { step: "03", title: "We Find a Match", desc: "We find matches that fit your specific criteria." },
-               { step: "04", title: "You Get the Call", desc: "Receive interview requests from interested practices." },
+               { step: "04", title: "We Contact You", desc: "We'll email or call you with interview opportunities from interested practices." },
                { step: "05", title: "Interview Prep & Offer Guidance", desc: "One-on-one prep and guidance from our team." },
                { step: "06", title: "Sign With Confidence", desc: "Sign your contract with absolute confidence." },
              ].map((item) => (
