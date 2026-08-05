@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as IntroRouteImport } from './routes/intro'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as ForOdsRouteImport } from './routes/for-ods'
 import { Route as ForPracticesRouteImport } from './routes/for-practices'
@@ -38,6 +39,12 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+})
+
+const IntroRoute = IntroRouteImport.update({
+  id: '/intro',
+  path: '/intro',
   getParentRoute: () => rootRouteImport,
 })
 
@@ -217,6 +224,7 @@ const rootRouteChildren = {
   CreateAccountRoute: CreateAccountRoute,
   ForPracticesRoute: ForPracticesRoute,
   ForOdsRoute: ForOdsRoute,
+  IntroRoute: IntroRoute,
   HowItWorksRoute: HowItWorksRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   PrivacyRoute: PrivacyRoute,

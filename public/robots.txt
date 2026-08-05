@@ -12,6 +12,7 @@ Allow: /privacy
 Allow: /terms
 Allow: /get-started
 Allow: /resources
+Allow: /intro
 
 # Private / app areas — do not index
 Disallow: /admin

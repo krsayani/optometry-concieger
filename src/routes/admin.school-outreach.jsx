@@ -95,6 +95,9 @@ So we built Optometry Concierge. It's a free way to help students and new grads 
 
 We'd be grateful if you'd share it with your third- and fourth-years. I've included a short video of Karim and me explaining who we are and why this means so much to us, so your students can hear it directly.
 
+Watch our short intro:
+https://www.optometryconcierge.com/intro
+
 Thank you for everything you pour into getting these students ready. Happy to answer anything, or hop on a call if that's easier.
 
 Warmly,
@@ -111,6 +114,9 @@ https://www.optometryconcierge.com  ·  Admin@optometryconcierge.com`,
 I'm Dr. Bilal Ismail. My colleague Dr. Karim Sayani and I graduated together from UIW Rosenberg, and we still practice. We built a free resource called Optometry Concierge for one reason: we want new grads to land somewhere that values their training, pays them fairly, and lets them do the work they're passionate about, so it doesn't feel like work. Getting there comes down to the things school doesn't teach: resumes, contracts, knowing your worth, comparing offers, and negotiating.
 
 We help with all of it, free. It's confidential, students sign up themselves, and we don't need any information from your office. Would you share it with your third- and fourth-years? A short video from the two of us is below so they can hear why this matters to us.
+
+Watch our short intro:
+https://www.optometryconcierge.com/intro
 
 Thank you,
 Bilal & Karim  ·  Optometry Concierge  ·  https://www.optometryconcierge.com`,
@@ -697,7 +703,7 @@ function AdminSchoolOutreach() {
                   spam.
                 </li>
                 <li>
-                  Link the founders video; don&apos;t attach a large file.
+                  Link the intro video at /intro — emails include a poster + Watch button automatically.
                 </li>
                 <li>
                   Frame it as a free student resource, not recruiting.

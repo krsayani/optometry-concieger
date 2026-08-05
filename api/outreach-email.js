@@ -111,6 +111,8 @@ export default async function handler(req, res) {
     ).trim();
     const kind = String(body.kind || "outreach").trim();
     const bccAdmin = body.bccAdmin !== false;
+    const includeSchoolVideo =
+      body.includeSchoolVideo === true || kind === "school";
 
     if (!to || !isValidEmail(to)) {
       return res
@@ -138,7 +140,11 @@ export default async function handler(req, res) {
       bcc: bccAdmin && ADMIN_EMAIL ? [ADMIN_EMAIL] : undefined,
       subject,
       text: message,
-      html: buildPlainOutreachHtml({ subject, body: message }),
+      html: buildPlainOutreachHtml({
+        subject,
+        body: message,
+        includeSchoolVideo,
+      }),
       replyTo: auth.user.email || ADMIN_EMAIL,
       replyName: "Optometry Concierge",
     });

@@ -475,17 +475,73 @@ export async function sendUserEmail({
   return data;
 }
 
+const SCHOOL_INTRO_URL = "https://www.optometryconcierge.com/intro";
+const SCHOOL_INTRO_POSTER =
+  "https://www.optometryconcierge.com/videos/school-outreach-poster.jpg";
+
+function linkifyEscapedText(escaped) {
+  return escaped.replace(
+    /(https?:\/\/[^\s<]+)/g,
+    (url) =>
+      `<a href="${url}" style="color:${BRAND.teal};font-weight:700;text-decoration:none;" target="_blank" rel="noopener noreferrer">${url}</a>`,
+  );
+}
+
+function renderVideoCtaBlock() {
+  return `<div style="margin:8px 0 20px;">
+  <a href="${SCHOOL_INTRO_URL}" target="_blank" rel="noopener noreferrer" style="display:block;text-decoration:none;border-radius:16px;overflow:hidden;border:1px solid ${BRAND.border};">
+    <img src="${SCHOOL_INTRO_POSTER}" alt="Watch our short intro video" width="560" style="display:block;width:100%;max-width:560px;height:auto;border:0;" />
+    <div style="background:${BRAND.navy};padding:14px 18px;text-align:center;">
+      <span style="display:inline-block;background:${BRAND.teal};color:${BRAND.navy};font-weight:800;font-size:13px;letter-spacing:0.04em;text-transform:uppercase;padding:10px 18px;border-radius:999px;">▶ Watch our short intro</span>
+    </div>
+  </a>
+  <p style="margin:10px 0 0;font-size:12px;color:${BRAND.muted};line-height:1.5;">
+    Or open: <a href="${SCHOOL_INTRO_URL}" style="color:${BRAND.teal};font-weight:700;text-decoration:none;">${SCHOOL_INTRO_URL}</a>
+  </p>
+</div>`;
+}
+
 /** Plain outreach email → simple branded HTML. */
-export function buildPlainOutreachHtml({ subject, body }) {
-  const paragraphs = String(body || "")
+export function buildPlainOutreachHtml({ subject, body, includeSchoolVideo }) {
+  const rawBody = String(body || "");
+  const shouldEmbedVideo =
+    includeSchoolVideo === true ||
+    /optometryconcierge\.com\/intro/i.test(rawBody) ||
+    /school-outreach\.mp4/i.test(rawBody) ||
+    /\[video\]/i.test(rawBody);
+
+  const cleanedBody = rawBody
+    .replace(/\[video\]/gi, "")
+    .replace(
+      /https?:\/\/(www\.)?optometryconcierge\.com\/(intro|videos\/school-outreach\.mp4)\s*/gi,
+      "",
+    )
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+
+  const paragraphs = cleanedBody
     .split(/\n{2,}/)
     .map((block) => block.trim())
     .filter(Boolean)
-    .map(
-      (block) =>
-        `<p style="margin:0 0 16px;font-size:15px;line-height:1.65;color:${BRAND.text};">${escapeHtml(block).replace(/\n/g, "<br/>")}</p>`,
-    )
-    .join("");
+    .map((block) => {
+      const html = linkifyEscapedText(
+        escapeHtml(block).replace(/\n/g, "<br/>"),
+      );
+      return `<p style="margin:0 0 16px;font-size:15px;line-height:1.65;color:${BRAND.text};">${html}</p>`;
+    });
+
+  // Insert video CTA after the paragraph that mentions "video" when present,
+  // otherwise after the second paragraph.
+  let videoInserted = false;
+  if (shouldEmbedVideo) {
+    const videoIdx = paragraphs.findIndex((p) => /video/i.test(p));
+    const insertAt = videoIdx >= 0 ? videoIdx + 1 : Math.min(2, paragraphs.length);
+    paragraphs.splice(insertAt, 0, renderVideoCtaBlock());
+    videoInserted = true;
+  }
+  if (shouldEmbedVideo && !videoInserted) {
+    paragraphs.push(renderVideoCtaBlock());
+  }
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -497,7 +553,7 @@ export function buildPlainOutreachHtml({ subject, body }) {
         <p style="margin:0;font-size:13px;letter-spacing:0.12em;text-transform:uppercase;color:${BRAND.teal};font-weight:700;">Optometry Concierge</p>
         <p style="margin:6px 0 0;font-size:18px;font-weight:700;color:${BRAND.white};">${escapeHtml(subject || "Message")}</p>
       </div>
-      <div style="padding:28px 24px;">${paragraphs}</div>
+      <div style="padding:28px 24px;">${paragraphs.join("")}</div>
     </div>
     <p style="margin:16px 8px 0;font-size:12px;color:${BRAND.muted};line-height:1.5;">
       Sent by Optometry Concierge · Admin@optometryconcierge.com
