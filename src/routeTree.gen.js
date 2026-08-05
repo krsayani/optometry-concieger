@@ -30,6 +30,8 @@ import { Route as AdminOdIntakesRouteImport } from './routes/admin.od-intakes'
 import { Route as AdminPracticeIntakesRouteImport } from './routes/admin.practice-intakes'
 import { Route as AdminMatchesRouteImport } from './routes/admin.matches'
 import { Route as AdminSchoolOutreachRouteImport } from './routes/admin.school-outreach'
+import { Route as AdminOdOutreachRouteImport } from './routes/admin.od-outreach'
+import { Route as AdminPracticeOutreachRouteImport } from './routes/admin.practice-outreach'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 
@@ -158,6 +160,18 @@ const AdminSchoolOutreachRoute = AdminSchoolOutreachRouteImport.update({
   getParentRoute: () => AdminRoute,
 })
 
+const AdminOdOutreachRoute = AdminOdOutreachRouteImport.update({
+  id: '/od-outreach',
+  path: '/od-outreach',
+  getParentRoute: () => AdminRoute,
+})
+
+const AdminPracticeOutreachRoute = AdminPracticeOutreachRouteImport.update({
+  id: '/practice-outreach',
+  path: '/practice-outreach',
+  getParentRoute: () => AdminRoute,
+})
+
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -182,6 +196,8 @@ const AdminRouteChildren = {
   AdminPracticeIntakesRoute: AdminPracticeIntakesRoute,
   AdminMatchesRoute: AdminMatchesRoute,
   AdminSchoolOutreachRoute: AdminSchoolOutreachRoute,
+  AdminOdOutreachRoute: AdminOdOutreachRoute,
+  AdminPracticeOutreachRoute: AdminPracticeOutreachRoute,
   AdminOdIntakesRoute: AdminOdIntakesRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdminIndexRoute: AdminIndexRoute,

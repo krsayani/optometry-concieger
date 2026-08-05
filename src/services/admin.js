@@ -574,11 +574,14 @@ export async function updateSchoolOutreachClub(id, updates) {
   return data;
 }
 
-export async function sendSchoolOutreachEmail({
+export async function sendOutreachEmail({
   to,
   cc,
   subject,
   body,
+  kind = "outreach",
+  contactId,
+  contactLabel,
   schoolId,
   schoolName,
   bccAdmin = true,
@@ -591,7 +594,7 @@ export async function sendSchoolOutreachEmail({
     throw new Error("You must be signed in to send email.");
   }
 
-  const response = await fetch("/api/school-outreach-email", {
+  const response = await fetch("/api/outreach-email", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -602,6 +605,9 @@ export async function sendSchoolOutreachEmail({
       cc,
       subject,
       body,
+      kind,
+      contactId: contactId || schoolId,
+      contactLabel: contactLabel || schoolName,
       schoolId,
       schoolName,
       bccAdmin,
@@ -613,4 +619,98 @@ export async function sendSchoolOutreachEmail({
     throw new Error(payload.error || "Failed to send email.");
   }
   return payload;
+}
+
+/** @deprecated Prefer sendOutreachEmail */
+export async function sendSchoolOutreachEmail(args) {
+  return sendOutreachEmail({ ...args, kind: "school" });
+}
+
+export const CONTACT_OUTREACH_STATUSES = [
+  "Not started",
+  "Emailed",
+  "Follow-up sent",
+  "Replied",
+  "Interested",
+  "Signed up",
+  "Declined",
+  "No response",
+];
+
+export const CONTACT_OUTREACH_OWNERS = ["Bilal", "Karim"];
+
+export async function listOdOutreachContacts() {
+  const { data, error } = await supabase
+    .from("od_outreach_contacts")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function createOdOutreachContact(payload) {
+  const { data, error } = await supabase
+    .from("od_outreach_contacts")
+    .insert(payload)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function updateOdOutreachContact(id, updates) {
+  const { data, error } = await supabase
+    .from("od_outreach_contacts")
+    .update(updates)
+    .eq("id", id)
+    .select()
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+export async function deleteOdOutreachContact(id) {
+  const { error } = await supabase
+    .from("od_outreach_contacts")
+    .delete()
+    .eq("id", id);
+  if (error) throw error;
+}
+
+export async function listPracticeOutreachContacts() {
+  const { data, error } = await supabase
+    .from("practice_outreach_contacts")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function createPracticeOutreachContact(payload) {
+  const { data, error } = await supabase
+    .from("practice_outreach_contacts")
+    .insert(payload)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function updatePracticeOutreachContact(id, updates) {
+  const { data, error } = await supabase
+    .from("practice_outreach_contacts")
+    .update(updates)
+    .eq("id", id)
+    .select()
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+export async function deletePracticeOutreachContact(id) {
+  const { error } = await supabase
+    .from("practice_outreach_contacts")
+    .delete()
+    .eq("id", id);
+  if (error) throw error;
 }

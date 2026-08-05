@@ -19,7 +19,7 @@ import {
   listSchoolOutreachClubs,
   updateSchoolOutreachSchool,
   updateSchoolOutreachClub,
-  sendSchoolOutreachEmail,
+  sendOutreachEmail,
   SCHOOL_OUTREACH_STATUSES,
   SCHOOL_OUTREACH_OWNERS,
 } from "@/services/admin";
@@ -288,11 +288,14 @@ function AdminSchoolOutreach() {
       if (!compose) throw new Error("Nothing to send.");
       if (!compose.to?.trim()) throw new Error("Recipient email is required.");
 
-      const result = await sendSchoolOutreachEmail({
+      const result = await sendOutreachEmail({
         to: compose.to.trim(),
         cc: compose.cc.trim() || undefined,
         subject: compose.subject.trim(),
         body: compose.body.trim(),
+        kind: "school",
+        contactId: compose.school.id,
+        contactLabel: compose.school.school,
         schoolId: compose.school.id,
         schoolName: compose.school.school,
         bccAdmin: compose.bccAdmin,

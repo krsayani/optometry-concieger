@@ -6,6 +6,8 @@ import {
   Users,
   GitMerge,
   GraduationCap,
+  Stethoscope,
+  Building,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -15,6 +17,8 @@ const links = [
   { to: "/admin/practice-intakes", label: "Practices", icon: Building2 },
   { to: "/admin/matches", label: "Matches", icon: GitMerge },
   { to: "/admin/school-outreach", label: "School Outreach", icon: GraduationCap },
+  { to: "/admin/od-outreach", label: "OD Outreach", icon: Stethoscope },
+  { to: "/admin/practice-outreach", label: "Practice Outreach", icon: Building },
   { to: "/admin/users", label: "Users", icon: Users },
 ];
 

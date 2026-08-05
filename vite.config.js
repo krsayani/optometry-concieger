@@ -52,6 +52,7 @@ function apiDevPlugin() {
           "account-invite",
           "register-account",
           "school-outreach-email",
+          "outreach-email",
         ]);
         if (!allowed.has(route)) {
           return next();
