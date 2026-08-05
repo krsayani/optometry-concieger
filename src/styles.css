@@ -95,9 +95,9 @@
   --gradient-primary: linear-gradient(135deg, #2a9d9d 0%, #1f7f8a 55%, #165e75 100%);
   --gradient-hero: linear-gradient(
     165deg,
-    rgba(5, 28, 63, 0.92) 0%,
-    rgba(5, 28, 63, 0.72) 42%,
-    rgba(10, 42, 86, 0.88) 100%
+    rgba(5, 28, 63, 0.88) 0%,
+    rgba(5, 28, 63, 0.62) 45%,
+    rgba(10, 42, 86, 0.9) 100%
   );
   --gradient-mesh:
     radial-gradient(ellipse 80% 60% at 10% -10%, rgba(42, 157, 157, 0.14), transparent 55%),

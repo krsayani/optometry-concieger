@@ -106,7 +106,7 @@ function Home() {
               <Button
                 asChild
                 size="lg"
-                className="h-12 md:h-14 rounded-full border border-white/30 bg-white/8 px-8 md:px-10 text-base md:text-lg font-bold text-white backdrop-blur-md transition-all duration-300 hover:bg-white/16 hover:border-white/50"
+                className="h-12 md:h-14 rounded-full border border-white/50 bg-white/15 px-8 md:px-10 text-base md:text-lg font-bold text-white backdrop-blur-md transition-all duration-300 hover:bg-white/25 hover:border-white/70"
               >
                 <Link to="/for-practices" hash="intake">Hire an OD</Link>
               </Button>
