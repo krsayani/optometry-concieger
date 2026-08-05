@@ -64,7 +64,7 @@ export async function sendAdminEmail({ subject, replyTo, text, html }) {
   const resend = new Resend(apiKey);
   const from =
     process.env.CONTACT_FROM_EMAIL ||
-    "Optometry Concierge <onboarding@resend.dev>";
+    "Optometry Concierge <notifications@optometryconcierge.com>";
 
   const payload = {
     from,
