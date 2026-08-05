@@ -67,7 +67,7 @@ function Home() {
           src="/images/hero-exam.png"
           alt=""
           aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover object-[center_25%] opacity-45 md:animate-kenburns pointer-events-none"
+          className="absolute inset-0 h-full w-full object-cover object-center opacity-50 md:animate-kenburns pointer-events-none"
         />
         <div
           className="absolute inset-0 pointer-events-none"
