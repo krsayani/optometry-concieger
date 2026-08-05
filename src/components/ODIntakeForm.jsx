@@ -381,7 +381,7 @@ export function ODIntakeForm() {
 
       if (dbError) throw dbError;
 
-      await notifyAdminOfIntake("od", {
+      const emailed = await notifyAdminOfIntake("od", {
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
@@ -411,6 +411,11 @@ export function ODIntakeForm() {
 
       setSubmitted(true);
       toast.success("Profile Created Successfully!");
+      if (!emailed) {
+        toast.warning("Profile saved, but admin email notification failed.", {
+          description: "Please email Admin@optometryconcierge.com so we know you submitted.",
+        });
+      }
 
       if (!user) {
           toast.info("Check your email to verify your account and set your password.");

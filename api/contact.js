@@ -24,8 +24,9 @@ export default async function handler(req, res) {
   try {
     const body = await readJsonBody(req);
 
-    // Honeypot — bots fill this; humans leave it empty
-    if (body.website) {
+    // Honeypot — bots fill this; humans leave it empty.
+    // Do not name this "website"/"url" — password managers autofill those.
+    if (body.company_fax_hp) {
       return res.status(200).json({ ok: true });
     }
 
@@ -67,20 +68,15 @@ export default async function handler(req, res) {
       .filter(Boolean)
       .join("\n");
 
-    await sendAdminEmail({
+    const sent = await sendAdminEmail({
       subject: `[Contact] ${subject} — ${firstName} ${lastName}`,
       replyTo: email,
-      name: `${firstName} ${lastName}`,
-      fields: {
-        "I am a": audience,
-        Phone: phone || "Not provided",
-        Subject: subject,
-      },
       text,
     });
 
     return res.status(200).json({
       ok: true,
+      id: sent?.id,
       message: "Inquiry sent to the admin team.",
     });
   } catch (error) {

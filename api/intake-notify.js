@@ -139,9 +139,9 @@ export default async function handler(req, res) {
     const emailPayload =
       type === "od" ? buildOdEmail(body) : buildPracticeEmail(body);
 
-    await sendAdminEmail(emailPayload);
+    const sent = await sendAdminEmail(emailPayload);
 
-    return res.status(200).json({ ok: true });
+    return res.status(200).json({ ok: true, id: sent?.id });
   } catch (error) {
     console.error("[intake-notify API]", error);
     return res.status(500).json({

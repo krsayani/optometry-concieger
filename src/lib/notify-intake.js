@@ -10,9 +10,18 @@ export async function notifyAdminOfIntake(type, data) {
       body: JSON.stringify({ type, ...data }),
     });
 
+    const result = await response.json().catch(() => ({}));
+
     if (!response.ok) {
-      const result = await response.json().catch(() => ({}));
-      console.error("[notifyAdminOfIntake]", result.error || response.statusText);
+      console.error(
+        "[notifyAdminOfIntake]",
+        result.error || response.statusText,
+      );
+      return false;
+    }
+
+    if (!result.ok) {
+      console.error("[notifyAdminOfIntake] Unexpected response", result);
       return false;
     }
 

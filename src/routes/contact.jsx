@@ -58,8 +58,8 @@ function Contact() {
       subject: String(data.get("subject") || "").trim(),
       message: String(data.get("message") || "").trim(),
       audience,
-      // Honeypot for bots
-      website: String(data.get("website") || "").trim(),
+      // Honeypot for bots (obscure name avoids password-manager autofill)
+      company_fax_hp: String(data.get("company_fax_hp") || "").trim(),
     };
 
     try {
@@ -193,16 +193,21 @@ function Contact() {
                     </p>
                   </div>
 
-                  <form onSubmit={handleSubmit} className="space-y-5">
-                    {/* Honeypot */}
-                    <input
-                      type="text"
-                      name="website"
-                      tabIndex={-1}
-                      autoComplete="off"
-                      className="hidden"
+                  <form onSubmit={handleSubmit} className="relative space-y-5">
+                    {/* Honeypot — off-screen, obscure name to avoid autofill */}
+                    <div
                       aria-hidden="true"
-                    />
+                      className="absolute -left-[9999px] h-0 w-0 overflow-hidden"
+                    >
+                      <label htmlFor="company_fax_hp">Company fax</label>
+                      <input
+                        id="company_fax_hp"
+                        type="text"
+                        name="company_fax_hp"
+                        tabIndex={-1}
+                        autoComplete="off"
+                      />
+                    </div>
 
                     <div className="space-y-2">
                       <Label>I am a…</Label>

@@ -261,7 +261,7 @@ export function PracticeIntakeForm() {
 
       if (error) throw error;
 
-      await notifyAdminOfIntake("practice", {
+      const emailed = await notifyAdminOfIntake("practice", {
         contactName: data.contactName,
         practiceName: data.practiceName,
         email: data.email,
@@ -288,6 +288,11 @@ export function PracticeIntakeForm() {
 
       setSubmitted(true);
       toast.success("Hiring Request Submitted!");
+      if (!emailed) {
+        toast.warning("Request saved, but admin email notification failed.", {
+          description: "Please email Admin@optometryconcierge.com so we know you submitted.",
+        });
+      }
 
       if (!user) {
         toast.info("Check your email to verify your account and set your password.");

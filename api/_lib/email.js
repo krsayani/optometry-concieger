@@ -1,7 +1,14 @@
 import { Resend } from "resend";
 
-export const ADMIN_EMAIL =
-  process.env.CONTACT_TO_EMAIL || "admin@optometryconcierge.com";
+function normalizeEmail(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase();
+}
+
+export const ADMIN_EMAIL = normalizeEmail(
+  process.env.CONTACT_TO_EMAIL || "admin@optometryconcierge.com",
+);
 
 export function readJsonBody(req) {
   return new Promise((resolve, reject) => {
@@ -40,14 +47,9 @@ function textToHtml(text) {
 
 /**
  * Send an email to the admin inbox via Resend.
- * @param {{ subject: string, replyTo?: string, name?: string, text: string, fields?: Record<string, string>, html?: string }} options
+ * @param {{ subject: string, replyTo?: string, text: string, html?: string }} options
  */
-export async function sendAdminEmail({
-  subject,
-  replyTo,
-  text,
-  html,
-}) {
+export async function sendAdminEmail({ subject, replyTo, text, html }) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     throw new Error(
@@ -55,22 +57,44 @@ export async function sendAdminEmail({
     );
   }
 
+  if (!ADMIN_EMAIL) {
+    throw new Error("Missing CONTACT_TO_EMAIL admin recipient.");
+  }
+
   const resend = new Resend(apiKey);
   const from =
-    process.env.CONTACT_FROM_EMAIL || "Optometry Concierge <onboarding@resend.dev>";
+    process.env.CONTACT_FROM_EMAIL ||
+    "Optometry Concierge <onboarding@resend.dev>";
 
-  const { data, error } = await resend.emails.send({
+  const payload = {
     from,
     to: [ADMIN_EMAIL],
-    replyTo: replyTo || undefined,
     subject,
     text,
     html: html || textToHtml(text),
-  });
+  };
+
+  const cleanReplyTo = normalizeEmail(replyTo);
+  if (cleanReplyTo) {
+    payload.replyTo = cleanReplyTo;
+  }
+
+  const { data, error } = await resend.emails.send(payload);
 
   if (error) {
+    console.error("[sendAdminEmail] Resend error:", error);
     throw new Error(error.message || "Resend failed to send email");
   }
+
+  if (!data?.id) {
+    throw new Error("Resend accepted the request but returned no email id.");
+  }
+
+  console.info("[sendAdminEmail] Sent", {
+    id: data.id,
+    to: ADMIN_EMAIL,
+    subject,
+  });
 
   return data;
 }

@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { fileURLToPath } from "url";
@@ -11,6 +11,18 @@ function apiDevPlugin() {
   return {
     name: "api-dev-middleware",
     configureServer(server) {
+      // Ensure server-only Resend vars from .env are on process.env in local API routes
+      const env = loadEnv(server.config.mode, __dirname, "");
+      for (const key of [
+        "RESEND_API_KEY",
+        "CONTACT_TO_EMAIL",
+        "CONTACT_FROM_EMAIL",
+      ]) {
+        if (env[key] && !process.env[key]) {
+          process.env[key] = env[key];
+        }
+      }
+
       server.middlewares.use(async (req, res, next) => {
         const url = req.url?.split("?")[0] || "";
         if (!url.startsWith("/api/") || req.method === "GET") {

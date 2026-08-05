@@ -54,6 +54,7 @@ export function Navbar() {
   const navLinks = [
     { to: "/for-ods", hash: "intake", label: "The Optometrist", show: !isDoctor && !isSuperAdmin },
     { to: "/for-practices", hash: "intake", label: "The Practice", show: !isPractice && !isSuperAdmin },
+    { to: "/contact", label: "Contact Us", show: true },
   ];
 
   const NavItems = ({ onClick }) => (
@@ -70,7 +71,11 @@ export function Navbar() {
               pathname.startsWith(l.to) && "bg-primary/5 border-primary/40",
             )}
           >
-            <Link to={l.to} hash={l.hash} onClick={onClick}>
+            <Link
+              to={l.to}
+              {...(l.hash ? { hash: l.hash } : {})}
+              onClick={onClick}
+            >
               {l.label}
             </Link>
           </Button>
