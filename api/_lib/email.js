@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { getServiceRoleClient } from "./supabase-admin.js";
 
 function normalizeEmail(value) {
   return String(value || "")
@@ -436,7 +437,65 @@ async function sendWithResend(payload) {
 }
 
 /**
+ * Mirror an admin notification into the website Inbox (/admin/inbox).
+ * Contact/intake emails are sent TO Admin@ (Gmail) — they do not hit the
+ * Resend inbound webhook, so we store them here as well.
+ */
+async function mirrorAdminEmailToWebsiteInbox({
+  resendId,
+  subject,
+  replyTo,
+  replyName,
+  text,
+  html,
+}) {
+  const admin = getServiceRoleClient();
+  if (!admin) {
+    console.warn(
+      "[sendAdminEmail] SUPABASE_SERVICE_ROLE_KEY missing — website inbox not updated",
+    );
+    return;
+  }
+
+  const fromEmail = normalizeEmail(replyTo) || "noreply@optometryconcierge.com";
+  const fromName = String(replyName || "").trim() || null;
+  const row = {
+    resend_email_id: resendId || `admin-${Date.now()}`,
+    message_id: resendId ? `<${resendId}@resend.dev>` : null,
+    from_email: fromEmail,
+    from_name: fromName,
+    to_emails: ADMIN_EMAIL ? [ADMIN_EMAIL] : [],
+    cc_emails: [],
+    subject: subject || "(no subject)",
+    text_body: text || null,
+    html_body: html || null,
+    attachments: [],
+    is_read: false,
+    received_at: new Date().toISOString(),
+  };
+
+  const { error } = await admin
+    .from("inbound_emails")
+    .upsert(row, { onConflict: "resend_email_id" });
+
+  if (error) {
+    console.error("[sendAdminEmail] website inbox upsert failed", error);
+    return;
+  }
+
+  try {
+    await admin.from("admin_notifications").insert({
+      title: "New inbox email",
+      content: `${fromName || fromEmail} — ${subject || "(no subject)"}`,
+    });
+  } catch (notifyErr) {
+    console.error("[sendAdminEmail] admin_notifications insert failed", notifyErr);
+  }
+}
+
+/**
  * Send an email to the admin inbox via Resend.
+ * Also mirrors into the website Admin → Inbox.
  * @param {{ subject: string, replyTo?: string, replyName?: string, text: string, html?: string }} options
  */
 export async function sendAdminEmail({
@@ -471,6 +530,20 @@ export async function sendAdminEmail({
     subject,
     replyTo: formattedReplyTo || null,
   });
+
+  // Best-effort: Gmail already has the message; also show it in /admin/inbox
+  try {
+    await mirrorAdminEmailToWebsiteInbox({
+      resendId: data.id,
+      subject,
+      replyTo,
+      replyName,
+      text,
+      html,
+    });
+  } catch (mirrorErr) {
+    console.error("[sendAdminEmail] mirror to website inbox failed", mirrorErr);
+  }
 
   return data;
 }

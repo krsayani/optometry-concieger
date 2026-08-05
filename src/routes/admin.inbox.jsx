@@ -164,8 +164,8 @@ function AdminInbox() {
             Email Inbox
           </h1>
           <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-            Mail forwarded from Admin@ (Google Workspace) appears here. Reply
-            from the dashboard or from Gmail.
+            Contact forms, intake alerts, and inbound replies appear here and in
+            Google Workspace (Admin@). Reply from the dashboard or from Gmail.
           </p>
         </div>
       </div>
@@ -203,7 +203,7 @@ function AdminInbox() {
         <EmptyState
           icon={MailOpen}
           title="No messages yet"
-          description="Once Resend inbound + the webhook are configured, emails to your receiving address will show up here."
+          description="New contact forms and intake alerts will show up here automatically (and in Admin@ Gmail)."
         />
       ) : (
         <div className="grid gap-4 lg:grid-cols-[340px_minmax(0,1fr)]">
