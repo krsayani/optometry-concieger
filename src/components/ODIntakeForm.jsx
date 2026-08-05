@@ -38,6 +38,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { checkEmailAvailability } from "@/services/profiles";
 import { notifyAdminOfIntake } from "@/lib/notify-intake";
+import { isAuthThrottled, isExistingAccountError } from "@/lib/auth-errors";
 import { CaptchaChallenge } from "@/components/CaptchaChallenge";
 
 const US_SCHOOLS = [
@@ -295,140 +296,7 @@ export function ODIntakeForm() {
         }
       }
 
-      let userId = user?.id;
-
-      // 1. Create account if not logged in
-      if (!user) {
-        // Generate a random temporary password
-        const tempPassword = Math.random().toString(36).slice(-12) + "A1!";
-
-        const { data: authData, error: authError } = await supabase.auth.signUp({
-          email: data.email,
-          password: tempPassword,
-          options: {
-            emailRedirectTo: `${window.location.origin}/reset-password`,
-            data: {
-              full_name: `${data.firstName} ${data.lastName}`,
-              role: "od"
-            }
-          }
-        });
-
-        // If Supabase email sending is throttled, still notify admin with the full profile
-        if (authError?.message?.toLowerCase().includes("rate limit")) {
-          await notifyAdminOfIntake("od", {
-            firstName: data.firstName,
-            lastName: data.lastName,
-            email: data.email,
-            phone: data.phone,
-            school: data.school,
-            otherSchool: data.otherSchool,
-            gradYear: data.gradYear,
-            licenseStatus: data.licenseStatus,
-            licenseStates: data.licenseStates,
-            yearsInPractice: data.yearsInPractice,
-            completedResidency: data.completedResidency,
-            residencyType: data.residencyType,
-            preferredStates: data.preferredStates,
-            preferredCities: data.preferredCities,
-            openToRelocation: data.openToRelocation,
-            practiceSetting: data.practiceSetting,
-            practiceTypePreference: data.practiceTypePreference,
-            clinicalInterests: data.clinicalInterests,
-            salaryExpectation: data.salaryExpectation,
-            targetStartDate: data.targetStartDate,
-            jobPriorities: data.jobPriorities,
-            interestInOwnership: data.interestInOwnership,
-            positionType: data.positionType,
-            anythingElse: data.anythingElse,
-            resumeUrl: null,
-          });
-          setSubmitted(true);
-          setCaptchaResetKey((k) => k + 1);
-          setCaptchaVerified(false);
-          toast.success("Profile submitted successfully!");
-          toast.info("We received your profile. Account setup email will follow shortly.");
-          return;
-        }
-
-        if (authError) throw authError;
-        userId = authData.user?.id;
-
-        if (!userId) {
-            console.error("Auth success but no user ID returned. Check Supabase settings.");
-            throw new Error("Account creation failed. Please try again or contact support.");
-        }
-      } else {
-        // If already logged in, ensure they have the 'od' role
-        await supabase.rpc("ensure_user_role", {
-          target_user_id: userId,
-          target_role: "od"
-        });
-      }
-
-      // 2. Upload resume FIRST so we can include the URL in the intake response
-      let finalResumeUrl = null;
-      if (resumeFile) {
-        setIsUploading(true);
-        const fileExt = resumeFile.name.split('.').pop();
-        // Use user ID for folder organization
-        const folder = userId;
-        const fileName = `${folder}/resume-${Date.now()}.${fileExt}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from('resumes')
-          .upload(fileName, resumeFile, {
-            cacheControl: '3600',
-            upsert: true
-          });
-
-        if (uploadError) {
-            console.error("Resume upload failed:", uploadError);
-            toast.warning("Resume upload failed. You can upload it later from your profile.");
-        } else {
-            const { data: { publicUrl } } = supabase.storage
-              .from('resumes')
-              .getPublicUrl(fileName);
-            finalResumeUrl = publicUrl;
-        }
-      }
-
-      // 3. Save intake response
-      const { error: dbError } = await supabase
-        .from("od_intake_responses")
-        .insert({
-          user_id: userId,
-          first_name: data.firstName,
-          last_name: data.lastName,
-          email: data.email,
-          phone: data.phone,
-          school: data.school,
-          other_school: data.otherSchool,
-          grad_year: data.gradYear,
-          license_status: data.licenseStatus,
-          license_states: data.licenseStates,
-          years_in_practice: data.yearsInPractice,
-          completed_residency: data.completedResidency,
-          residency_type: data.residencyType,
-          preferred_states: data.preferredStates,
-          preferred_cities: data.preferredCities,
-          open_to_relocation: data.openToRelocation,
-          practice_setting: data.practiceSetting,
-          practice_type_preference: data.practiceTypePreference,
-          clinical_interests: data.clinicalInterests,
-          salary_expectation: data.salaryExpectation,
-          target_start_date: data.targetStartDate,
-          job_priorities: data.jobPriorities,
-          interest_in_ownership: data.interestInOwnership,
-          anything_else: data.anythingElse,
-          position_type: data.positionType,
-          consent: data.consent,
-          resume_url: finalResumeUrl
-        });
-
-      if (dbError) throw dbError;
-
-      const emailed = await notifyAdminOfIntake("od", {
+      const buildOdNotifyPayload = (resumeUrl = null) => ({
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
@@ -453,8 +321,124 @@ export function ODIntakeForm() {
         interestInOwnership: data.interestInOwnership,
         positionType: data.positionType,
         anythingElse: data.anythingElse,
-        resumeUrl: finalResumeUrl,
+        resumeUrl,
       });
+
+      const finishWithoutAccount = async () => {
+        const emailed = await notifyAdminOfIntake("od", buildOdNotifyPayload());
+        setSubmitted(true);
+        setCaptchaResetKey((k) => k + 1);
+        setCaptchaVerified(false);
+        toast.success("Profile submitted successfully!");
+        toast.info(
+          emailed
+            ? "Our team has your information and will follow up shortly."
+            : "Please email Admin@optometryconcierge.com so we can finish setup.",
+        );
+      };
+
+      let userId = user?.id;
+
+      // 1. Create account if not logged in (best-effort — Supabase may throttle confirmation emails)
+      if (!user) {
+        const tempPassword = Math.random().toString(36).slice(-12) + "A1!";
+
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+          email: data.email,
+          password: tempPassword,
+          options: {
+            emailRedirectTo: `${window.location.origin}/reset-password`,
+            data: {
+              full_name: `${data.firstName} ${data.lastName}`,
+              role: "od",
+            },
+          },
+        });
+
+        if (authError) {
+          if (isExistingAccountError(authError)) throw authError;
+          // Never block the profile lead on auth email throttling
+          await finishWithoutAccount();
+          return;
+        }
+
+        userId = authData.user?.id;
+        if (!userId) {
+          await finishWithoutAccount();
+          return;
+        }
+      } else {
+        await supabase.rpc("ensure_user_role", {
+          target_user_id: userId,
+          target_role: "od",
+        });
+      }
+
+      // 2. Upload resume
+      let finalResumeUrl = null;
+      if (resumeFile && userId) {
+        setIsUploading(true);
+        const fileExt = resumeFile.name.split(".").pop();
+        const fileName = `${userId}/resume-${Date.now()}.${fileExt}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("resumes")
+          .upload(fileName, resumeFile, {
+            cacheControl: "3600",
+            upsert: true,
+          });
+
+        if (uploadError) {
+          console.error("Resume upload failed:", uploadError);
+          toast.warning("Resume upload failed. You can upload it later from your profile.");
+        } else {
+          const {
+            data: { publicUrl },
+          } = supabase.storage.from("resumes").getPublicUrl(fileName);
+          finalResumeUrl = publicUrl;
+        }
+      }
+
+      // 3. Save intake response
+      const { error: dbError } = await supabase.from("od_intake_responses").insert({
+        user_id: userId,
+        first_name: data.firstName,
+        last_name: data.lastName,
+        email: data.email,
+        phone: data.phone,
+        school: data.school,
+        other_school: data.otherSchool,
+        grad_year: data.gradYear,
+        license_status: data.licenseStatus,
+        license_states: data.licenseStates,
+        years_in_practice: data.yearsInPractice,
+        completed_residency: data.completedResidency,
+        residency_type: data.residencyType,
+        preferred_states: data.preferredStates,
+        preferred_cities: data.preferredCities,
+        open_to_relocation: data.openToRelocation,
+        practice_setting: data.practiceSetting,
+        practice_type_preference: data.practiceTypePreference,
+        clinical_interests: data.clinicalInterests,
+        salary_expectation: data.salaryExpectation,
+        target_start_date: data.targetStartDate,
+        job_priorities: data.jobPriorities,
+        interest_in_ownership: data.interestInOwnership,
+        anything_else: data.anythingElse,
+        position_type: data.positionType,
+        consent: data.consent,
+        resume_url: finalResumeUrl,
+      });
+
+      if (dbError) {
+        await finishWithoutAccount();
+        return;
+      }
+
+      const emailed = await notifyAdminOfIntake(
+        "od",
+        buildOdNotifyPayload(finalResumeUrl),
+      );
 
       setSubmitted(true);
       setCaptchaResetKey((k) => k + 1);
@@ -464,19 +448,50 @@ export function ODIntakeForm() {
         toast.warning("Profile saved, but admin email notification failed.", {
           description: "Please email Admin@optometryconcierge.com so we know you submitted.",
         });
+      } else if (!user) {
+        toast.info("Check your email to verify your account and set your password.");
       }
-
-      if (!user) {
-          toast.info("Check your email to verify your account and set your password.");
-      }
-
     } catch (error) {
       console.error("Error submitting intake:", error);
+
+      if (isAuthThrottled(error)) {
+        await notifyAdminOfIntake("od", {
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+          phone: data.phone,
+          school: data.school,
+          otherSchool: data.otherSchool,
+          gradYear: data.gradYear,
+          licenseStatus: data.licenseStatus,
+          licenseStates: data.licenseStates,
+          yearsInPractice: data.yearsInPractice,
+          completedResidency: data.completedResidency,
+          residencyType: data.residencyType,
+          preferredStates: data.preferredStates,
+          preferredCities: data.preferredCities,
+          openToRelocation: data.openToRelocation,
+          practiceSetting: data.practiceSetting,
+          practiceTypePreference: data.practiceTypePreference,
+          clinicalInterests: data.clinicalInterests,
+          salaryExpectation: data.salaryExpectation,
+          targetStartDate: data.targetStartDate,
+          jobPriorities: data.jobPriorities,
+          interestInOwnership: data.interestInOwnership,
+          positionType: data.positionType,
+          anythingElse: data.anythingElse,
+          resumeUrl: null,
+        });
+        setSubmitted(true);
+        setCaptchaResetKey((k) => k + 1);
+        setCaptchaVerified(false);
+        toast.success("Profile submitted successfully!");
+        toast.info("Our team has your information and will follow up shortly.");
+        return;
+      }
+
       let message = "We couldn't create your profile. Please check your information and try again.";
-
-      const errorMsg = error.message?.toLowerCase() || "";
-
-      if (errorMsg.includes("already registered") || errorMsg.includes("email already in use") || errorMsg.includes("unique constraint")) {
+      if (isExistingAccountError(error)) {
         message = "An account with this email already exists. Please sign in instead.";
       }
 
