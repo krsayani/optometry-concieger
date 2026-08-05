@@ -10,6 +10,18 @@ export const ADMIN_EMAIL = normalizeEmail(
   process.env.CONTACT_TO_EMAIL || "admin@optometryconcierge.com",
 );
 
+/** Google Workspace / Gmail copy of inbound mail (defaults to Admin@). */
+export const WORKSPACE_NOTIFY_EMAIL = normalizeEmail(
+  process.env.INBOUND_FORWARD_TO ||
+    process.env.CONTACT_TO_EMAIL ||
+    "admin@optometryconcierge.com",
+);
+
+/** Resend receiving address used for the website inbox. */
+export const INBOUND_RECEIVE_EMAIL = normalizeEmail(
+  process.env.INBOUND_RECEIVE_EMAIL || "admin@inbox.optometryconcierge.com",
+);
+
 const BRAND = {
   navy: "#051C3F",
   teal: "#2A9D9D",
@@ -352,6 +364,34 @@ export async function fetchReceivedEmail(emailId) {
   const { data, error } = await resend.emails.receiving.get(emailId);
   if (error) {
     throw new Error(error.message || "Failed to fetch received email");
+  }
+  return data;
+}
+
+/**
+ * Forward a received email to Google Workspace / Gmail so admins see it
+ * outside the website inbox too.
+ */
+export async function forwardReceivedEmailToWorkspace(emailId, to = WORKSPACE_NOTIFY_EMAIL) {
+  const recipient = normalizeEmail(to);
+  if (!recipient) {
+    throw new Error("Missing workspace notify email.");
+  }
+
+  const resend = getResendClient();
+  const from =
+    process.env.CONTACT_FROM_EMAIL ||
+    "Optometry Concierge <Admin@optometryconcierge.com>";
+
+  const { data, error } = await resend.emails.receiving.forward({
+    emailId,
+    to: recipient,
+    from,
+    passthrough: true,
+  });
+
+  if (error) {
+    throw new Error(error.message || "Failed to forward inbound email");
   }
   return data;
 }

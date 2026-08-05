@@ -2,6 +2,9 @@ import {
   getResendClient,
   fetchReceivedEmail,
   parseFromAddress,
+  forwardReceivedEmailToWorkspace,
+  WORKSPACE_NOTIFY_EMAIL,
+  ADMIN_EMAIL,
 } from "./_lib/email.js";
 import { getServiceRoleClient } from "./_lib/supabase-admin.js";
 
@@ -32,6 +35,17 @@ async function readRawBody(req) {
     chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
   }
   return Buffer.concat(chunks).toString("utf8");
+}
+
+function alreadyDeliveredToWorkspace({ toEmails, receivedFor, ccEmails }) {
+  const workspace = WORKSPACE_NOTIFY_EMAIL || ADMIN_EMAIL;
+  if (!workspace) return false;
+  const haystack = new Set([
+    ...asEmailArray(toEmails),
+    ...asEmailArray(ccEmails),
+    ...asEmailArray(receivedFor),
+  ]);
+  return haystack.has(workspace);
 }
 
 export default async function handler(req, res) {
@@ -108,14 +122,19 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Missing from email" });
     }
 
+    const toEmails = asEmailArray(full?.to || meta.to);
+    const ccEmails = asEmailArray(full?.cc || meta.cc);
+    const receivedFor = asEmailArray(meta.received_for || full?.received_for);
+    const subject = full?.subject || meta.subject || "(no subject)";
+
     const row = {
       resend_email_id: emailId,
       message_id: full?.message_id || meta.message_id || null,
       from_email,
       from_name: from_name || null,
-      to_emails: asEmailArray(full?.to || meta.to),
-      cc_emails: asEmailArray(full?.cc || meta.cc),
-      subject: full?.subject || meta.subject || "(no subject)",
+      to_emails: toEmails,
+      cc_emails: ccEmails,
+      subject,
       text_body: full?.text || null,
       html_body: full?.html || null,
       attachments: full?.attachments || meta.attachments || [],
@@ -134,7 +153,39 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: error.message });
     }
 
-    return res.status(200).json({ ok: true, id: data?.id, emailId });
+    // In-app admin dashboard alert
+    try {
+      await admin.from("admin_notifications").insert({
+        title: "New inbox email",
+        content: `${from_name || from_email} — ${subject}`,
+      });
+    } catch (notifyErr) {
+      console.error("[resend-inbound] admin_notifications insert failed", notifyErr);
+    }
+
+    // Mirror into Google Workspace / Gmail unless Workspace already has it
+    // (e.g. Google forwarded Admin@ → inbox@ and received_for includes Admin@).
+    let forwarded = false;
+    const skipForward =
+      process.env.INBOUND_FORWARD_ENABLED === "false" ||
+      alreadyDeliveredToWorkspace({ toEmails, receivedFor, ccEmails });
+
+    if (!skipForward && WORKSPACE_NOTIFY_EMAIL) {
+      try {
+        await forwardReceivedEmailToWorkspace(emailId, WORKSPACE_NOTIFY_EMAIL);
+        forwarded = true;
+      } catch (fwdErr) {
+        console.error("[resend-inbound] workspace forward failed", fwdErr);
+      }
+    }
+
+    return res.status(200).json({
+      ok: true,
+      id: data?.id,
+      emailId,
+      forwarded,
+      workspace: WORKSPACE_NOTIFY_EMAIL || null,
+    });
   } catch (error) {
     console.error("[resend-inbound]", error);
     return res.status(400).json({

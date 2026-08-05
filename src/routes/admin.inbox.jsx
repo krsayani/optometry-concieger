@@ -164,8 +164,8 @@ function AdminInbox() {
             Email Inbox
           </h1>
           <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-            Replies and inbound mail received via Resend appear here. Reply
-            directly from the dashboard.
+            Inbound mail appears here and is mirrored to Google Workspace
+            (Admin@). Reply from the dashboard or from Gmail.
           </p>
         </div>
       </div>
