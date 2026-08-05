@@ -714,3 +714,53 @@ export async function deletePracticeOutreachContact(id) {
     .eq("id", id);
   if (error) throw error;
 }
+
+export async function listInboundEmails() {
+  const { data, error } = await supabase
+    .from("inbound_emails")
+    .select("*")
+    .order("received_at", { ascending: false });
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function markInboundEmailRead(id, isRead = true) {
+  const { data, error } = await supabase
+    .from("inbound_emails")
+    .update({ is_read: isRead })
+    .eq("id", id)
+    .select()
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+export async function deleteInboundEmail(id) {
+  const { error } = await supabase.from("inbound_emails").delete().eq("id", id);
+  if (error) throw error;
+}
+
+export async function replyToInboundEmail({ inboundId, body }) {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session?.access_token) {
+    throw new Error("You must be signed in to reply.");
+  }
+
+  const response = await fetch("/api/inbox-reply", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${session.access_token}`,
+    },
+    body: JSON.stringify({ inboundId, body }),
+  });
+
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(payload.error || "Failed to send reply.");
+  }
+  return payload;
+}

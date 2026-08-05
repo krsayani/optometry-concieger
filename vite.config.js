@@ -15,6 +15,7 @@ function apiDevPlugin() {
       const env = loadEnv(server.config.mode, __dirname, "");
       for (const key of [
         "RESEND_API_KEY",
+        "RESEND_WEBHOOK_SECRET",
         "CONTACT_TO_EMAIL",
         "CONTACT_FROM_EMAIL",
         "SUPABASE_SERVICE_ROLE_KEY",
@@ -53,6 +54,8 @@ function apiDevPlugin() {
           "register-account",
           "school-outreach-email",
           "outreach-email",
+          "resend-inbound",
+          "inbox-reply",
         ]);
         if (!allowed.has(route)) {
           return next();
@@ -68,9 +71,16 @@ function apiDevPlugin() {
           const mockReq = {
             method: "POST",
             body,
+            rawBody: raw,
             headers: {
               authorization: req.headers.authorization || "",
               "content-type": req.headers["content-type"] || "application/json",
+              "svix-id": req.headers["svix-id"] || "",
+              "svix-timestamp": req.headers["svix-timestamp"] || "",
+              "svix-signature": req.headers["svix-signature"] || "",
+            },
+            async *[Symbol.asyncIterator]() {
+              if (raw) yield Buffer.from(raw);
             },
             on() {},
           };

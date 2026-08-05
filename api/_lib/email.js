@@ -337,7 +337,7 @@ export function buildPlainTextFromSections({
   return lines.join("\n");
 }
 
-function getResendClient() {
+export function getResendClient() {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     throw new Error(
@@ -345,6 +345,27 @@ function getResendClient() {
     );
   }
   return new Resend(apiKey);
+}
+
+export async function fetchReceivedEmail(emailId) {
+  const resend = getResendClient();
+  const { data, error } = await resend.emails.receiving.get(emailId);
+  if (error) {
+    throw new Error(error.message || "Failed to fetch received email");
+  }
+  return data;
+}
+
+export function parseFromAddress(from) {
+  const raw = String(from || "").trim();
+  const match = raw.match(/^(.*)<([^>]+)>$/);
+  if (match) {
+    return {
+      from_name: match[1].trim().replace(/^"|"$/g, "") || null,
+      from_email: normalizeEmail(match[2]),
+    };
+  }
+  return { from_name: null, from_email: normalizeEmail(raw) };
 }
 
 function getFromAddress() {
@@ -432,6 +453,7 @@ export async function sendUserEmail({
   bcc,
   replyTo,
   replyName,
+  headers,
 }) {
   const recipients = (Array.isArray(to) ? to : [to])
     .map(normalizeEmail)
@@ -460,6 +482,10 @@ export async function sendUserEmail({
   const formattedReplyTo = formatReplyTo(replyTo, replyName);
   if (formattedReplyTo) {
     payload.replyTo = formattedReplyTo;
+  }
+
+  if (headers && typeof headers === "object") {
+    payload.headers = headers;
   }
 
   const data = await sendWithResend(payload);

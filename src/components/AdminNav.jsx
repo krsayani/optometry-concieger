@@ -8,11 +8,13 @@ import {
   GraduationCap,
   Stethoscope,
   Building,
+  Inbox,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const links = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { to: "/admin/inbox", label: "Inbox", icon: Inbox },
   { to: "/admin/od-intakes", label: "Optometrists", icon: UserCheck },
   { to: "/admin/practice-intakes", label: "Practices", icon: Building2 },
   { to: "/admin/matches", label: "Matches", icon: GitMerge },

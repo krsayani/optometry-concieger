@@ -9,186 +9,167 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as IntroRouteImport } from './routes/intro'
-import { Route as HowItWorksRouteImport } from './routes/how-it-works'
-import { Route as ForOdsRouteImport } from './routes/for-ods'
-import { Route as ForPracticesRouteImport } from './routes/for-practices'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CreateAccountRouteImport } from './routes/create-account'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AdminRouteImport } from './routes/admin'
-import { Route as AboutRouteImport } from './routes/about'
+import { Route as ForOdsRouteImport } from './routes/for-ods'
+import { Route as ForPracticesRouteImport } from './routes/for-practices'
 import { Route as GetStartedRouteImport } from './routes/get-started'
-import { Route as ResourcesRouteImport } from './routes/resources'
+import { Route as HowItWorksRouteImport } from './routes/how-it-works'
+import { Route as IntroRouteImport } from './routes/intro'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as TermsRouteImport } from './routes/terms'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as AdminUsersRouteImport } from './routes/admin.users'
-import { Route as AdminOdIntakesRouteImport } from './routes/admin.od-intakes'
-import { Route as AdminPracticeIntakesRouteImport } from './routes/admin.practice-intakes'
-import { Route as AdminMatchesRouteImport } from './routes/admin.matches'
-import { Route as AdminSchoolOutreachRouteImport } from './routes/admin.school-outreach'
-import { Route as AdminOdOutreachRouteImport } from './routes/admin.od-outreach'
-import { Route as AdminPracticeOutreachRouteImport } from './routes/admin.practice-outreach'
-import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
-  getParentRoute: () => rootRouteImport,
-})
-
-const IntroRoute = IntroRouteImport.update({
-  id: '/intro',
-  path: '/intro',
-  getParentRoute: () => rootRouteImport,
-})
-
-const HowItWorksRoute = HowItWorksRouteImport.update({
-  id: '/how-it-works',
-  path: '/how-it-works',
-  getParentRoute: () => rootRouteImport,
-})
-
-const ForOdsRoute = ForOdsRouteImport.update({
-  id: '/for-ods',
-  path: '/for-ods',
-  getParentRoute: () => rootRouteImport,
-})
-
-const ForPracticesRoute = ForPracticesRouteImport.update({
-  id: '/for-practices',
-  path: '/for-practices',
-  getParentRoute: () => rootRouteImport,
-})
-
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => rootRouteImport,
-})
-
-const CreateAccountRoute = CreateAccountRouteImport.update({
-  id: '/create-account',
-  path: '/create-account',
-  getParentRoute: () => rootRouteImport,
-})
-
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => rootRouteImport,
-})
-
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-})
-
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => rootRouteImport,
-})
-
-const ResourcesRoute = ResourcesRouteImport.update({
-  id: '/resources',
-  path: '/resources',
-  getParentRoute: () => rootRouteImport,
-})
-
-const GetStartedRoute = GetStartedRouteImport.update({
-  id: '/get-started',
-  path: '/get-started',
-  getParentRoute: () => rootRouteImport,
-})
-
-const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => rootRouteImport,
-})
-
-const TermsRoute = TermsRouteImport.update({
-  id: '/terms',
-  path: '/terms',
-  getParentRoute: () => rootRouteImport,
-})
-
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
-  getParentRoute: () => rootRouteImport,
-})
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminInboxRouteImport } from './routes/admin.inbox'
+import { Route as AdminMatchesRouteImport } from './routes/admin.matches'
+import { Route as AdminOdIntakesRouteImport } from './routes/admin.od-intakes'
+import { Route as AdminOdOutreachRouteImport } from './routes/admin.od-outreach'
+import { Route as AdminPracticeIntakesRouteImport } from './routes/admin.practice-intakes'
+import { Route as AdminPracticeOutreachRouteImport } from './routes/admin.practice-outreach'
+import { Route as AdminSchoolOutreachRouteImport } from './routes/admin.school-outreach'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 })
-
-const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AdminRoute,
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
 })
-
-const AdminUsersRoute = AdminUsersRouteImport.update({
-  id: '/users',
-  path: '/users',
-  getParentRoute: () => AdminRoute,
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
 })
-
-const AdminOdIntakesRoute = AdminOdIntakesRouteImport.update({
-  id: '/od-intakes',
-  path: '/od-intakes',
-  getParentRoute: () => AdminRoute,
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
 })
-
-const AdminPracticeIntakesRoute = AdminPracticeIntakesRouteImport.update({
-  id: '/practice-intakes',
-  path: '/practice-intakes',
-  getParentRoute: () => AdminRoute,
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
 })
-
-const AdminMatchesRoute = AdminMatchesRouteImport.update({
-  id: '/matches',
-  path: '/matches',
-  getParentRoute: () => AdminRoute,
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
 })
-
-const AdminSchoolOutreachRoute = AdminSchoolOutreachRouteImport.update({
-  id: '/school-outreach',
-  path: '/school-outreach',
-  getParentRoute: () => AdminRoute,
+const CreateAccountRoute = CreateAccountRouteImport.update({
+  id: '/create-account',
+  path: '/create-account',
+  getParentRoute: () => rootRouteImport,
 })
-
-const AdminOdOutreachRoute = AdminOdOutreachRouteImport.update({
-  id: '/od-outreach',
-  path: '/od-outreach',
-  getParentRoute: () => AdminRoute,
+const ForOdsRoute = ForOdsRouteImport.update({
+  id: '/for-ods',
+  path: '/for-ods',
+  getParentRoute: () => rootRouteImport,
 })
-
-const AdminPracticeOutreachRoute = AdminPracticeOutreachRouteImport.update({
-  id: '/practice-outreach',
-  path: '/practice-outreach',
-  getParentRoute: () => AdminRoute,
+const ForPracticesRoute = ForPracticesRouteImport.update({
+  id: '/for-practices',
+  path: '/for-practices',
+  getParentRoute: () => rootRouteImport,
 })
-
+const GetStartedRoute = GetStartedRouteImport.update({
+  id: '/get-started',
+  path: '/get-started',
+  getParentRoute: () => rootRouteImport,
+})
+const HowItWorksRoute = HowItWorksRouteImport.update({
+  id: '/how-it-works',
+  path: '/how-it-works',
+  getParentRoute: () => rootRouteImport,
+})
+const IntroRoute = IntroRouteImport.update({
+  id: '/intro',
+  path: '/intro',
+  getParentRoute: () => rootRouteImport,
+})
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+})
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+})
+const ResourcesRoute = ResourcesRouteImport.update({
+  id: '/resources',
+  path: '/resources',
+  getParentRoute: () => rootRouteImport,
+})
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+})
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+})
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
   getParentRoute: () => AuthenticatedRouteRoute,
 })
-
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AuthenticatedRouteRoute,
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+})
+const AdminInboxRoute = AdminInboxRouteImport.update({
+  id: '/inbox',
+  path: '/inbox',
+  getParentRoute: () => AdminRoute,
+})
+const AdminMatchesRoute = AdminMatchesRouteImport.update({
+  id: '/matches',
+  path: '/matches',
+  getParentRoute: () => AdminRoute,
+})
+const AdminOdIntakesRoute = AdminOdIntakesRouteImport.update({
+  id: '/od-intakes',
+  path: '/od-intakes',
+  getParentRoute: () => AdminRoute,
+})
+const AdminOdOutreachRoute = AdminOdOutreachRouteImport.update({
+  id: '/od-outreach',
+  path: '/od-outreach',
+  getParentRoute: () => AdminRoute,
+})
+const AdminPracticeIntakesRoute = AdminPracticeIntakesRouteImport.update({
+  id: '/practice-intakes',
+  path: '/practice-intakes',
+  getParentRoute: () => AdminRoute,
+})
+const AdminPracticeOutreachRoute = AdminPracticeOutreachRouteImport.update({
+  id: '/practice-outreach',
+  path: '/practice-outreach',
+  getParentRoute: () => AdminRoute,
+})
+const AdminSchoolOutreachRoute = AdminSchoolOutreachRouteImport.update({
+  id: '/school-outreach',
+  path: '/school-outreach',
+  getParentRoute: () => AdminRoute,
+})
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRoute,
 })
 
 const AuthenticatedRouteRouteChildren = {
@@ -200,12 +181,13 @@ const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 const AdminRouteChildren = {
-  AdminPracticeIntakesRoute: AdminPracticeIntakesRoute,
+  AdminInboxRoute: AdminInboxRoute,
   AdminMatchesRoute: AdminMatchesRoute,
-  AdminSchoolOutreachRoute: AdminSchoolOutreachRoute,
-  AdminOdOutreachRoute: AdminOdOutreachRoute,
-  AdminPracticeOutreachRoute: AdminPracticeOutreachRoute,
   AdminOdIntakesRoute: AdminOdIntakesRoute,
+  AdminOdOutreachRoute: AdminOdOutreachRoute,
+  AdminPracticeIntakesRoute: AdminPracticeIntakesRoute,
+  AdminPracticeOutreachRoute: AdminPracticeOutreachRoute,
+  AdminSchoolOutreachRoute: AdminSchoolOutreachRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
@@ -216,20 +198,18 @@ const rootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
-  ResourcesRoute: ResourcesRoute,
-  GetStartedRoute: GetStartedRoute,
   AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
   CreateAccountRoute: CreateAccountRoute,
-  ForPracticesRoute: ForPracticesRoute,
   ForOdsRoute: ForOdsRoute,
-  IntroRoute: IntroRoute,
+  ForPracticesRoute: ForPracticesRoute,
+  GetStartedRoute: GetStartedRoute,
   HowItWorksRoute: HowItWorksRoute,
-  ResetPasswordRoute: ResetPasswordRoute,
+  IntroRoute: IntroRoute,
   PrivacyRoute: PrivacyRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
+  ResourcesRoute: ResourcesRoute,
   TermsRoute: TermsRoute,
 }
-
-export const routeTree = rootRouteImport
-  ._addFileChildren(rootRouteChildren)
+export const routeTree = rootRouteImport._addFileChildren(rootRouteChildren)
