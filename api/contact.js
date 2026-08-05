@@ -1,104 +1,11 @@
-const ADMIN_EMAIL = process.env.CONTACT_TO_EMAIL || "Admin@optometryconcierge.com";
-
-function readJsonBody(req) {
-  return new Promise((resolve, reject) => {
-    if (req.body && typeof req.body === "object") {
-      resolve(req.body);
-      return;
-    }
-
-    let data = "";
-    req.on("data", (chunk) => {
-      data += chunk;
-    });
-    req.on("end", () => {
-      if (!data) {
-        resolve({});
-        return;
-      }
-      try {
-        resolve(JSON.parse(data));
-      } catch (error) {
-        reject(error);
-      }
-    });
-    req.on("error", reject);
-  });
-}
+import {
+  ADMIN_EMAIL,
+  readJsonBody,
+  sendAdminEmail,
+} from "./_lib/email.js";
 
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-async function sendWithResend(payload) {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) return null;
-
-  const from =
-    process.env.CONTACT_FROM_EMAIL || "Optometry Concierge <onboarding@resend.dev>";
-
-  const text = [
-    `New contact inquiry from the website`,
-    ``,
-    `Name: ${payload.firstName} ${payload.lastName}`,
-    `Email: ${payload.email}`,
-    payload.phone ? `Phone: ${payload.phone}` : null,
-    `I am a: ${payload.audience}`,
-    `Subject: ${payload.subject}`,
-    ``,
-    `Message:`,
-    payload.message,
-  ]
-    .filter(Boolean)
-    .join("\n");
-
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from,
-      to: [ADMIN_EMAIL],
-      reply_to: payload.email,
-      subject: `[Contact] ${payload.subject} — ${payload.firstName} ${payload.lastName}`,
-      text,
-    }),
-  });
-
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(data?.message || "Resend failed to send email");
-  }
-  return data;
-}
-
-async function sendWithFormSubmit(payload) {
-  const response = await fetch(`https://formsubmit.co/ajax/${ADMIN_EMAIL}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-    body: JSON.stringify({
-      name: `${payload.firstName} ${payload.lastName}`,
-      email: payload.email,
-      phone: payload.phone || "Not provided",
-      _subject: `[Contact] ${payload.subject} — ${payload.firstName} ${payload.lastName}`,
-      _replyto: payload.email,
-      _template: "table",
-      _captcha: "false",
-      "I am a": payload.audience,
-      message: payload.message,
-    }),
-  });
-
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok || data.success === "false" || data.success === false) {
-    throw new Error(data.message || "Unable to deliver inquiry email");
-  }
-  return data;
 }
 
 export default async function handler(req, res) {
@@ -143,21 +50,34 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Message is too long." });
     }
 
-    const payload = {
-      firstName,
-      lastName,
-      email,
-      phone,
-      subject,
+    const text = [
+      "New contact inquiry from the website",
+      "",
+      `Name: ${firstName} ${lastName}`,
+      `Email: ${email}`,
+      phone ? `Phone: ${phone}` : null,
+      `I am a: ${audience}`,
+      `Subject: ${subject}`,
+      "",
+      "Message:",
       message,
-      audience,
-    };
+      "",
+      `Delivered to: ${ADMIN_EMAIL}`,
+    ]
+      .filter(Boolean)
+      .join("\n");
 
-    if (process.env.RESEND_API_KEY) {
-      await sendWithResend(payload);
-    } else {
-      await sendWithFormSubmit(payload);
-    }
+    await sendAdminEmail({
+      subject: `[Contact] ${subject} — ${firstName} ${lastName}`,
+      replyTo: email,
+      name: `${firstName} ${lastName}`,
+      fields: {
+        "I am a": audience,
+        Phone: phone || "Not provided",
+        Subject: subject,
+      },
+      text,
+    });
 
     return res.status(200).json({
       ok: true,

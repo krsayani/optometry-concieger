@@ -40,6 +40,7 @@ import { cn, formatPhoneNumber, phoneDigits } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { checkEmailAvailability } from "@/services/profiles";
+import { notifyAdminOfIntake } from "@/lib/notify-intake";
 
 const schema = z.object({
   // Step 1: Contact
@@ -259,6 +260,31 @@ export function PracticeIntakeForm() {
         });
 
       if (error) throw error;
+
+      await notifyAdminOfIntake("practice", {
+        contactName: data.contactName,
+        practiceName: data.practiceName,
+        email: data.email,
+        phone: data.phone,
+        location: data.location,
+        practiceType: data.practiceType,
+        numODs: data.numODs,
+        positionType: data.positionType,
+        salaryRange: data.salaryRange,
+        productionBonus: data.productionBonus,
+        signOnBonus: data.signOnBonus,
+        relocationAssistance: data.relocationAssistance,
+        benefits: data.benefits,
+        schedule: data.schedule,
+        patientVolume: data.patientVolume,
+        primaryCareType: data.primaryCareType,
+        newGradFriendly: data.newGradFriendly,
+        mentorshipAvailable: data.mentorshipAvailable,
+        equipmentTech: data.equipmentTech,
+        ownershipTrack: data.ownershipTrack,
+        urgency: data.urgency,
+        anythingElse: data.anythingElse,
+      });
 
       setSubmitted(true);
       toast.success("Hiring Request Submitted!");

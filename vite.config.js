@@ -7,17 +7,29 @@ import path from "path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-function contactApiPlugin() {
+function apiDevPlugin() {
   return {
-    name: "contact-api-dev",
+    name: "api-dev-middleware",
     configureServer(server) {
-      server.middlewares.use("/api/contact", async (req, res, next) => {
+      server.middlewares.use(async (req, res, next) => {
+        const url = req.url?.split("?")[0] || "";
+        if (!url.startsWith("/api/") || req.method === "GET") {
+          return next();
+        }
+
         if (req.method === "OPTIONS") {
           res.statusCode = 204;
           res.end();
           return;
         }
+
         if (req.method !== "POST") {
+          return next();
+        }
+
+        const route = url.replace(/^\/api\//, "").replace(/\/$/, "");
+        const allowed = new Set(["contact", "intake-notify"]);
+        if (!allowed.has(route)) {
           return next();
         }
 
@@ -27,7 +39,7 @@ function contactApiPlugin() {
           const raw = Buffer.concat(chunks).toString("utf8");
           const body = raw ? JSON.parse(raw) : {};
 
-          const { default: handler } = await import("./api/contact.js");
+          const { default: handler } = await import(`./api/${route}.js`);
           const mockReq = {
             method: "POST",
             body,
@@ -60,7 +72,7 @@ function contactApiPlugin() {
           res.setHeader("Content-Type", "application/json");
           res.end(
             JSON.stringify({
-              error: error?.message || "Contact API failed in local development.",
+              error: error?.message || "API failed in local development.",
             }),
           );
         }
@@ -70,7 +82,7 @@ function contactApiPlugin() {
 }
 
 export default defineConfig({
-  plugins: [react(), tailwindcss(), contactApiPlugin()],
+  plugins: [react(), tailwindcss(), apiDevPlugin()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

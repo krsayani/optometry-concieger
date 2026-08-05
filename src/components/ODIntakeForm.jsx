@@ -37,6 +37,7 @@ import { cn, formatPhoneNumber, phoneDigits } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { checkEmailAvailability } from "@/services/profiles";
+import { notifyAdminOfIntake } from "@/lib/notify-intake";
 
 const US_SCHOOLS = [
   "Arizona College of Optometry at Midwestern University",
@@ -379,6 +380,34 @@ export function ODIntakeForm() {
         });
 
       if (dbError) throw dbError;
+
+      await notifyAdminOfIntake("od", {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        phone: data.phone,
+        school: data.school,
+        otherSchool: data.otherSchool,
+        gradYear: data.gradYear,
+        licenseStatus: data.licenseStatus,
+        licenseStates: data.licenseStates,
+        yearsInPractice: data.yearsInPractice,
+        completedResidency: data.completedResidency,
+        residencyType: data.residencyType,
+        preferredStates: data.preferredStates,
+        preferredCities: data.preferredCities,
+        openToRelocation: data.openToRelocation,
+        practiceSetting: data.practiceSetting,
+        practiceTypePreference: data.practiceTypePreference,
+        clinicalInterests: data.clinicalInterests,
+        salaryExpectation: data.salaryExpectation,
+        targetStartDate: data.targetStartDate,
+        jobPriorities: data.jobPriorities,
+        interestInOwnership: data.interestInOwnership,
+        positionType: data.positionType,
+        anythingElse: data.anythingElse,
+        resumeUrl: finalResumeUrl,
+      });
 
       setSubmitted(true);
       toast.success("Profile Created Successfully!");
