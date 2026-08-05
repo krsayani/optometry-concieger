@@ -1,7 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { SiteLayout } from "@/layouts/SiteLayout";
 import {
   Building2,
   Trash2,
@@ -135,10 +134,10 @@ function AdminPracticeIntakes() {
     onError: (err) => toast.error("We couldn't save the changes. Please try again."),
   });
 
-  if (isLoading) return <SiteLayout><PageLoader /></SiteLayout>;
+  if (isLoading) return <PageLoader />;
 
   return (
-    <SiteLayout>
+    <>
       <div className="container-page py-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div className="flex items-center gap-3">
@@ -466,7 +465,7 @@ function AdminPracticeIntakes() {
           </DialogContent>
         </Dialog>
       </div>
-    </SiteLayout>
+    </>
   );
 }
 

@@ -2,7 +2,6 @@ import { useState, useMemo, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { SiteLayout } from "@/layouts/SiteLayout";
 import {
   Users,
   Trash2,
@@ -220,10 +219,10 @@ function AdminMatches() {
     onError: (err) => toast.error("We couldn't remove the match. Please try again."),
   });
 
-  if (matchesLoading) return <SiteLayout><PageLoader /></SiteLayout>;
+  if (matchesLoading) return <PageLoader />;
 
   return (
-    <SiteLayout>
+    <>
       <div className="container-page py-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div className="flex items-center gap-3">
@@ -594,6 +593,6 @@ function AdminMatches() {
             </DialogContent>
         </Dialog>
       </div>
-    </SiteLayout>
+    </>
   );
 }

@@ -1,5 +1,7 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
+import { SiteLayout } from "@/layouts/SiteLayout";
+import { AdminNav } from "@/components/AdminNav";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
@@ -15,7 +17,7 @@ export const Route = createFileRoute("/admin")({
       .select("role")
       .eq("user_id", session.user.id);
 
-    const isSuperAdmin = roles?.some(r => r.role === "super_admin");
+    const isSuperAdmin = roles?.some((r) => r.role === "super_admin");
 
     if (!isSuperAdmin) {
       throw redirect({ to: "/" });
@@ -23,5 +25,14 @@ export const Route = createFileRoute("/admin")({
 
     return { user: session.user, role: "super_admin" };
   },
-  component: () => <Outlet />,
+  component: AdminLayout,
 });
+
+function AdminLayout() {
+  return (
+    <SiteLayout>
+      <AdminNav />
+      <Outlet />
+    </SiteLayout>
+  );
+}
