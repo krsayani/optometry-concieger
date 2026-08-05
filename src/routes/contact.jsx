@@ -41,57 +41,65 @@ const audienceOptions = [
 function Contact() {
   const [audience, setAudience] = useState("od");
   const [busy, setBusy] = useState(false);
+  const [sent, setSent] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setBusy(true);
 
-    const form = new FormData(e.currentTarget);
-    const firstName = String(form.get("firstName") || "").trim();
-    const lastName = String(form.get("lastName") || "").trim();
-    const email = String(form.get("email") || "").trim();
-    const phone = String(form.get("phone") || "").trim();
-    const subject = String(form.get("subject") || "").trim();
-    const message = String(form.get("message") || "").trim();
-    const audienceLabel =
-      audience === "practice" ? "Practice" : "Optometrist";
+    const form = e.currentTarget;
+    const data = new FormData(form);
 
-    const mailSubject = encodeURIComponent(
-      `[Contact] ${subject} — ${firstName} ${lastName}`,
-    );
-    const mailBody = encodeURIComponent(
-      [
-        `Name: ${firstName} ${lastName}`,
-        `Email: ${email}`,
-        phone ? `Phone: ${phone}` : null,
-        `I am a: ${audienceLabel}`,
-        "",
-        "Message:",
-        message,
-      ]
-        .filter(Boolean)
-        .join("\n"),
-    );
+    const payload = {
+      firstName: String(data.get("firstName") || "").trim(),
+      lastName: String(data.get("lastName") || "").trim(),
+      email: String(data.get("email") || "").trim(),
+      phone: String(data.get("phone") || "").trim(),
+      subject: String(data.get("subject") || "").trim(),
+      message: String(data.get("message") || "").trim(),
+      audience,
+      // Honeypot for bots
+      website: String(data.get("website") || "").trim(),
+    };
 
-    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${mailSubject}&body=${mailBody}`;
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-    toast.success("Opening your email app", {
-      description: "Your message is ready to send to our team.",
-    });
+      const result = await response.json().catch(() => ({}));
 
-    e.currentTarget.reset();
-    setAudience("od");
-    setBusy(false);
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to send your message.");
+      }
+
+      setSent(true);
+      form.reset();
+      setAudience("od");
+      toast.success("Message sent", {
+        description: `Your inquiry was emailed to ${CONTACT_EMAIL}.`,
+      });
+    } catch (error) {
+      toast.error("Could not send message", {
+        description:
+          error?.message ||
+          `Please email us directly at ${CONTACT_EMAIL}.`,
+      });
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
     <SiteLayout>
       {/* Hero */}
       <section className="relative overflow-hidden bg-primary text-white pt-14 pb-16 md:pt-20 md:pb-24">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,oklch(0.72_0.14_195/0.18),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,#2a9d9d_0%,transparent_50%)] opacity-20" />
         <div className="container-page relative z-10 max-w-3xl">
           <span className="section-eyebrow text-accent !mb-4">Get in Touch</span>
-          <h1 className="text-3xl md:text-5xl font-black tracking-tight mb-4 md:mb-6">
+          <h1 className="text-3xl md:text-5xl font-black tracking-tight mb-4 md:mb-6 text-white">
             Contact Us
           </h1>
           <p className="text-base md:text-lg text-white/85 font-medium leading-relaxed max-w-2xl">
@@ -111,7 +119,7 @@ function Contact() {
               </div>
               <h2 className="font-bold text-lg text-primary mb-1">Email Us</h2>
               <p className="text-sm text-muted-foreground mb-3">
-                Best for career questions, hiring inquiries, and partnerships.
+                Form submissions are delivered directly to our admin inbox.
               </p>
               <a
                 href={`mailto:${CONTACT_EMAIL}`}
@@ -152,132 +160,171 @@ function Contact() {
           {/* Form column */}
           <div className="lg:col-span-3">
             <div className="rounded-2xl md:rounded-3xl border border-border bg-card p-6 md:p-10 shadow-card">
-              <div className="mb-8">
-                <h2 className="text-2xl font-black tracking-tight text-primary mb-2">
-                  Send a message
-                </h2>
-                <p className="text-sm text-muted-foreground font-medium">
-                  Fill out the form below and we will get back to you shortly.
-                </p>
-              </div>
-
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div className="space-y-2">
-                  <Label>I am a…</Label>
-                  <div className="grid sm:grid-cols-2 gap-3">
-                    {audienceOptions.map((option) => (
-                      <button
-                        key={option.id}
-                        type="button"
-                        onClick={() => setAudience(option.id)}
-                        className={cn(
-                          "flex items-center gap-3 rounded-xl border px-4 py-3.5 text-left transition-all",
-                          audience === option.id
-                            ? "border-accent/50 bg-accent/10 text-primary shadow-soft"
-                            : "border-border bg-background text-muted-foreground hover:border-primary/20 hover:text-foreground",
-                        )}
-                      >
-                        <option.icon className="h-5 w-5 shrink-0" />
-                        <span className="text-sm font-bold">{option.label}</span>
-                      </button>
-                    ))}
+              {sent ? (
+                <div className="text-center py-10 md:py-14">
+                  <div className="mx-auto mb-5 h-14 w-14 rounded-2xl bg-accent/15 text-accent flex items-center justify-center">
+                    <Send className="h-6 w-6" />
                   </div>
-                </div>
-
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name</Label>
-                    <Input
-                      id="firstName"
-                      name="firstName"
-                      required
-                      placeholder="Jane"
-                      autoComplete="given-name"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName">Last Name</Label>
-                    <Input
-                      id="lastName"
-                      name="lastName"
-                      required
-                      placeholder="Doe"
-                      autoComplete="family-name"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email Address</Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      required
-                      placeholder="you@example.com"
-                      autoComplete="email"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">
-                      Phone <span className="text-muted-foreground font-normal">(optional)</span>
-                    </Label>
-                    <Input
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      placeholder="(555) 123-4567"
-                      autoComplete="tel"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="subject">Subject</Label>
-                  <Input
-                    id="subject"
-                    name="subject"
-                    required
-                    placeholder={
-                      audience === "practice"
-                        ? "Hiring an OD"
-                        : "Career guidance question"
-                    }
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="message">Message</Label>
-                  <Textarea
-                    id="message"
-                    name="message"
-                    required
-                    rows={6}
-                    placeholder="Tell us a bit about what you need help with…"
-                  />
-                </div>
-
-                <Button
-                  type="submit"
-                  size="lg"
-                  disabled={busy}
-                  className="w-full h-12 md:h-14 rounded-full font-bold shadow-elevated"
-                >
-                  <Send className="h-4 w-4" />
-                  {busy ? "Preparing…" : "Send Message"}
-                </Button>
-
-                <p className="text-center text-xs text-muted-foreground">
-                  Prefer email? Reach us directly at{" "}
-                  <a
-                    href={`mailto:${CONTACT_EMAIL}`}
-                    className="font-semibold text-primary hover:text-accent"
+                  <h2 className="text-2xl font-black tracking-tight text-primary mb-3">
+                    Message sent
+                  </h2>
+                  <p className="text-sm md:text-base text-muted-foreground font-medium max-w-md mx-auto mb-8 leading-relaxed">
+                    Thanks for reaching out. Your inquiry was emailed to{" "}
+                    <span className="text-primary font-semibold">{CONTACT_EMAIL}</span>.
+                    We will get back to you soon.
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="rounded-full px-6"
+                    onClick={() => setSent(false)}
                   >
-                    {CONTACT_EMAIL}
-                  </a>
-                </p>
-              </form>
+                    Send another message
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <div className="mb-8">
+                    <h2 className="text-2xl font-black tracking-tight text-primary mb-2">
+                      Send a message
+                    </h2>
+                    <p className="text-sm text-muted-foreground font-medium">
+                      Fill out the form below and we will email the team right away.
+                    </p>
+                  </div>
+
+                  <form onSubmit={handleSubmit} className="space-y-5">
+                    {/* Honeypot */}
+                    <input
+                      type="text"
+                      name="website"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      className="hidden"
+                      aria-hidden="true"
+                    />
+
+                    <div className="space-y-2">
+                      <Label>I am a…</Label>
+                      <div className="grid sm:grid-cols-2 gap-3">
+                        {audienceOptions.map((option) => (
+                          <button
+                            key={option.id}
+                            type="button"
+                            onClick={() => setAudience(option.id)}
+                            className={cn(
+                              "flex items-center gap-3 rounded-xl border px-4 py-3.5 text-left transition-all",
+                              audience === option.id
+                                ? "border-accent/50 bg-accent/10 text-primary shadow-soft"
+                                : "border-border bg-background text-muted-foreground hover:border-primary/20 hover:text-foreground",
+                            )}
+                          >
+                            <option.icon className="h-5 w-5 shrink-0" />
+                            <span className="text-sm font-bold">{option.label}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="firstName">First Name</Label>
+                        <Input
+                          id="firstName"
+                          name="firstName"
+                          required
+                          placeholder="Jane"
+                          autoComplete="given-name"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="lastName">Last Name</Label>
+                        <Input
+                          id="lastName"
+                          name="lastName"
+                          required
+                          placeholder="Doe"
+                          autoComplete="family-name"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email Address</Label>
+                        <Input
+                          id="email"
+                          name="email"
+                          type="email"
+                          required
+                          placeholder="you@example.com"
+                          autoComplete="email"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="phone">
+                          Phone{" "}
+                          <span className="text-muted-foreground font-normal">
+                            (optional)
+                          </span>
+                        </Label>
+                        <Input
+                          id="phone"
+                          name="phone"
+                          type="tel"
+                          placeholder="(555) 123-4567"
+                          autoComplete="tel"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="subject">Subject</Label>
+                      <Input
+                        id="subject"
+                        name="subject"
+                        required
+                        placeholder={
+                          audience === "practice"
+                            ? "Hiring an OD"
+                            : "Career guidance question"
+                        }
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="message">Message</Label>
+                      <Textarea
+                        id="message"
+                        name="message"
+                        required
+                        rows={6}
+                        placeholder="Tell us a bit about what you need help with…"
+                      />
+                    </div>
+
+                    <Button
+                      type="submit"
+                      size="lg"
+                      disabled={busy}
+                      className="w-full h-12 md:h-14 rounded-full font-bold shadow-elevated"
+                    >
+                      <Send className="h-4 w-4" />
+                      {busy ? "Sending…" : "Send Message"}
+                    </Button>
+
+                    <p className="text-center text-xs text-muted-foreground">
+                      Prefer email? Reach us directly at{" "}
+                      <a
+                        href={`mailto:${CONTACT_EMAIL}`}
+                        className="font-semibold text-primary hover:text-accent"
+                      >
+                        {CONTACT_EMAIL}
+                      </a>
+                    </p>
+                  </form>
+                </>
+              )}
             </div>
           </div>
         </div>
