@@ -521,3 +521,55 @@ export async function clearAllNotifications() {
     .gte("id", "00000000-0000-0000-0000-000000000000"); // Standard way to delete all in Supabase
   if (error) throw error;
 }
+
+export const SCHOOL_OUTREACH_STATUSES = [
+  "Not started",
+  "Emailed",
+  "Follow-up sent",
+  "Replied",
+  "Sharing with students",
+  "Declined",
+  "No response",
+];
+
+export const SCHOOL_OUTREACH_OWNERS = ["Bilal", "Karim"];
+
+export async function listSchoolOutreachSchools() {
+  const { data, error } = await supabase
+    .from("school_outreach_schools")
+    .select("*")
+    .order("sort_order", { ascending: true });
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function updateSchoolOutreachSchool(id, updates) {
+  const { data, error } = await supabase
+    .from("school_outreach_schools")
+    .update(updates)
+    .eq("id", id)
+    .select()
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+export async function listSchoolOutreachClubs() {
+  const { data, error } = await supabase
+    .from("school_outreach_clubs")
+    .select("*")
+    .order("sort_order", { ascending: true });
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function updateSchoolOutreachClub(id, updates) {
+  const { data, error } = await supabase
+    .from("school_outreach_clubs")
+    .update(updates)
+    .eq("id", id)
+    .select()
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}

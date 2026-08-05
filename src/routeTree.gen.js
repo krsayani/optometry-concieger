@@ -29,6 +29,7 @@ import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminOdIntakesRouteImport } from './routes/admin.od-intakes'
 import { Route as AdminPracticeIntakesRouteImport } from './routes/admin.practice-intakes'
 import { Route as AdminMatchesRouteImport } from './routes/admin.matches'
+import { Route as AdminSchoolOutreachRouteImport } from './routes/admin.school-outreach'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 
@@ -151,6 +152,12 @@ const AdminMatchesRoute = AdminMatchesRouteImport.update({
   getParentRoute: () => AdminRoute,
 })
 
+const AdminSchoolOutreachRoute = AdminSchoolOutreachRouteImport.update({
+  id: '/school-outreach',
+  path: '/school-outreach',
+  getParentRoute: () => AdminRoute,
+})
+
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -174,6 +181,7 @@ const AuthenticatedRouteRouteWithChildren =
 const AdminRouteChildren = {
   AdminPracticeIntakesRoute: AdminPracticeIntakesRoute,
   AdminMatchesRoute: AdminMatchesRoute,
+  AdminSchoolOutreachRoute: AdminSchoolOutreachRoute,
   AdminOdIntakesRoute: AdminOdIntakesRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdminIndexRoute: AdminIndexRoute,
