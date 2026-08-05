@@ -41,6 +41,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { checkEmailAvailability } from "@/services/profiles";
 import { notifyAdminOfIntake } from "@/lib/notify-intake";
+import { CaptchaChallenge } from "@/components/CaptchaChallenge";
 
 const schema = z.object({
   // Step 1: Contact
@@ -86,6 +87,8 @@ export function PracticeIntakeForm() {
   const [submitted, setSubmitted] = useState(false);
   const [emailAvailable, setEmailAvailable] = useState(true);
   const [isCheckingEmail, setIsCheckingEmail] = useState(false);
+  const [captchaVerified, setCaptchaVerified] = useState(false);
+  const [captchaResetKey, setCaptchaResetKey] = useState(0);
 
   const {
     register,
@@ -183,6 +186,13 @@ export function PracticeIntakeForm() {
   };
 
   const onSubmit = async (data) => {
+    if (!captchaVerified) {
+      toast.error("Complete the security check", {
+        description: "Solve the captcha before submitting your request.",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       // 0. Preliminary Check: See if this email is already registered in Auth
@@ -215,6 +225,39 @@ export function PracticeIntakeForm() {
             }
           }
         });
+
+        if (authError?.message?.toLowerCase().includes("rate limit")) {
+          await notifyAdminOfIntake("practice", {
+            contactName: data.contactName,
+            practiceName: data.practiceName,
+            email: data.email,
+            phone: data.phone,
+            location: data.location,
+            practiceType: data.practiceType,
+            numODs: data.numODs,
+            positionType: data.positionType,
+            salaryRange: data.salaryRange,
+            productionBonus: data.productionBonus,
+            signOnBonus: data.signOnBonus,
+            relocationAssistance: data.relocationAssistance,
+            benefits: data.benefits,
+            schedule: data.schedule,
+            patientVolume: data.patientVolume,
+            primaryCareType: data.primaryCareType,
+            newGradFriendly: data.newGradFriendly,
+            mentorshipAvailable: data.mentorshipAvailable,
+            equipmentTech: data.equipmentTech,
+            ownershipTrack: data.ownershipTrack,
+            urgency: data.urgency,
+            anythingElse: data.anythingElse,
+          });
+          setSubmitted(true);
+          setCaptchaResetKey((k) => k + 1);
+          setCaptchaVerified(false);
+          toast.success("Hiring request submitted!");
+          toast.info("We received your request. Account setup email will follow shortly.");
+          return;
+        }
 
         if (authError) throw authError;
         userId = authData.user?.id;
@@ -287,6 +330,8 @@ export function PracticeIntakeForm() {
       });
 
       setSubmitted(true);
+      setCaptchaResetKey((k) => k + 1);
+      setCaptchaVerified(false);
       toast.success("Hiring Request Submitted!");
       if (!emailed) {
         toast.warning("Request saved, but admin email notification failed.", {
@@ -305,10 +350,10 @@ export function PracticeIntakeForm() {
 
       if (errorMsg.includes("already registered") || errorMsg.includes("email already in use") || errorMsg.includes("unique constraint")) {
         message = "An account with this email already exists. Please sign in instead.";
-      } else if (errorMsg.includes("email rate limit exceeded")) {
-        message = "Too many attempts. Please wait a few minutes before trying again.";
       }
 
+      setCaptchaResetKey((k) => k + 1);
+      setCaptchaVerified(false);
       toast.error(message);
     } finally {
       setIsSubmitting(false);
@@ -705,6 +750,11 @@ export function PracticeIntakeForm() {
                        {errors.agreeToTerms && <p className="text-xs text-destructive">{errors.agreeToTerms.message}</p>}
                     </div>
                 </div>
+
+                <CaptchaChallenge
+                  resetKey={captchaResetKey}
+                  onVerifiedChange={setCaptchaVerified}
+                />
              </div>
           </div>
         )}
@@ -734,7 +784,7 @@ export function PracticeIntakeForm() {
               ) : (
                 <Button
                    type="submit"
-                   disabled={isSubmitting || isSuperAdmin}
+                   disabled={isSubmitting || isSuperAdmin || !captchaVerified}
                    className="rounded-full px-10 shadow-elevated w-full sm:w-auto"
                 >
                    {isSubmitting ? "Submitting..." : "Submit Hiring Request"}

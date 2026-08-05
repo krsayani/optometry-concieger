@@ -38,6 +38,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { checkEmailAvailability } from "@/services/profiles";
 import { notifyAdminOfIntake } from "@/lib/notify-intake";
+import { CaptchaChallenge } from "@/components/CaptchaChallenge";
 
 const US_SCHOOLS = [
   "Arizona College of Optometry at Midwestern University",
@@ -141,6 +142,8 @@ export function ODIntakeForm() {
   const [isUploading, setIsUploading] = useState(false);
   const [emailAvailable, setEmailAvailable] = useState(true);
   const [isCheckingEmail, setIsCheckingEmail] = useState(false);
+  const [captchaVerified, setCaptchaVerified] = useState(false);
+  const [captchaResetKey, setCaptchaResetKey] = useState(0);
 
   const {
     register,
@@ -252,6 +255,13 @@ export function ODIntakeForm() {
   };
 
   const onSubmit = async (data) => {
+    if (!captchaVerified) {
+      toast.error("Complete the security check", {
+        description: "Solve the captcha before submitting your profile.",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       // 0. Preliminary Check: See if this user already has a profile if logged in
@@ -303,6 +313,43 @@ export function ODIntakeForm() {
             }
           }
         });
+
+        // If Supabase email sending is throttled, still notify admin with the full profile
+        if (authError?.message?.toLowerCase().includes("rate limit")) {
+          await notifyAdminOfIntake("od", {
+            firstName: data.firstName,
+            lastName: data.lastName,
+            email: data.email,
+            phone: data.phone,
+            school: data.school,
+            otherSchool: data.otherSchool,
+            gradYear: data.gradYear,
+            licenseStatus: data.licenseStatus,
+            licenseStates: data.licenseStates,
+            yearsInPractice: data.yearsInPractice,
+            completedResidency: data.completedResidency,
+            residencyType: data.residencyType,
+            preferredStates: data.preferredStates,
+            preferredCities: data.preferredCities,
+            openToRelocation: data.openToRelocation,
+            practiceSetting: data.practiceSetting,
+            practiceTypePreference: data.practiceTypePreference,
+            clinicalInterests: data.clinicalInterests,
+            salaryExpectation: data.salaryExpectation,
+            targetStartDate: data.targetStartDate,
+            jobPriorities: data.jobPriorities,
+            interestInOwnership: data.interestInOwnership,
+            positionType: data.positionType,
+            anythingElse: data.anythingElse,
+            resumeUrl: null,
+          });
+          setSubmitted(true);
+          setCaptchaResetKey((k) => k + 1);
+          setCaptchaVerified(false);
+          toast.success("Profile submitted successfully!");
+          toast.info("We received your profile. Account setup email will follow shortly.");
+          return;
+        }
 
         if (authError) throw authError;
         userId = authData.user?.id;
@@ -410,6 +457,8 @@ export function ODIntakeForm() {
       });
 
       setSubmitted(true);
+      setCaptchaResetKey((k) => k + 1);
+      setCaptchaVerified(false);
       toast.success("Profile Created Successfully!");
       if (!emailed) {
         toast.warning("Profile saved, but admin email notification failed.", {
@@ -429,10 +478,10 @@ export function ODIntakeForm() {
 
       if (errorMsg.includes("already registered") || errorMsg.includes("email already in use") || errorMsg.includes("unique constraint")) {
         message = "An account with this email already exists. Please sign in instead.";
-      } else if (errorMsg.includes("email rate limit exceeded")) {
-        message = "Too many attempts. Please wait a few minutes before trying again.";
       }
 
+      setCaptchaResetKey((k) => k + 1);
+      setCaptchaVerified(false);
       toast.error(message);
     } finally {
       setIsSubmitting(false);
@@ -964,6 +1013,11 @@ export function ODIntakeForm() {
                    </div>
                 </div>
              </div>
+
+             <CaptchaChallenge
+               resetKey={captchaResetKey}
+               onVerifiedChange={setCaptchaVerified}
+             />
           </div>
         )}
 
@@ -1003,7 +1057,7 @@ export function ODIntakeForm() {
                 <Button
                    key="submit-form-button"
                    type="submit"
-                   disabled={isSubmitting || isSuperAdmin}
+                   disabled={isSubmitting || isSuperAdmin || !captchaVerified}
                    className="rounded-full px-10 shadow-elevated w-full sm:w-auto"
                 >
                    {isSubmitting ? "Submitting..." : "Submit My Profile"}

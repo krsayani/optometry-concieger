@@ -80,8 +80,6 @@ function AuthPage() {
       let message = "Invalid email or password. Please try again.";
       if (err.message?.includes("Email not confirmed")) {
         message = "Please verify your email address before signing in.";
-      } else if (err.message?.includes("rate limit")) {
-        message = "Too many attempts. Please try again later.";
       }
       toast.error(message);
     } finally {
@@ -102,11 +100,9 @@ function AuthPage() {
       });
       setForgot(false);
     } catch (err) {
-      let message = "We couldn't send the reset email. Please check the address and try again.";
-      if (err.message?.toLowerCase().includes("rate limit")) {
-        message = "Too many reset attempts. Please wait a few minutes before trying again.";
-      }
-      toast.error(message);
+      toast.error(
+        "We couldn't send the reset email. Please check the address and try again.",
+      );
     } finally {
       setBusy(false);
     }
