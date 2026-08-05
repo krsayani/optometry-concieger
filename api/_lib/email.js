@@ -10,16 +10,20 @@ export const ADMIN_EMAIL = normalizeEmail(
   process.env.CONTACT_TO_EMAIL || "admin@optometryconcierge.com",
 );
 
-/** Google Workspace / Gmail copy of inbound mail (defaults to Admin@). */
+/** Google Workspace / Gmail address (Admin@) — primary mailbox. */
 export const WORKSPACE_NOTIFY_EMAIL = normalizeEmail(
   process.env.INBOUND_FORWARD_TO ||
     process.env.CONTACT_TO_EMAIL ||
     "admin@optometryconcierge.com",
 );
 
-/** Resend receiving address used for the website inbox. */
+/**
+ * Resend receiving address that feeds the website inbox.
+ * Prefer a Resend-managed `*.resend.app` address so Admin@ can stay on Google Workspace.
+ * Set via INBOUND_RECEIVE_EMAIL after copying it from Resend → Receiving.
+ */
 export const INBOUND_RECEIVE_EMAIL = normalizeEmail(
-  process.env.INBOUND_RECEIVE_EMAIL || "admin@inbox.optometryconcierge.com",
+  process.env.INBOUND_RECEIVE_EMAIL || "",
 );
 
 const BRAND = {

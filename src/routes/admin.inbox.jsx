@@ -164,8 +164,8 @@ function AdminInbox() {
             Email Inbox
           </h1>
           <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-            Inbound mail appears here and is mirrored to Google Workspace
-            (Admin@). Reply from the dashboard or from Gmail.
+            Mail forwarded from Admin@ (Google Workspace) appears here. Reply
+            from the dashboard or from Gmail.
           </p>
         </div>
       </div>
