@@ -31,9 +31,9 @@ function BrandLogo({ onClick }) {
         alt="Optometry Concierge"
         className="h-9 w-9 sm:h-10 sm:w-10 md:h-11 md:w-11 rounded-lg object-cover shadow-sm ring-1 ring-border/60 transition-transform duration-300 group-hover:scale-[1.03] shrink-0"
       />
-      <span className="ml-2 md:ml-2.5 font-serif text-[0.95rem] sm:text-[1.05rem] md:text-lg font-semibold tracking-tight text-primary leading-none truncate">
+      <span className="ml-2 md:ml-2.5 font-serif text-[0.95rem] sm:text-[1.05rem] md:text-lg font-semibold tracking-tight text-primary leading-[1.15] overflow-visible">
         Optometry
-        <span className="block text-accent italic -mt-0.5">Concierge</span>
+        <span className="block text-accent italic leading-[1.2] pb-0.5">Concierge</span>
       </span>
     </Link>
   );
@@ -110,7 +110,7 @@ export function Navbar() {
         </div>
       </div>
 
-      <nav className="container-page flex h-14 md:h-16 items-center justify-between gap-3">
+      <nav className="container-page flex h-14 md:h-16 items-center justify-between gap-3 overflow-visible">
         <BrandLogo />
 
         <div className="hidden items-center gap-4 md:flex">

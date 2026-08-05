@@ -15,9 +15,9 @@ export function Footer() {
                   alt="Optometry Concierge"
                   className="h-11 w-11 md:h-12 md:w-12 rounded-xl object-cover ring-1 ring-white/15"
                 />
-                <span className="font-serif text-xl md:text-2xl font-semibold tracking-tight text-white leading-none">
+                <span className="font-serif text-xl md:text-2xl font-semibold tracking-tight text-white leading-[1.15] overflow-visible">
                   Optometry
-                  <span className="block text-accent italic -mt-0.5">Concierge</span>
+                  <span className="block text-accent italic leading-[1.2] pb-0.5">Concierge</span>
                 </span>
              </Link>
              <p className="text-sm md:text-base font-medium text-white/70 leading-relaxed max-w-sm">

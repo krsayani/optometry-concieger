@@ -291,9 +291,9 @@ function CreateAccountPage() {
               alt="Optometry Concierge"
               className="h-12 w-12 rounded-xl object-cover shadow-soft ring-1 ring-border/60"
             />
-            <span className="font-display text-left text-sm font-extrabold uppercase tracking-tighter text-primary leading-tight">
+            <span className="font-serif text-left text-lg font-semibold tracking-tight text-primary leading-[1.15] overflow-visible">
               Optometry
-              <span className="block text-accent -mt-0.5">Concierge</span>
+              <span className="block text-accent italic leading-[1.2] pb-0.5">Concierge</span>
             </span>
           </Link>
         </div>

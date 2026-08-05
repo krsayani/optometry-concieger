@@ -120,9 +120,9 @@ function AuthPage() {
               alt="Optometry Concierge"
               className="h-11 w-11 sm:h-12 sm:w-12 rounded-xl object-cover shadow-soft ring-1 ring-border/60 transition-transform group-hover:scale-[1.03]"
             />
-            <span className="font-serif text-left text-lg sm:text-xl font-semibold tracking-tight text-primary leading-none">
+            <span className="font-serif text-left text-lg sm:text-xl font-semibold tracking-tight text-primary leading-[1.15] overflow-visible">
               Optometry
-              <span className="block text-accent italic -mt-0.5">Concierge</span>
+              <span className="block text-accent italic leading-[1.2] pb-0.5">Concierge</span>
             </span>
           </Link>
         </div>
