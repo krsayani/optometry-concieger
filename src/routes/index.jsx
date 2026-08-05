@@ -312,18 +312,19 @@ function Home() {
       {/* 6. Doctor Owned Section */}
       <DoctorOwnedSection />
 
-      {/* 7. Testimonials - Dark Background */}
+      {/* 7. Testimonials */}
       <section className="bg-primary pt-14 pb-16 md:pt-24 md:pb-28 text-white border-y border-white/5 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[150px] -z-10" />
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-accent/10 rounded-full blur-[150px] -z-10" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/5 rounded-full blur-[120px] -z-10" />
         <div className="container-page">
           <div className="mx-auto max-w-4xl text-center mb-10 md:mb-14">
-            <span className="section-eyebrow text-accent">Colleague Feedback</span>
+            <span className="section-eyebrow">Colleague Feedback</span>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-white leading-tight">
               What our <span className="text-accent">clients</span> say
             </h2>
           </div>
 
-          <div className="grid gap-4 md:gap-6 md:grid-cols-2 xl:grid-cols-3 max-w-6xl mx-auto">
+          <div className="grid gap-5 md:gap-6 md:grid-cols-2 xl:grid-cols-3 max-w-6xl mx-auto">
             {[
               {
                 quote: "Optometry Concierge helped me compare multiple offers and explained details in my contract that I would have completely overlooked. I felt much more confident accepting my first position.",
@@ -353,29 +354,26 @@ function Home() {
             ].map((item, i) => (
               <div
                 key={i}
-                className="relative rounded-2xl md:rounded-3xl border border-white/10 bg-white/[0.06] p-6 md:p-8 shadow-soft transition-all duration-300 hover:bg-white/10 hover:border-white/20 group backdrop-blur-md"
+                className="relative flex flex-col rounded-2xl border border-white/10 bg-white/[0.07] p-6 md:p-7 transition-all duration-300 hover:bg-white/[0.11] hover:border-accent/30 hover:-translate-y-0.5 group"
               >
-                <Quote className="absolute right-5 top-5 md:right-6 md:top-6 h-8 w-8 md:h-10 md:w-10 text-accent opacity-15 group-hover:opacity-30 transition-opacity" />
-                <div className="relative z-10 flex h-full flex-col">
-                  <div className="flex gap-1 mb-4 md:mb-5">
-                    {[1, 2, 3, 4, 5].map((s) => <Star key={s} className="h-3.5 w-3.5 md:h-4 md:w-4 fill-accent text-accent" />)}
-                  </div>
-                  <p className="text-base md:text-lg font-semibold text-white/95 leading-relaxed mb-6 md:mb-8 flex-1">
-                    "{item.quote}"
+                <Quote className="absolute right-5 top-5 h-7 w-7 text-accent/25 group-hover:text-accent/40 transition-colors" />
+                <div className="flex gap-1 mb-4">
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <Star key={s} className="h-3.5 w-3.5 fill-accent text-accent" />
+                  ))}
+                </div>
+                <p className="font-sans text-[0.95rem] md:text-base font-medium text-white/90 leading-relaxed mb-6 flex-1">
+                  "{item.quote}"
+                </p>
+                <div className="pt-4 border-t border-white/10">
+                  <p className="font-display font-bold text-sm md:text-[0.95rem] text-white tracking-tight">
+                    {item.author}
                   </p>
-                  <div className="flex items-center gap-3 md:gap-4 pt-5 border-t border-white/10">
-                    <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-accent text-primary flex items-center justify-center font-black text-base md:text-lg shadow-soft shrink-0">
-                      {item.author[0]}
-                    </div>
-                    <div>
-                      <p className="font-bold text-sm md:text-base text-white">{item.author}</p>
-                      {item.role ? (
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-accent mt-0.5 opacity-90">
-                          {item.role}
-                        </p>
-                      ) : null}
-                    </div>
-                  </div>
+                  {item.role ? (
+                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-accent mt-1">
+                      {item.role}
+                    </p>
+                  ) : null}
                 </div>
               </div>
             ))}
