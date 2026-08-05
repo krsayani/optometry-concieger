@@ -17,17 +17,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
+import { buildSeoHead } from "@/lib/seo";
+
 export const Route = createFileRoute("/contact")({
-  head: () => ({
-    meta: [
-      { title: "Contact Us — Optometry Concierge" },
-      {
-        name: "description",
-        content:
-          "Get in touch with Optometry Concierge. Whether you are an OD or a practice, we are here to help.",
-      },
-    ],
-  }),
+  head: () =>
+    buildSeoHead({
+      title: "Contact Us",
+      description:
+        "Get in touch with Optometry Concierge. Whether you are an OD or a practice, we are here to help.",
+      path: "/contact",
+    }),
   component: Contact,
 });
 

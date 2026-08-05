@@ -27,18 +27,16 @@ import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ConciergeIllustration, RoadmapIllustration, OptometryIllustration, InteractiveRoadmap } from "@/components/Illustrations";
 import { cn } from "@/lib/utils";
+import { buildSeoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Optometry Concierge — From graduation to great offer" },
-      {
-        name: "description",
-        content:
-          "Free career concierge and job placement service for optometry students, new grads, and established ODs.",
-      },
-    ],
-  }),
+  head: () =>
+    buildSeoHead({
+      title: "Optometry Concierge — From graduation to great offer",
+      description:
+        "Free career concierge for optometry students, new grads, and established ODs. Resume review, salary guidance, offer comparison, and confidential job matching.",
+      path: "/",
+    }),
   component: Home,
 });
 

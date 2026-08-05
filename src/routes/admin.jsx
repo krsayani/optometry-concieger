@@ -2,9 +2,17 @@ import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteLayout } from "@/layouts/SiteLayout";
 import { AdminNav } from "@/components/AdminNav";
+import { buildSeoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
+  head: () =>
+    buildSeoHead({
+      title: "Admin",
+      description: "Optometry Concierge admin dashboard.",
+      path: "/admin",
+      noindex: true,
+    }),
   beforeLoad: async () => {
     const { data: { session } } = await supabase.auth.getSession();
 

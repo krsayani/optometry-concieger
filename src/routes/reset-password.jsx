@@ -7,8 +7,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+import { buildSeoHead } from "@/lib/seo";
+
 export const Route = createFileRoute("/reset-password")({
-  head: () => ({ meta: [{ title: "Set Password · Optometry Concierge" }] }),
+  head: () =>
+    buildSeoHead({
+      title: "Set Password",
+      description: "Set a new password for your Optometry Concierge account.",
+      path: "/reset-password",
+      noindex: true,
+    }),
   component: ResetPassword,
 });
 

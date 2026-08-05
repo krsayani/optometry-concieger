@@ -26,8 +26,16 @@ import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 
+import { buildSeoHead } from "@/lib/seo";
+
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({ meta: [{ title: "My Dashboard · Optometry Concierge" }] }),
+  head: () =>
+    buildSeoHead({
+      title: "My Dashboard",
+      description: "Your Optometry Concierge dashboard.",
+      path: "/dashboard",
+      noindex: true,
+    }),
   component: Dashboard,
 });
 

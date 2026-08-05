@@ -26,7 +26,16 @@ import { ConfidentialitySection } from "@/components/ConfidentialitySection";
 import { cn } from "@/lib/utils";
 import { InteractiveRoadmap, OptometryIllustration } from "@/components/Illustrations";
 
+import { buildSeoHead } from "@/lib/seo";
+
 export const Route = createFileRoute("/for-practices")({
+  head: () =>
+    buildSeoHead({
+      title: "For Practices",
+      description:
+        "Hire pre-vetted, interview-ready ODs through a Doctor owned and led matching service. No upfront cost — pay only when you hire.",
+      path: "/for-practices",
+    }),
   component: ForPractices,
 });
 

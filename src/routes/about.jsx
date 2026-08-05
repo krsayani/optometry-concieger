@@ -4,7 +4,16 @@ import { ShieldCheck, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ConfidentialIllustration } from "@/components/Illustrations";
 
+import { buildSeoHead } from "@/lib/seo";
+
 export const Route = createFileRoute("/about")({
+  head: () =>
+    buildSeoHead({
+      title: "About Us",
+      description:
+        "Meet Doctors Bilal Ismail and Karim Sayani — practicing optometrists who built Optometry Concierge to help colleagues find the right opportunity.",
+      path: "/about",
+    }),
   component: About,
 });
 

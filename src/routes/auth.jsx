@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { buildSeoHead } from "@/lib/seo";
 
 const searchSchema = z.object({
   mode: z.enum(["login", "register"]).catch("login"),
@@ -38,9 +39,13 @@ export const Route = createFileRoute("/auth")({
       }
     }
   },
-  head: () => ({
-    meta: [{ title: "Sign in · Optometry Concierge" }],
-  }),
+  head: () =>
+    buildSeoHead({
+      title: "Sign In",
+      description: "Sign in to your Optometry Concierge account.",
+      path: "/auth",
+      noindex: true,
+    }),
   component: AuthPage,
 });
 

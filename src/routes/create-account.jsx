@@ -17,6 +17,7 @@ import {
   readPendingIntake,
 } from "@/lib/account-invite";
 import { isExistingAccountError } from "@/lib/auth-errors";
+import { buildSeoHead } from "@/lib/seo";
 
 const searchSchema = z.object({
   email: z.string().email().optional().catch(undefined),
@@ -34,9 +35,13 @@ export const Route = createFileRoute("/create-account")({
       throw redirect({ to: "/dashboard" });
     }
   },
-  head: () => ({
-    meta: [{ title: "Create account · Optometry Concierge" }],
-  }),
+  head: () =>
+    buildSeoHead({
+      title: "Create Account",
+      description: "Create your Optometry Concierge account.",
+      path: "/create-account",
+      noindex: true,
+    }),
   component: CreateAccountPage,
 });
 

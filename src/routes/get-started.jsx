@@ -3,7 +3,16 @@ import { SiteLayout } from "@/layouts/SiteLayout";
 import { GraduationCap, Building2, ArrowRight, UserCheck, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+import { buildSeoHead } from "@/lib/seo";
+
 export const Route = createFileRoute("/get-started")({
+  head: () =>
+    buildSeoHead({
+      title: "Get Started",
+      description:
+        "Start free as an optometrist or begin a confidential practice search with Optometry Concierge.",
+      path: "/get-started",
+    }),
   component: GetStarted,
 });
 

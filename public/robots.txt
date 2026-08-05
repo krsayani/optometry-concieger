@@ -1,2 +1,26 @@
+# Optometry Concierge
+# https://www.optometryconcierge.com
+
 User-agent: *
 Allow: /
+Allow: /for-ods
+Allow: /for-practices
+Allow: /how-it-works
+Allow: /about
+Allow: /contact
+Allow: /privacy
+Allow: /terms
+Allow: /get-started
+Allow: /resources
+
+# Private / app areas — do not index
+Disallow: /admin
+Disallow: /admin/
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /auth
+Disallow: /create-account
+Disallow: /reset-password
+Disallow: /api/
+
+Sitemap: https://www.optometryconcierge.com/sitemap.xml

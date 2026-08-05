@@ -25,8 +25,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { RoadmapIllustration } from "@/components/Illustrations";
 import { cn } from "@/lib/utils";
+import { buildSeoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/how-it-works")({
+  head: () =>
+    buildSeoHead({
+      title: "How It Works",
+      description:
+        "See how Optometry Concierge matches ODs and practices with a transparent, confidential, clinical-first process.",
+      path: "/how-it-works",
+    }),
   component: HowItWorks,
 });
 

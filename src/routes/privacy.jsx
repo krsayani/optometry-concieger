@@ -2,17 +2,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SiteLayout } from "@/layouts/SiteLayout";
 import { ShieldCheck, EyeOff, Lock, UserCheck } from "lucide-react";
 
+import { buildSeoHead } from "@/lib/seo";
+
 export const Route = createFileRoute("/privacy")({
-  head: () => ({
-    meta: [
-      { title: "Privacy Policy — Optometry Concierge" },
-      {
-        name: "description",
-        content:
-          "Learn how Optometry Concierge protects your identity with our consent-first privacy model.",
-      },
-    ],
-  }),
+  head: () =>
+    buildSeoHead({
+      title: "Privacy Policy",
+      description:
+        "Learn how Optometry Concierge protects your identity with our consent-first privacy model.",
+      path: "/privacy",
+    }),
   component: PrivacyPage,
 });
 

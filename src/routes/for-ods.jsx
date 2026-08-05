@@ -29,8 +29,16 @@ import { ODIntakeForm } from "@/components/ODIntakeForm";
 import { cn } from "@/lib/utils";
 import { ConfidentialitySection } from "@/components/ConfidentialitySection";
 import { InteractiveRoadmap } from "@/components/Illustrations";
+import { buildSeoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/for-ods")({
+  head: () =>
+    buildSeoHead({
+      title: "For Optometrists",
+      description:
+        "Free, confidential career help for ODs and students — resume review, salary guidance, offer comparison, contract education, and job matching.",
+      path: "/for-ods",
+    }),
   component: ForODs,
 });
 

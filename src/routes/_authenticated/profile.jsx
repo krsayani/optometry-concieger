@@ -56,12 +56,20 @@ const STATES = [
   "Open to Anywhere"
 ];
 
+import { buildSeoHead } from "@/lib/seo";
+
 export const Route = createFileRoute("/_authenticated/profile")({
   validateSearch: (search) => ({
     tab: search.tab || "account",
     subtab: search.subtab || null,
   }),
-  head: () => ({ meta: [{ title: "Your Profile · Optometry Concierge" }] }),
+  head: () =>
+    buildSeoHead({
+      title: "Your Profile",
+      description: "Manage your Optometry Concierge profile.",
+      path: "/profile",
+      noindex: true,
+    }),
   component: ProfilePage,
 });
 

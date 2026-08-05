@@ -2,7 +2,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SiteLayout } from "@/layouts/SiteLayout";
 import { FileText, ShieldCheck, Scale, Lock } from "lucide-react";
 
+import { buildSeoHead } from "@/lib/seo";
+
 export const Route = createFileRoute("/terms")({
+  head: () =>
+    buildSeoHead({
+      title: "Terms of Service",
+      description:
+        "Terms of Service for using Optometry Concierge, the Doctor owned and led optometry career platform.",
+      path: "/terms",
+    }),
   component: TermsPage,
 });
 

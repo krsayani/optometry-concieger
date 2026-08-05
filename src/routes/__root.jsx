@@ -5,10 +5,13 @@ import {
   createRootRouteWithContext,
   useRouter,
   useNavigate,
+  HeadContent,
 } from "@tanstack/react-router";
 import { Toaster, toast } from "sonner";
 import { useEffect } from "react";
+import { createPortal } from "react-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { buildSeoHead } from "@/lib/seo";
 
 import { AuthProvider } from "../context/AuthContext";
 
@@ -73,6 +76,11 @@ function ErrorComponent({ error, reset }) {
 }
 
 export const Route = createRootRouteWithContext()({
+  head: () =>
+    buildSeoHead({
+      title: "Optometry Concierge — From graduation to great offer",
+      path: "/",
+    }),
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
   errorComponent: ErrorComponent,
@@ -132,6 +140,9 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
+        {typeof document !== "undefined"
+          ? createPortal(<HeadContent />, document.head)
+          : null}
         <Outlet />
         <Toaster position="top-center" richColors closeButton />
       </AuthProvider>

@@ -3,7 +3,16 @@ import { SiteLayout } from "@/layouts/SiteLayout";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+import { buildSeoHead } from "@/lib/seo";
+
 export const Route = createFileRoute("/resources")({
+  head: () =>
+    buildSeoHead({
+      title: "Resources",
+      description:
+        "Optometry Concierge resource library for career guidance, contracts, and private practice insights — coming soon.",
+      path: "/resources",
+    }),
   component: Resources,
 });
 
