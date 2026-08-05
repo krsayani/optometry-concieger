@@ -36,8 +36,8 @@ export function Footer() {
             </h4>
             <nav className="flex flex-col gap-4">
               <Link to="/" className="text-sm font-bold hover:text-accent transition-colors">Home</Link>
-              <Link to="/for-ods" className="text-sm font-bold hover:text-accent transition-colors">For ODs</Link>
-              <Link to="/for-practices" className="text-sm font-bold hover:text-accent transition-colors">For Practices</Link>
+              <Link to="/for-ods" hash="intake" className="text-sm font-bold hover:text-accent transition-colors">For ODs</Link>
+              <Link to="/for-practices" hash="intake" className="text-sm font-bold hover:text-accent transition-colors">For Practices</Link>
               <Link to="/how-it-works" className="text-sm font-bold hover:text-accent transition-colors">How It Works</Link>
             </nav>
           </div>

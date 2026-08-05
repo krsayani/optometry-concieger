@@ -93,10 +93,10 @@ function Home() {
             </p>
             <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 px-2">
               <Button asChild size="lg" className="h-12 md:h-14 rounded-full border-none bg-accent px-8 md:px-10 text-base md:text-lg font-bold text-accent-foreground shadow-elevated transition-all hover:bg-accent/90 hover:shadow-elevated">
-                <Link to="/for-ods">Get Free Career Help</Link>
+                <Link to="/for-ods" hash="intake">Get Free Career Help</Link>
               </Button>
               <Button asChild size="lg" className="h-12 md:h-14 rounded-full border border-white/25 bg-white/10 px-8 md:px-10 text-base md:text-lg font-bold text-white backdrop-blur-md transition-all hover:bg-white/20 hover:border-white/40">
-                <Link to="/for-practices">Hire an OD</Link>
+                <Link to="/for-practices" hash="intake">Hire an OD</Link>
               </Button>
             </div>
           </div>
@@ -260,7 +260,7 @@ function Home() {
 
           <div className="mt-20 text-center">
                  <Button asChild size="lg" className="rounded-full px-12 h-18 text-xl font-black bg-white text-primary shadow-elevated transition-all hover:scale-105 hover:bg-white/90">
-               <Link to="/for-ods">Get Started Today</Link>
+               <Link to="/for-ods" hash="intake">Get Started Today</Link>
              </Button>
           </div>
         </div>
@@ -404,7 +404,7 @@ function Home() {
             </p>
             <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4">
               <Button asChild size="lg" className="h-12 md:h-14 rounded-full px-8 md:px-10 text-base font-bold bg-accent hover:bg-accent/90 text-accent-foreground border-none shadow-elevated">
-                <Link to="/for-ods">Get Started Now</Link>
+                <Link to="/for-ods" hash="intake">Get Started Now</Link>
               </Button>
               <Button asChild size="lg" className="h-12 md:h-14 rounded-full px-8 md:px-10 text-base font-bold bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20">
                 <Link to="/contact">Talk to a Recruiter</Link>

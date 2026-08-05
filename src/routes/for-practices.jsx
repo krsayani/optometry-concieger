@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteLayout } from "@/layouts/SiteLayout";
 import {
@@ -71,6 +71,14 @@ function FAQItem({ question, answer }) {
 }
 
 function ForPractices() {
+  useEffect(() => {
+    if (window.location.hash === "#intake") {
+      requestAnimationFrame(() => {
+        document.getElementById("intake")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+  }, []);
+
   return (
     <SiteLayout>
       {/* Hero Section - Elevated & Professional */}
@@ -221,6 +229,36 @@ function ForPractices() {
         </div>
       </section>
 
+      {/* Create Profile Form — top of page */}
+      <section id="intake" className="container-page py-14 md:py-20 bg-muted/40 rounded-[2rem] md:rounded-[3rem] my-10 md:my-14 scroll-mt-24">
+         <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-10 md:mb-14">
+              <span className="section-eyebrow">Get Started</span>
+              <h2 className="text-3xl md:text-5xl font-black tracking-tight text-foreground leading-tight mb-4">
+                Create a <span className="text-gradient">Profile</span>
+              </h2>
+              <p className="mt-2 text-base text-muted-foreground font-medium max-w-2xl mx-auto leading-relaxed">
+                Take the first step toward finding your next great associate. Our team will follow up within 24 hours.
+              </p>
+            </div>
+
+            <div className="bg-card border border-border rounded-2xl md:rounded-[2.5rem] p-6 md:p-12 shadow-elevated">
+               <PracticeIntakeForm />
+               <div className="text-sm text-left border-t border-border mt-12 pt-8">
+                  <p className="font-black text-foreground uppercase tracking-widest flex items-center gap-3 mb-3">
+                    <Lock className="h-5 w-5 text-primary" />
+                    100% Confidential Search
+                  </p>
+                  <p className="text-muted-foreground font-medium leading-relaxed">
+                    We never post your position on public job boards. Your practice details are
+                    only shared with candidates after they have been vetted and you have
+                    approved the introduction.
+                  </p>
+               </div>
+            </div>
+         </div>
+      </section>
+
       {/* Practice Benefits Section */}
       <section className="relative bg-background py-20 md:py-32 overflow-hidden">
         <img
@@ -353,34 +391,6 @@ function ForPractices() {
          </div>
       </section>
 
-      {/* Intake Form Section - Light */}
-      <section id="intake" className="container-page py-20 md:py-32 bg-muted/40 rounded-[3rem] mb-16 mt-16">
-         <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-16">
-              <span className="section-eyebrow">Step 01</span>
-              <h2 className="text-4xl md:text-6xl font-black tracking-tight text-foreground leading-tight md:leading-[0.9] mb-8">Submit a <br /><span className="text-gradient">Hiring Request</span></h2>
-              <p className="mt-4 text-lg text-muted-foreground font-medium max-w-2xl mx-auto leading-relaxed">
-                Take the first step toward finding your next great associate. Our team will follow up within 24 hours.
-              </p>
-            </div>
-
-            <div className="bg-card border border-border rounded-[2rem] p-6 md:p-12 shadow-elevated">
-               <PracticeIntakeForm />
-
-               <div className="text-sm text-left border-t border-border mt-16 pt-10">
-                  <p className="font-black text-foreground uppercase tracking-widest flex items-center gap-3 mb-4">
-                    <Lock className="h-5 w-5 text-primary" />
-                    100% Confidential Search
-                  </p>
-                  <p className="text-muted-foreground font-medium leading-relaxed">
-                    We never post your position on public job boards. Your practice details are
-                    only shared with candidates after they have been vetted and you have
-                    approved the introduction.
-                  </p>
-               </div>
-            </div>
-         </div>
-      </section>
     </SiteLayout>
   );
 }

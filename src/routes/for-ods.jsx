@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteLayout } from "@/layouts/SiteLayout";
 import {
@@ -76,6 +76,14 @@ function FAQItem({ question, answer }) {
 
 function ForODs() {
   const [audience, setAudience] = useState("new-grad"); // 'new-grad' or 'experienced'
+
+  useEffect(() => {
+    if (window.location.hash === "#intake") {
+      requestAnimationFrame(() => {
+        document.getElementById("intake")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+  }, []);
 
   return (
     <SiteLayout>
@@ -250,6 +258,36 @@ function ForODs() {
         </div>
       </section>
 
+      {/* Create Profile Form — top of page */}
+      <section id="intake" className="container-page py-14 md:py-20 bg-muted/40 rounded-[2rem] md:rounded-[3rem] my-10 md:my-14 scroll-mt-24">
+         <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-10 md:mb-14">
+              <span className="section-eyebrow">Get Started</span>
+              <h2 className="text-3xl md:text-5xl font-black tracking-tight text-foreground leading-tight mb-4">
+                Create a <span className="text-gradient">Profile</span>
+              </h2>
+              <p className="mt-2 text-base text-muted-foreground font-medium max-w-2xl mx-auto leading-relaxed">
+                Take the first step toward your next chapter. Our onboarding process is 100% confidential and takes less than 5 minutes.
+              </p>
+            </div>
+
+            <div className="bg-card border border-border rounded-2xl md:rounded-[2.5rem] p-6 md:p-12 shadow-elevated">
+               <ODIntakeForm />
+               <div className="text-sm text-left border-t border-border mt-12 pt-8">
+                  <p className="font-black text-foreground uppercase tracking-widest flex items-center gap-3 mb-3">
+                    <ShieldCheck className="h-5 w-5 text-primary" />
+                    100% Confidentiality Guarantee
+                  </p>
+                  <p className="text-muted-foreground font-medium leading-relaxed">
+                    Your information is never shared with any practice without your explicit consent.
+                    Practices cannot browse candidate profiles or see who has signed up.
+                    We make the introduction — you decide if and when your name goes forward.
+                  </p>
+               </div>
+            </div>
+         </div>
+      </section>
+
       {/* Visual Roadmap Section - Updated to 6 Steps */}
       <section className="bg-muted/40 pt-16 pb-20 md:pt-24 md:pb-32 overflow-hidden">
         <div className="container-page">
@@ -328,33 +366,6 @@ function ForODs() {
         </div>
       </section>
 
-      {/* Intake Form Section */}
-      <section id="intake" className="container-page py-20 md:py-32 bg-muted/40 rounded-[3rem] mb-16 scroll-mt-24">
-         <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-16">
-              <span className="section-eyebrow">Get Started</span>
-              <h2 className="text-3xl md:text-5xl font-black tracking-tight text-foreground leading-tight md:leading-[1.1] mb-8">Create Your <br /><span className="text-gradient">Free Profile</span></h2>
-              <p className="mt-4 text-base text-muted-foreground font-medium max-w-2xl mx-auto leading-relaxed">
-                Take the first step toward your next chapter. Our onboarding process is 100% confidential and takes less than 5 minutes.
-              </p>
-            </div>
-
-            <div className="bg-card border border-border rounded-[3rem] p-8 md:p-20 shadow-elevated">
-               <ODIntakeForm />
-               <div className="text-sm text-left border-t border-border mt-16 pt-10">
-                  <p className="font-black text-foreground uppercase tracking-widest flex items-center gap-3 mb-4">
-                    <ShieldCheck className="h-5 w-5 text-primary" />
-                    100% Confidentiality Guarantee
-                  </p>
-                  <p className="text-muted-foreground font-medium leading-relaxed">
-                    Your information is never shared with any practice without your explicit consent.
-                    Practices cannot browse candidate profiles or see who has signed up.
-                    We make the introduction — you decide if and when your name goes forward.
-                  </p>
-               </div>
-            </div>
-         </div>
-      </section>
     </SiteLayout>
   );
 }

@@ -52,8 +52,8 @@ export function Navbar() {
   const isPractice = roles.includes("employer");
 
   const navLinks = [
-    { to: "/for-ods", label: "The Optometrist", show: !isDoctor && !isSuperAdmin },
-    { to: "/for-practices", label: "The Practice", show: !isPractice && !isSuperAdmin },
+    { to: "/for-ods", hash: "intake", label: "The Optometrist", show: !isDoctor && !isSuperAdmin },
+    { to: "/for-practices", hash: "intake", label: "The Practice", show: !isPractice && !isSuperAdmin },
   ];
 
   const NavItems = ({ onClick }) => (
@@ -70,7 +70,7 @@ export function Navbar() {
               pathname.startsWith(l.to) && "bg-primary/5 border-primary/40",
             )}
           >
-            <Link to={l.to} onClick={onClick}>
+            <Link to={l.to} hash={l.hash} onClick={onClick}>
               {l.label}
             </Link>
           </Button>
@@ -195,6 +195,7 @@ export function Navbar() {
                           <Link
                             key={l.to}
                             to={l.to}
+                            hash={l.hash}
                             onClick={() => setOpen(false)}
                             className={cn(
                               "flex items-center px-1 text-base font-semibold transition-colors hover:text-primary",
