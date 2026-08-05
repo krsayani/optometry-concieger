@@ -1,5 +1,7 @@
+import { Resend } from "resend";
+
 export const ADMIN_EMAIL =
-  process.env.CONTACT_TO_EMAIL || "Admin@optometryconcierge.com";
+  process.env.CONTACT_TO_EMAIL || "admin@optometryconcierge.com";
 
 export function readJsonBody(req) {
   return new Promise((resolve, reject) => {
@@ -27,73 +29,49 @@ export function readJsonBody(req) {
   });
 }
 
+function textToHtml(text) {
+  const escaped = String(text || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+  return `<div style="font-family:Arial,sans-serif;font-size:14px;line-height:1.6;color:#051c3f;white-space:pre-wrap;">${escaped}</div>`;
+}
+
 /**
- * Send an email to the admin inbox via Resend (preferred) or FormSubmit.
- * @param {{ subject: string, replyTo?: string, name?: string, text: string, fields?: Record<string, string> }} options
+ * Send an email to the admin inbox via Resend.
+ * @param {{ subject: string, replyTo?: string, name?: string, text: string, fields?: Record<string, string>, html?: string }} options
  */
 export async function sendAdminEmail({
   subject,
   replyTo,
-  name = "Website Notification",
   text,
-  fields = {},
+  html,
 }) {
-  if (process.env.RESEND_API_KEY) {
-    return sendWithResend({ subject, replyTo, text });
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    throw new Error(
+      "Missing RESEND_API_KEY. Add your Resend API key to the environment.",
+    );
   }
-  return sendWithFormSubmit({ subject, replyTo, name, text, fields });
-}
 
-async function sendWithResend({ subject, replyTo, text }) {
+  const resend = new Resend(apiKey);
   const from =
-    process.env.CONTACT_FROM_EMAIL ||
-    "Optometry Concierge <onboarding@resend.dev>";
+    process.env.CONTACT_FROM_EMAIL || "Optometry Concierge <onboarding@resend.dev>";
 
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from,
-      to: [ADMIN_EMAIL],
-      reply_to: replyTo || undefined,
-      subject,
-      text,
-    }),
+  const { data, error } = await resend.emails.send({
+    from,
+    to: [ADMIN_EMAIL],
+    replyTo: replyTo || undefined,
+    subject,
+    text,
+    html: html || textToHtml(text),
   });
 
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(data?.message || "Resend failed to send email");
+  if (error) {
+    throw new Error(error.message || "Resend failed to send email");
   }
-  return data;
-}
 
-async function sendWithFormSubmit({ subject, replyTo, name, text, fields }) {
-  const response = await fetch(`https://formsubmit.co/ajax/${ADMIN_EMAIL}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-    body: JSON.stringify({
-      name,
-      email: replyTo || ADMIN_EMAIL,
-      _subject: subject,
-      _replyto: replyTo || ADMIN_EMAIL,
-      _template: "table",
-      _captcha: "false",
-      ...fields,
-      details: text,
-    }),
-  });
-
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok || data.success === "false" || data.success === false) {
-    throw new Error(data.message || "Unable to deliver email");
-  }
   return data;
 }
 
