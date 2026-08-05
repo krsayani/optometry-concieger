@@ -351,6 +351,11 @@ function Home() {
                 author: "Hiring Practice",
                 role: "",
               },
+              {
+                quote: "I was relocating to a new state and did not know where to start. Optometry Concierge helped me understand the local market, refine my resume, and connect with practices that actually fit my goals.",
+                author: "Relocating Optometrist",
+                role: "5 Years in Practice",
+              },
             ].map((item, i) => (
               <div
                 key={i}
