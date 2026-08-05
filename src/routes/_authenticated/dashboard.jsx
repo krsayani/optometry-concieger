@@ -41,7 +41,7 @@ function Dashboard() {
     }
   }, [loading, roles, navigate]);
 
-  if (loading || (user && roles.length === 0)) {
+  if (loading) {
     return (
       <SiteLayout>
         <PageLoader />
@@ -53,6 +53,43 @@ function Dashboard() {
 
   const isOD = roles.includes("od");
   const isPractice = roles.includes("employer");
+
+  if (!isOD && !isPractice) {
+    return (
+      <SiteLayout>
+        <div className="container-page py-10 md:py-20">
+          <div className="mx-auto max-w-2xl rounded-[2.5rem] border border-border bg-card p-8 md:p-12 text-center shadow-soft">
+            <div className="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-2xl bg-primary/5 text-primary">
+              <Sparkles className="h-10 w-10" />
+            </div>
+            <h2 className="mb-4 text-2xl md:text-3xl font-bold text-foreground">
+              Finish setting up your account
+            </h2>
+            <p className="mb-8 text-lg leading-relaxed text-muted-foreground">
+              Your login works, but we still need a career or practice profile
+              before your dashboard can load matching updates.
+            </p>
+            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+              <Button asChild className="h-14 w-full rounded-full px-10 text-base font-bold sm:w-auto">
+                <Link to="/for-ods" hash="intake">
+                  Create OD Profile <ChevronRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                className="h-14 w-full rounded-full px-8 sm:w-auto"
+              >
+                <Link to="/for-practices" hash="intake">
+                  Create Practice Profile
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </SiteLayout>
+    );
+  }
 
   return (
     <SiteLayout>

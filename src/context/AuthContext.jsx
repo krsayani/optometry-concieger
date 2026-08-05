@@ -75,13 +75,33 @@ export function AuthProvider({ children }) {
 
     let { profile, role, roles } = await fetchProfileAndRoles(user.id);
 
-    // Retry once for new signups
+    // Retry once for new signups (profile trigger can lag slightly)
     if (!profile && roles.length === 0) {
-      await new Promise(r => setTimeout(r, 1500));
+      await new Promise((r) => setTimeout(r, 1500));
       const retry = await fetchProfileAndRoles(user.id);
       profile = retry.profile;
       role = retry.role;
       roles = retry.roles;
+    }
+
+    // Heal accounts that have role metadata but no user_roles row yet
+    // (common after fresh project setup / signup without intake).
+    if (roles.length === 0) {
+      const metaRole = user.user_metadata?.role;
+      if (metaRole === "od" || metaRole === "employer") {
+        try {
+          await supabase.rpc("ensure_user_role", {
+            target_user_id: user.id,
+            target_role: metaRole,
+          });
+          const healed = await fetchProfileAndRoles(user.id);
+          profile = healed.profile ?? profile;
+          role = healed.role;
+          roles = healed.roles;
+        } catch (error) {
+          console.error("Failed to sync user role from metadata:", error);
+        }
+      }
     }
 
     lastLoadedUserId.current = user.id;
