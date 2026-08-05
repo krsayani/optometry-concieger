@@ -101,7 +101,7 @@ function About() {
               <Link to="/for-ods" hash="intake">Create Your Free Profile <ArrowRight className="ml-2 h-5 w-5" /></Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="rounded-full px-8 h-12 md:h-14 text-base font-bold">
-              <Link to="/contact">Talk to a Recruiter</Link>
+              <Link to="/contact">Connect With Us</Link>
             </Button>
           </div>
         </div>
