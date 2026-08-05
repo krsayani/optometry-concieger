@@ -19,11 +19,17 @@ import { UserAvatar } from "@/components/UserAvatar";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 
-function BrandLogo() {
+function BrandLogo({ onClick }) {
   return (
-    <Link to="/" className="flex items-center gap-2">
-      <span className="text-lg font-black tracking-tighter uppercase text-foreground">
-        Optometry <span className="text-accent">Concierge</span>
+    <Link to="/" onClick={onClick} className="flex items-center shrink-0">
+      <img
+        src="/logo.png"
+        alt="Optometry Concierge"
+        className="h-10 w-10 md:h-11 md:w-11 rounded-lg object-cover shadow-sm ring-1 ring-border/60"
+      />
+      <span className="ml-2.5 text-sm md:text-base font-black tracking-tighter uppercase text-foreground leading-tight">
+        Optometry
+        <span className="block text-accent -mt-0.5">Concierge</span>
       </span>
     </Link>
   );
@@ -154,7 +160,7 @@ export function Navbar() {
               <SheetTitle className="sr-only">Menu</SheetTitle>
               <div className="flex flex-col h-full">
                 <div className="p-6 border-b border-border">
-                  <BrandLogo />
+                  <BrandLogo onClick={() => setOpen(false)} />
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-6 space-y-8">

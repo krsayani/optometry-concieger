@@ -117,9 +117,15 @@ function AuthPage() {
       <div className="w-full max-w-[520px]">
         {/* Brand Logo */}
         <div className="mb-10 text-center">
-          <Link to="/" className="inline-flex items-center gap-2">
-            <span className="text-2xl font-black uppercase tracking-tighter text-primary">
-              Optometry <span className="text-accent">Concierge</span>
+          <Link to="/" className="inline-flex items-center gap-3">
+            <img
+              src="/logo.png"
+              alt="Optometry Concierge"
+              className="h-12 w-12 rounded-xl object-cover shadow-soft ring-1 ring-border/60"
+            />
+            <span className="text-xl font-black uppercase tracking-tighter text-primary leading-tight text-left">
+              Optometry
+              <span className="block text-accent">Concierge</span>
             </span>
           </Link>
         </div>

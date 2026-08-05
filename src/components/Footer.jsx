@@ -9,9 +9,15 @@ export function Footer() {
         <div className="grid grid-cols-1 gap-10 md:gap-12 md:grid-cols-4 lg:grid-cols-5">
           {/* Brand/About */}
           <div className="space-y-5 lg:col-span-2">
-             <Link to="/" className="flex items-center gap-2 mb-2">
-                <span className="text-xl md:text-2xl font-black tracking-tighter uppercase text-white">
-                  Optometry <span className="text-accent">Concierge</span>
+             <Link to="/" className="inline-flex items-center gap-3 mb-2">
+                <img
+                  src="/logo.png"
+                  alt="Optometry Concierge"
+                  className="h-12 w-12 rounded-xl object-cover ring-1 ring-white/15"
+                />
+                <span className="text-xl md:text-2xl font-black tracking-tighter uppercase text-white leading-tight">
+                  Optometry
+                  <span className="block text-accent">Concierge</span>
                 </span>
              </Link>
              <p className="text-sm md:text-base font-medium text-white/70 leading-relaxed max-w-sm">
