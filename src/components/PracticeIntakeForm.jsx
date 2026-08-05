@@ -41,6 +41,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { checkEmailAvailability } from "@/services/profiles";
 import { notifyAdminOfIntake } from "@/lib/notify-intake";
+import {
+  sendAccountInvite,
+  storePendingIntake,
+} from "@/lib/account-invite";
 import { isAuthThrottled, isExistingAccountError } from "@/lib/auth-errors";
 import { CaptchaChallenge } from "@/components/CaptchaChallenge";
 
@@ -232,58 +236,44 @@ export function PracticeIntakeForm() {
         ownershipTrack: data.ownershipTrack,
         urgency: data.urgency,
         anythingElse: data.anythingElse,
+        consent: data.agreeToTerms && data.agreeToFee,
       };
 
-      const finishWithoutAccount = async () => {
+      // New visitors: notify admin + email create-account invite
+      if (!user) {
+        storePendingIntake("practice", practicePayload);
         const emailed = await notifyAdminOfIntake("practice", practicePayload);
+        const invited = await sendAccountInvite({
+          email: data.email,
+          name: data.contactName || data.practiceName,
+          type: "practice",
+        });
+
         setSubmitted(true);
         setCaptchaResetKey((k) => k + 1);
         setCaptchaVerified(false);
         toast.success("Hiring request submitted!");
-        toast.info(
-          emailed
-            ? "Our team has your information and will follow up shortly."
-            : "Please email Admin@optometryconcierge.com so we can finish setup.",
-        );
-      };
-
-      let userId = user?.id;
-
-      // 1. Create account if not logged in (best-effort — Supabase may throttle confirmation emails)
-      if (!user) {
-        const tempPassword = Math.random().toString(36).slice(-12) + "A1!";
-
-        const { data: authData, error: authError } = await supabase.auth.signUp({
-          email: data.email,
-          password: tempPassword,
-          options: {
-            emailRedirectTo: `${window.location.origin}/reset-password`,
-            data: {
-              full_name: data.contactName,
-              role: "employer",
-            },
-          },
-        });
-
-        if (authError) {
-          if (isExistingAccountError(authError)) throw authError;
-          await finishWithoutAccount();
-          return;
+        if (invited) {
+          toast.info("Check your email to create your account password.");
+        } else if (emailed) {
+          toast.info(
+            "Our team has your information. Visit Create Account from the sign-in page if you don’t see an email.",
+          );
+        } else {
+          toast.info(
+            "Please email Admin@optometryconcierge.com so we can finish setup.",
+          );
         }
-
-        userId = authData.user?.id;
-        if (!userId) {
-          await finishWithoutAccount();
-          return;
-        }
-      } else {
-        await supabase.rpc("ensure_user_role", {
-          target_user_id: userId,
-          target_role: "employer",
-        });
+        return;
       }
 
-      // 2. Save intake response
+      // Logged-in users: save directly
+      const userId = user.id;
+      await supabase.rpc("ensure_user_role", {
+        target_user_id: userId,
+        target_role: "employer",
+      });
+
       const { error } = await supabase.from("employer_intake_responses").insert({
         user_id: userId,
         contact_name: data.contactName,
@@ -311,10 +301,7 @@ export function PracticeIntakeForm() {
         consent: data.agreeToTerms && data.agreeToFee,
       });
 
-      if (error) {
-        await finishWithoutAccount();
-        return;
-      }
+      if (error) throw error;
 
       const emailed = await notifyAdminOfIntake("practice", practicePayload);
 
@@ -326,48 +313,16 @@ export function PracticeIntakeForm() {
         toast.warning("Request saved, but admin email notification failed.", {
           description: "Please email Admin@optometryconcierge.com so we know you submitted.",
         });
-      } else if (!user) {
-        toast.info("Check your email to verify your account and set your password.");
       }
     } catch (error) {
       console.error("Error submitting employer intake:", error);
 
-      if (isAuthThrottled(error)) {
-        await notifyAdminOfIntake("practice", {
-          contactName: data.contactName,
-          practiceName: data.practiceName,
-          email: data.email,
-          phone: data.phone,
-          location: data.location,
-          practiceType: data.practiceType,
-          numODs: data.numODs,
-          positionType: data.positionType,
-          salaryRange: data.salaryRange,
-          productionBonus: data.productionBonus,
-          signOnBonus: data.signOnBonus,
-          relocationAssistance: data.relocationAssistance,
-          benefits: data.benefits,
-          schedule: data.schedule,
-          patientVolume: data.patientVolume,
-          primaryCareType: data.primaryCareType,
-          newGradFriendly: data.newGradFriendly,
-          mentorshipAvailable: data.mentorshipAvailable,
-          equipmentTech: data.equipmentTech,
-          ownershipTrack: data.ownershipTrack,
-          urgency: data.urgency,
-          anythingElse: data.anythingElse,
-        });
-        setSubmitted(true);
-        setCaptchaResetKey((k) => k + 1);
-        setCaptchaVerified(false);
-        toast.success("Hiring request submitted!");
-        toast.info("Our team has your information and will follow up shortly.");
-        return;
-      }
-
       let message = "We couldn't submit your request. Please check your information and try again.";
       if (isExistingAccountError(error)) {
         message = "An account with this email already exists. Please sign in instead.";
+      } else if (isAuthThrottled(error)) {
+        message =
+          "Please check your email for an account invite, or try again in a few minutes.";
       }
 
       setCaptchaResetKey((k) => k + 1);

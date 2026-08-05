@@ -38,6 +38,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { checkEmailAvailability } from "@/services/profiles";
 import { notifyAdminOfIntake } from "@/lib/notify-intake";
+import {
+  sendAccountInvite,
+  storePendingIntake,
+} from "@/lib/account-invite";
 import { isAuthThrottled, isExistingAccountError } from "@/lib/auth-errors";
 import { CaptchaChallenge } from "@/components/CaptchaChallenge";
 
@@ -324,59 +328,44 @@ export function ODIntakeForm() {
         resumeUrl,
       });
 
-      const finishWithoutAccount = async () => {
-        const emailed = await notifyAdminOfIntake("od", buildOdNotifyPayload());
+      // New visitors: notify admin, email them a create-account link, save pending intake for after signup
+      if (!user) {
+        const payload = buildOdNotifyPayload();
+        storePendingIntake("od", { ...payload, consent: data.consent });
+        const emailed = await notifyAdminOfIntake("od", payload);
+        const invited = await sendAccountInvite({
+          email: data.email,
+          name: `${data.firstName} ${data.lastName}`.trim(),
+          type: "od",
+        });
+
         setSubmitted(true);
         setCaptchaResetKey((k) => k + 1);
         setCaptchaVerified(false);
         toast.success("Profile submitted successfully!");
-        toast.info(
-          emailed
-            ? "Our team has your information and will follow up shortly."
-            : "Please email Admin@optometryconcierge.com so we can finish setup.",
-        );
-      };
-
-      let userId = user?.id;
-
-      // 1. Create account if not logged in (best-effort — Supabase may throttle confirmation emails)
-      if (!user) {
-        const tempPassword = Math.random().toString(36).slice(-12) + "A1!";
-
-        const { data: authData, error: authError } = await supabase.auth.signUp({
-          email: data.email,
-          password: tempPassword,
-          options: {
-            emailRedirectTo: `${window.location.origin}/reset-password`,
-            data: {
-              full_name: `${data.firstName} ${data.lastName}`,
-              role: "od",
-            },
-          },
-        });
-
-        if (authError) {
-          if (isExistingAccountError(authError)) throw authError;
-          // Never block the profile lead on auth email throttling
-          await finishWithoutAccount();
-          return;
+        if (invited) {
+          toast.info("Check your email to create your account password.");
+        } else if (emailed) {
+          toast.info(
+            "Our team has your information. Visit Create Account from the sign-in page if you don’t see an email.",
+          );
+        } else {
+          toast.info(
+            "Please email Admin@optometryconcierge.com so we can finish setup.",
+          );
         }
-
-        userId = authData.user?.id;
-        if (!userId) {
-          await finishWithoutAccount();
-          return;
-        }
-      } else {
-        await supabase.rpc("ensure_user_role", {
-          target_user_id: userId,
-          target_role: "od",
-        });
+        return;
       }
 
-      // 2. Upload resume
+      // Logged-in users: save profile directly
+      const userId = user.id;
+      await supabase.rpc("ensure_user_role", {
+        target_user_id: userId,
+        target_role: "od",
+      });
+
       let finalResumeUrl = null;
-      if (resumeFile && userId) {
+      if (resumeFile) {
         setIsUploading(true);
         const fileExt = resumeFile.name.split(".").pop();
         const fileName = `${userId}/resume-${Date.now()}.${fileExt}`;
@@ -399,7 +388,6 @@ export function ODIntakeForm() {
         }
       }
 
-      // 3. Save intake response
       const { error: dbError } = await supabase.from("od_intake_responses").insert({
         user_id: userId,
         first_name: data.firstName,
@@ -430,10 +418,7 @@ export function ODIntakeForm() {
         resume_url: finalResumeUrl,
       });
 
-      if (dbError) {
-        await finishWithoutAccount();
-        return;
-      }
+      if (dbError) throw dbError;
 
       const emailed = await notifyAdminOfIntake(
         "od",
@@ -448,51 +433,16 @@ export function ODIntakeForm() {
         toast.warning("Profile saved, but admin email notification failed.", {
           description: "Please email Admin@optometryconcierge.com so we know you submitted.",
         });
-      } else if (!user) {
-        toast.info("Check your email to verify your account and set your password.");
       }
     } catch (error) {
       console.error("Error submitting intake:", error);
 
-      if (isAuthThrottled(error)) {
-        await notifyAdminOfIntake("od", {
-          firstName: data.firstName,
-          lastName: data.lastName,
-          email: data.email,
-          phone: data.phone,
-          school: data.school,
-          otherSchool: data.otherSchool,
-          gradYear: data.gradYear,
-          licenseStatus: data.licenseStatus,
-          licenseStates: data.licenseStates,
-          yearsInPractice: data.yearsInPractice,
-          completedResidency: data.completedResidency,
-          residencyType: data.residencyType,
-          preferredStates: data.preferredStates,
-          preferredCities: data.preferredCities,
-          openToRelocation: data.openToRelocation,
-          practiceSetting: data.practiceSetting,
-          practiceTypePreference: data.practiceTypePreference,
-          clinicalInterests: data.clinicalInterests,
-          salaryExpectation: data.salaryExpectation,
-          targetStartDate: data.targetStartDate,
-          jobPriorities: data.jobPriorities,
-          interestInOwnership: data.interestInOwnership,
-          positionType: data.positionType,
-          anythingElse: data.anythingElse,
-          resumeUrl: null,
-        });
-        setSubmitted(true);
-        setCaptchaResetKey((k) => k + 1);
-        setCaptchaVerified(false);
-        toast.success("Profile submitted successfully!");
-        toast.info("Our team has your information and will follow up shortly.");
-        return;
-      }
-
       let message = "We couldn't create your profile. Please check your information and try again.";
       if (isExistingAccountError(error)) {
         message = "An account with this email already exists. Please sign in instead.";
+      } else if (isAuthThrottled(error)) {
+        message =
+          "Please check your email for an account invite, or try again in a few minutes.";
       }
 
       setCaptchaResetKey((k) => k + 1);

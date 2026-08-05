@@ -8,188 +8,507 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as HowItWorksRouteImport } from './routes/how-it-works'
-import { Route as ForOdsRouteImport } from './routes/for-ods'
-import { Route as ForPracticesRouteImport } from './routes/for-practices'
-import { Route as ContactRouteImport } from './routes/contact'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AdminRouteImport } from './routes/admin'
-import { Route as AboutRouteImport } from './routes/about'
-import { Route as GetStartedRouteImport } from './routes/get-started'
-import { Route as ResourcesRouteImport } from './routes/resources'
-import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as TermsRouteImport } from './routes/terms'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as AdminUsersRouteImport } from './routes/admin.users'
-import { Route as AdminOdIntakesRouteImport } from './routes/admin.od-intakes'
-import { Route as AdminPracticeIntakesRouteImport } from './routes/admin.practice-intakes'
-import { Route as AdminMatchesRouteImport } from './routes/admin.matches'
-import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
-  getParentRoute: () => rootRouteImport,
-})
-
-const HowItWorksRoute = HowItWorksRouteImport.update({
-  id: '/how-it-works',
-  path: '/how-it-works',
-  getParentRoute: () => rootRouteImport,
-})
-
-const ForOdsRoute = ForOdsRouteImport.update({
-  id: '/for-ods',
-  path: '/for-ods',
-  getParentRoute: () => rootRouteImport,
-})
-
-const ForPracticesRoute = ForPracticesRouteImport.update({
-  id: '/for-practices',
-  path: '/for-practices',
-  getParentRoute: () => rootRouteImport,
-})
-
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => rootRouteImport,
-})
-
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => rootRouteImport,
-})
-
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-})
-
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => rootRouteImport,
-})
-
-const ResourcesRoute = ResourcesRouteImport.update({
-  id: '/resources',
-  path: '/resources',
-  getParentRoute: () => rootRouteImport,
-})
-
-const GetStartedRoute = GetStartedRouteImport.update({
-  id: '/get-started',
-  path: '/get-started',
-  getParentRoute: () => rootRouteImport,
-})
-
-const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => rootRouteImport,
-})
-
-const TermsRoute = TermsRouteImport.update({
-  id: '/terms',
-  path: '/terms',
-  getParentRoute: () => rootRouteImport,
-})
-
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
-  getParentRoute: () => rootRouteImport,
-})
+import { Route as rootRouteImport } from "./routes/__root";
+import { Route as IndexRouteImport } from "./routes/index";
+import { Route as AuthenticatedRouteRouteImport } from "./routes/_authenticated/route";
+import { Route as AboutRouteImport } from "./routes/about";
+import { Route as AdminRouteImport } from "./routes/admin";
+import { Route as AuthRouteImport } from "./routes/auth";
+import { Route as ContactRouteImport } from "./routes/contact";
+import { Route as CreateAccountRouteImport } from "./routes/create-account";
+import { Route as ForOdsRouteImport } from "./routes/for-ods";
+import { Route as ForPracticesRouteImport } from "./routes/for-practices";
+import { Route as GetStartedRouteImport } from "./routes/get-started";
+import { Route as HowItWorksRouteImport } from "./routes/how-it-works";
+import { Route as PrivacyRouteImport } from "./routes/privacy";
+import { Route as ResetPasswordRouteImport } from "./routes/reset-password";
+import { Route as ResourcesRouteImport } from "./routes/resources";
+import { Route as TermsRouteImport } from "./routes/terms";
+import { Route as AuthenticatedDashboardRouteImport } from "./routes/_authenticated/dashboard";
+import { Route as AuthenticatedProfileRouteImport } from "./routes/_authenticated/profile";
+import { Route as AdminIndexRouteImport } from "./routes/admin.index";
+import { Route as AdminMatchesRouteImport } from "./routes/admin.matches";
+import { Route as AdminOdIntakesRouteImport } from "./routes/admin.od-intakes";
+import { Route as AdminPracticeIntakesRouteImport } from "./routes/admin.practice-intakes";
+import { Route as AdminUsersRouteImport } from "./routes/admin.users";
 
 const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => rootRouteImport,
-})
-
-const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AdminRoute,
-})
-
-const AdminUsersRoute = AdminUsersRouteImport.update({
-  id: '/users',
-  path: '/users',
-  getParentRoute: () => AdminRoute,
-})
-
-const AdminOdIntakesRoute = AdminOdIntakesRouteImport.update({
-  id: '/od-intakes',
-  path: '/od-intakes',
-  getParentRoute: () => AdminRoute,
-})
-
-const AdminPracticeIntakesRoute = AdminPracticeIntakesRouteImport.update({
-  id: '/practice-intakes',
-  path: '/practice-intakes',
-  getParentRoute: () => AdminRoute,
-})
-
-const AdminMatchesRoute = AdminMatchesRouteImport.update({
-  id: '/matches',
-  path: '/matches',
-  getParentRoute: () => AdminRoute,
-})
-
-const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => AuthenticatedRouteRoute,
-})
-
+} as any);
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: "/_authenticated",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const AboutRoute = AboutRouteImport.update({
+  id: "/about",
+  path: "/about",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const AdminRoute = AdminRouteImport.update({
+  id: "/admin",
+  path: "/admin",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const AuthRoute = AuthRouteImport.update({
+  id: "/auth",
+  path: "/auth",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const ContactRoute = ContactRouteImport.update({
+  id: "/contact",
+  path: "/contact",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const CreateAccountRoute = CreateAccountRouteImport.update({
+  id: "/create-account",
+  path: "/create-account",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const ForOdsRoute = ForOdsRouteImport.update({
+  id: "/for-ods",
+  path: "/for-ods",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const ForPracticesRoute = ForPracticesRouteImport.update({
+  id: "/for-practices",
+  path: "/for-practices",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const GetStartedRoute = GetStartedRouteImport.update({
+  id: "/get-started",
+  path: "/get-started",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const HowItWorksRoute = HowItWorksRouteImport.update({
+  id: "/how-it-works",
+  path: "/how-it-works",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: "/privacy",
+  path: "/privacy",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: "/reset-password",
+  path: "/reset-password",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const ResourcesRoute = ResourcesRouteImport.update({
+  id: "/resources",
+  path: "/resources",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const TermsRoute = TermsRouteImport.update({
+  id: "/terms",
+  path: "/terms",
+  getParentRoute: () => rootRouteImport,
+} as any);
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+  id: "/dashboard",
+  path: "/dashboard",
   getParentRoute: () => AuthenticatedRouteRoute,
-})
+} as any);
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: "/profile",
+  path: "/profile",
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any);
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: "/",
+  path: "/",
+  getParentRoute: () => AdminRoute,
+} as any);
+const AdminMatchesRoute = AdminMatchesRouteImport.update({
+  id: "/matches",
+  path: "/matches",
+  getParentRoute: () => AdminRoute,
+} as any);
+const AdminOdIntakesRoute = AdminOdIntakesRouteImport.update({
+  id: "/od-intakes",
+  path: "/od-intakes",
+  getParentRoute: () => AdminRoute,
+} as any);
+const AdminPracticeIntakesRoute = AdminPracticeIntakesRouteImport.update({
+  id: "/practice-intakes",
+  path: "/practice-intakes",
+  getParentRoute: () => AdminRoute,
+} as any);
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: "/users",
+  path: "/users",
+  getParentRoute: () => AdminRoute,
+} as any);
 
-const AuthenticatedRouteRouteChildren = {
+export interface FileRoutesByFullPath {
+  "/": typeof IndexRoute;
+  "/about": typeof AboutRoute;
+  "/admin": typeof AdminRouteWithChildren;
+  "/auth": typeof AuthRoute;
+  "/contact": typeof ContactRoute;
+  "/create-account": typeof CreateAccountRoute;
+  "/for-ods": typeof ForOdsRoute;
+  "/for-practices": typeof ForPracticesRoute;
+  "/get-started": typeof GetStartedRoute;
+  "/how-it-works": typeof HowItWorksRoute;
+  "/privacy": typeof PrivacyRoute;
+  "/reset-password": typeof ResetPasswordRoute;
+  "/resources": typeof ResourcesRoute;
+  "/terms": typeof TermsRoute;
+  "/dashboard": typeof AuthenticatedDashboardRoute;
+  "/profile": typeof AuthenticatedProfileRoute;
+  "/admin/matches": typeof AdminMatchesRoute;
+  "/admin/od-intakes": typeof AdminOdIntakesRoute;
+  "/admin/practice-intakes": typeof AdminPracticeIntakesRoute;
+  "/admin/users": typeof AdminUsersRoute;
+  "/admin/": typeof AdminIndexRoute;
+}
+export interface FileRoutesByTo {
+  "/": typeof IndexRoute;
+  "/about": typeof AboutRoute;
+  "/auth": typeof AuthRoute;
+  "/contact": typeof ContactRoute;
+  "/create-account": typeof CreateAccountRoute;
+  "/for-ods": typeof ForOdsRoute;
+  "/for-practices": typeof ForPracticesRoute;
+  "/get-started": typeof GetStartedRoute;
+  "/how-it-works": typeof HowItWorksRoute;
+  "/privacy": typeof PrivacyRoute;
+  "/reset-password": typeof ResetPasswordRoute;
+  "/resources": typeof ResourcesRoute;
+  "/terms": typeof TermsRoute;
+  "/dashboard": typeof AuthenticatedDashboardRoute;
+  "/profile": typeof AuthenticatedProfileRoute;
+  "/admin/matches": typeof AdminMatchesRoute;
+  "/admin/od-intakes": typeof AdminOdIntakesRoute;
+  "/admin/practice-intakes": typeof AdminPracticeIntakesRoute;
+  "/admin/users": typeof AdminUsersRoute;
+  "/admin": typeof AdminIndexRoute;
+}
+export interface FileRoutesById {
+  __root__: typeof rootRouteImport;
+  "/": typeof IndexRoute;
+  "/_authenticated": typeof AuthenticatedRouteRouteWithChildren;
+  "/about": typeof AboutRoute;
+  "/admin": typeof AdminRouteWithChildren;
+  "/auth": typeof AuthRoute;
+  "/contact": typeof ContactRoute;
+  "/create-account": typeof CreateAccountRoute;
+  "/for-ods": typeof ForOdsRoute;
+  "/for-practices": typeof ForPracticesRoute;
+  "/get-started": typeof GetStartedRoute;
+  "/how-it-works": typeof HowItWorksRoute;
+  "/privacy": typeof PrivacyRoute;
+  "/reset-password": typeof ResetPasswordRoute;
+  "/resources": typeof ResourcesRoute;
+  "/terms": typeof TermsRoute;
+  "/_authenticated/dashboard": typeof AuthenticatedDashboardRoute;
+  "/_authenticated/profile": typeof AuthenticatedProfileRoute;
+  "/admin/matches": typeof AdminMatchesRoute;
+  "/admin/od-intakes": typeof AdminOdIntakesRoute;
+  "/admin/practice-intakes": typeof AdminPracticeIntakesRoute;
+  "/admin/users": typeof AdminUsersRoute;
+  "/admin/": typeof AdminIndexRoute;
+}
+export interface FileRouteTypes {
+  fileRoutesByFullPath: FileRoutesByFullPath;
+  fullPaths:
+    | "/"
+    | "/about"
+    | "/admin"
+    | "/auth"
+    | "/contact"
+    | "/create-account"
+    | "/for-ods"
+    | "/for-practices"
+    | "/get-started"
+    | "/how-it-works"
+    | "/privacy"
+    | "/reset-password"
+    | "/resources"
+    | "/terms"
+    | "/dashboard"
+    | "/profile"
+    | "/admin/matches"
+    | "/admin/od-intakes"
+    | "/admin/practice-intakes"
+    | "/admin/users"
+    | "/admin/";
+  fileRoutesByTo: FileRoutesByTo;
+  to:
+    | "/"
+    | "/about"
+    | "/auth"
+    | "/contact"
+    | "/create-account"
+    | "/for-ods"
+    | "/for-practices"
+    | "/get-started"
+    | "/how-it-works"
+    | "/privacy"
+    | "/reset-password"
+    | "/resources"
+    | "/terms"
+    | "/dashboard"
+    | "/profile"
+    | "/admin/matches"
+    | "/admin/od-intakes"
+    | "/admin/practice-intakes"
+    | "/admin/users"
+    | "/admin";
+  id:
+    | "__root__"
+    | "/"
+    | "/_authenticated"
+    | "/about"
+    | "/admin"
+    | "/auth"
+    | "/contact"
+    | "/create-account"
+    | "/for-ods"
+    | "/for-practices"
+    | "/get-started"
+    | "/how-it-works"
+    | "/privacy"
+    | "/reset-password"
+    | "/resources"
+    | "/terms"
+    | "/_authenticated/dashboard"
+    | "/_authenticated/profile"
+    | "/admin/matches"
+    | "/admin/od-intakes"
+    | "/admin/practice-intakes"
+    | "/admin/users"
+    | "/admin/";
+  fileRoutesById: FileRoutesById;
+}
+export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute;
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren;
+  AboutRoute: typeof AboutRoute;
+  AdminRoute: typeof AdminRouteWithChildren;
+  AuthRoute: typeof AuthRoute;
+  ContactRoute: typeof ContactRoute;
+  CreateAccountRoute: typeof CreateAccountRoute;
+  ForOdsRoute: typeof ForOdsRoute;
+  ForPracticesRoute: typeof ForPracticesRoute;
+  GetStartedRoute: typeof GetStartedRoute;
+  HowItWorksRoute: typeof HowItWorksRoute;
+  PrivacyRoute: typeof PrivacyRoute;
+  ResetPasswordRoute: typeof ResetPasswordRoute;
+  ResourcesRoute: typeof ResourcesRoute;
+  TermsRoute: typeof TermsRoute;
+}
+
+declare module "@tanstack/react-router" {
+  interface FileRoutesByPath {
+    "/": {
+      id: "/";
+      path: "/";
+      fullPath: "/";
+      preLoaderRoute: typeof IndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/_authenticated": {
+      id: "/_authenticated";
+      path: "";
+      fullPath: "/";
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/about": {
+      id: "/about";
+      path: "/about";
+      fullPath: "/about";
+      preLoaderRoute: typeof AboutRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/admin": {
+      id: "/admin";
+      path: "/admin";
+      fullPath: "/admin";
+      preLoaderRoute: typeof AdminRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/auth": {
+      id: "/auth";
+      path: "/auth";
+      fullPath: "/auth";
+      preLoaderRoute: typeof AuthRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/contact": {
+      id: "/contact";
+      path: "/contact";
+      fullPath: "/contact";
+      preLoaderRoute: typeof ContactRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/create-account": {
+      id: "/create-account";
+      path: "/create-account";
+      fullPath: "/create-account";
+      preLoaderRoute: typeof CreateAccountRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/for-ods": {
+      id: "/for-ods";
+      path: "/for-ods";
+      fullPath: "/for-ods";
+      preLoaderRoute: typeof ForOdsRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/for-practices": {
+      id: "/for-practices";
+      path: "/for-practices";
+      fullPath: "/for-practices";
+      preLoaderRoute: typeof ForPracticesRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/get-started": {
+      id: "/get-started";
+      path: "/get-started";
+      fullPath: "/get-started";
+      preLoaderRoute: typeof GetStartedRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/how-it-works": {
+      id: "/how-it-works";
+      path: "/how-it-works";
+      fullPath: "/how-it-works";
+      preLoaderRoute: typeof HowItWorksRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/privacy": {
+      id: "/privacy";
+      path: "/privacy";
+      fullPath: "/privacy";
+      preLoaderRoute: typeof PrivacyRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/reset-password": {
+      id: "/reset-password";
+      path: "/reset-password";
+      fullPath: "/reset-password";
+      preLoaderRoute: typeof ResetPasswordRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/resources": {
+      id: "/resources";
+      path: "/resources";
+      fullPath: "/resources";
+      preLoaderRoute: typeof ResourcesRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/terms": {
+      id: "/terms";
+      path: "/terms";
+      fullPath: "/terms";
+      preLoaderRoute: typeof TermsRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/_authenticated/dashboard": {
+      id: "/_authenticated/dashboard";
+      path: "/dashboard";
+      fullPath: "/dashboard";
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport;
+      parentRoute: typeof AuthenticatedRouteRoute;
+    };
+    "/_authenticated/profile": {
+      id: "/_authenticated/profile";
+      path: "/profile";
+      fullPath: "/profile";
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport;
+      parentRoute: typeof AuthenticatedRouteRoute;
+    };
+    "/admin/": {
+      id: "/admin/";
+      path: "/";
+      fullPath: "/admin/";
+      preLoaderRoute: typeof AdminIndexRouteImport;
+      parentRoute: typeof AdminRoute;
+    };
+    "/admin/matches": {
+      id: "/admin/matches";
+      path: "/matches";
+      fullPath: "/admin/matches";
+      preLoaderRoute: typeof AdminMatchesRouteImport;
+      parentRoute: typeof AdminRoute;
+    };
+    "/admin/od-intakes": {
+      id: "/admin/od-intakes";
+      path: "/od-intakes";
+      fullPath: "/admin/od-intakes";
+      preLoaderRoute: typeof AdminOdIntakesRouteImport;
+      parentRoute: typeof AdminRoute;
+    };
+    "/admin/practice-intakes": {
+      id: "/admin/practice-intakes";
+      path: "/practice-intakes";
+      fullPath: "/admin/practice-intakes";
+      preLoaderRoute: typeof AdminPracticeIntakesRouteImport;
+      parentRoute: typeof AdminRoute;
+    };
+    "/admin/users": {
+      id: "/admin/users";
+      path: "/users";
+      fullPath: "/admin/users";
+      preLoaderRoute: typeof AdminUsersRouteImport;
+      parentRoute: typeof AdminRoute;
+    };
+  }
+}
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute;
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute;
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
-}
+};
 
 const AuthenticatedRouteRouteWithChildren =
-  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren);
 
-const AdminRouteChildren = {
-  AdminPracticeIntakesRoute: AdminPracticeIntakesRoute,
-  AdminMatchesRoute: AdminMatchesRoute,
-  AdminOdIntakesRoute: AdminOdIntakesRoute,
-  AdminUsersRoute: AdminUsersRoute,
-  AdminIndexRoute: AdminIndexRoute,
+interface AdminRouteChildren {
+  AdminMatchesRoute: typeof AdminMatchesRoute;
+  AdminOdIntakesRoute: typeof AdminOdIntakesRoute;
+  AdminPracticeIntakesRoute: typeof AdminPracticeIntakesRoute;
+  AdminUsersRoute: typeof AdminUsersRoute;
+  AdminIndexRoute: typeof AdminIndexRoute;
 }
 
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminMatchesRoute: AdminMatchesRoute,
+  AdminOdIntakesRoute: AdminOdIntakesRoute,
+  AdminPracticeIntakesRoute: AdminPracticeIntakesRoute,
+  AdminUsersRoute: AdminUsersRoute,
+  AdminIndexRoute: AdminIndexRoute,
+};
 
-const rootRouteChildren = {
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren);
+
+const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
-  ResourcesRoute: ResourcesRoute,
-  GetStartedRoute: GetStartedRoute,
   AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
-  ForPracticesRoute: ForPracticesRoute,
+  CreateAccountRoute: CreateAccountRoute,
   ForOdsRoute: ForOdsRoute,
+  ForPracticesRoute: ForPracticesRoute,
+  GetStartedRoute: GetStartedRoute,
   HowItWorksRoute: HowItWorksRoute,
-  ResetPasswordRoute: ResetPasswordRoute,
   PrivacyRoute: PrivacyRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
+  ResourcesRoute: ResourcesRoute,
   TermsRoute: TermsRoute,
-}
-
+};
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
+  ._addFileTypes<FileRouteTypes>();

@@ -40,7 +40,7 @@ function apiDevPlugin() {
         }
 
         const route = url.replace(/^\/api\//, "").replace(/\/$/, "");
-        const allowed = new Set(["contact", "intake-notify"]);
+        const allowed = new Set(["contact", "intake-notify", "account-invite"]);
         if (!allowed.has(route)) {
           return next();
         }

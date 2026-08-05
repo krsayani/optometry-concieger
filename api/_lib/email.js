@@ -305,6 +305,39 @@ export function buildPlainTextFromSections({
   return lines.join("\n");
 }
 
+function getResendClient() {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    throw new Error(
+      "Missing RESEND_API_KEY. Add your Resend API key to the environment.",
+    );
+  }
+  return new Resend(apiKey);
+}
+
+function getFromAddress() {
+  return (
+    process.env.CONTACT_FROM_EMAIL ||
+    "Optometry Concierge <notifications@optometryconcierge.com>"
+  );
+}
+
+async function sendWithResend(payload) {
+  const resend = getResendClient();
+  const { data, error } = await resend.emails.send(payload);
+
+  if (error) {
+    console.error("[sendWithResend] Resend error:", error);
+    throw new Error(error.message || "Resend failed to send email");
+  }
+
+  if (!data?.id) {
+    throw new Error("Resend accepted the request but returned no email id.");
+  }
+
+  return data;
+}
+
 /**
  * Send an email to the admin inbox via Resend.
  * @param {{ subject: string, replyTo?: string, replyName?: string, text: string, html?: string }} options
@@ -316,24 +349,12 @@ export async function sendAdminEmail({
   text,
   html,
 }) {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    throw new Error(
-      "Missing RESEND_API_KEY. Add your Resend API key to the environment.",
-    );
-  }
-
   if (!ADMIN_EMAIL) {
     throw new Error("Missing CONTACT_TO_EMAIL admin recipient.");
   }
 
-  const resend = new Resend(apiKey);
-  const from =
-    process.env.CONTACT_FROM_EMAIL ||
-    "Optometry Concierge <notifications@optometryconcierge.com>";
-
   const payload = {
-    from,
+    from: getFromAddress(),
     to: [ADMIN_EMAIL],
     subject,
     text,
@@ -345,16 +366,7 @@ export async function sendAdminEmail({
     payload.replyTo = formattedReplyTo;
   }
 
-  const { data, error } = await resend.emails.send(payload);
-
-  if (error) {
-    console.error("[sendAdminEmail] Resend error:", error);
-    throw new Error(error.message || "Resend failed to send email");
-  }
-
-  if (!data?.id) {
-    throw new Error("Resend accepted the request but returned no email id.");
-  }
+  const data = await sendWithResend(payload);
 
   console.info("[sendAdminEmail] Sent", {
     id: data.id,
@@ -364,6 +376,114 @@ export async function sendAdminEmail({
   });
 
   return data;
+}
+
+/**
+ * Send an email to a site user via Resend.
+ * @param {{ to: string, subject: string, text: string, html?: string }} options
+ */
+export async function sendUserEmail({ to, subject, text, html }) {
+  const recipient = normalizeEmail(to);
+  if (!recipient) {
+    throw new Error("Missing recipient email.");
+  }
+
+  const data = await sendWithResend({
+    from: getFromAddress(),
+    to: [recipient],
+    subject,
+    text,
+    html: html || undefined,
+  });
+
+  console.info("[sendUserEmail] Sent", {
+    id: data.id,
+    to: recipient,
+    subject,
+  });
+
+  return data;
+}
+
+export function getSiteUrl() {
+  return (
+    process.env.SITE_URL ||
+    process.env.VITE_SITE_URL ||
+    "https://www.optometryconcierge.com"
+  ).replace(/\/$/, "");
+}
+
+/**
+ * Branded "create your account" email for OD / practice submitters.
+ */
+export function buildAccountInviteHtml({
+  name,
+  type,
+  createAccountUrl,
+}) {
+  const isPractice = type === "practice";
+  const audience = isPractice ? "practice" : "optometrist";
+  const greetingName = String(name || "").trim() || "there";
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Create your Optometry Concierge account</title>
+</head>
+<body style="margin:0;padding:0;background:${BRAND.cream};">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${BRAND.cream};padding:24px 12px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;background:${BRAND.white};border-radius:24px;overflow:hidden;border:1px solid ${BRAND.border};">
+          <tr>
+            <td style="background:${BRAND.navy};padding:28px 32px;">
+              <p style="margin:0 0 10px;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:${BRAND.teal};">
+                Optometry Concierge
+              </p>
+              <h1 style="margin:0 0 8px;font-family:Arial,Helvetica,sans-serif;font-size:26px;line-height:1.25;color:${BRAND.white};font-weight:800;">
+                Create your account
+              </h1>
+              <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.55;color:rgba(255,255,255,0.82);">
+                We received your ${audience} profile. Set a password to access your dashboard.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:28px 32px;">
+              <p style="margin:0 0 14px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:${BRAND.text};">
+                Hi ${escapeHtml(greetingName)},
+              </p>
+              <p style="margin:0 0 18px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:${BRAND.text};">
+                Thanks for submitting your profile to Optometry Concierge. Click below to create your account password and open your private dashboard.
+              </p>
+              <p style="margin:0 0 22px;text-align:center;">
+                <a href="${escapeHtml(createAccountUrl)}" style="display:inline-block;background:${BRAND.teal};color:${BRAND.white};text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:700;padding:14px 28px;border-radius:999px;">
+                  Create my account
+                </a>
+              </p>
+              <p style="margin:0 0 10px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.6;color:${BRAND.muted};">
+                If the button doesn’t work, copy and paste this link into your browser:
+              </p>
+              <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.5;color:${BRAND.teal};word-break:break-all;">
+                ${escapeHtml(createAccountUrl)}
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 32px 28px;">
+              <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;color:${BRAND.muted};">
+                Questions? Reply to this email or contact Admin@optometryconcierge.com.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
 }
 
 export function formatFields(fields) {
