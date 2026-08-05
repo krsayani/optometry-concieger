@@ -1,7 +1,8 @@
 import {
-  ADMIN_EMAIL,
   readJsonBody,
   sendAdminEmail,
+  buildAdminNotificationHtml,
+  buildPlainTextFromSections,
 } from "./_lib/email.js";
 
 function isValidEmail(email) {
@@ -51,27 +52,46 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Message is too long." });
     }
 
-    const text = [
-      "New contact inquiry from the website",
-      "",
-      `Name: ${firstName} ${lastName}`,
-      `Email: ${email}`,
-      phone ? `Phone: ${phone}` : null,
-      `I am a: ${audience}`,
-      `Subject: ${subject}`,
-      "",
-      "Message:",
-      message,
-      "",
-      `Delivered to: ${ADMIN_EMAIL}`,
-    ]
-      .filter(Boolean)
-      .join("\n");
+    const replyName = `${firstName} ${lastName}`.trim();
+    const sections = [
+      {
+        title: "Inquiry details",
+        rows: [
+          { label: "I am a", value: audience },
+          { label: "Subject", value: subject },
+          { label: "Email", value: email },
+          { label: "Phone", value: phone },
+        ],
+      },
+    ];
 
     const sent = await sendAdminEmail({
-      subject: `[Contact] ${subject} — ${firstName} ${lastName}`,
+      subject: `Contact inquiry — ${subject} (${replyName})`,
       replyTo: email,
-      text,
+      replyName,
+      html: buildAdminNotificationHtml({
+        badge: "Contact form",
+        title: replyName,
+        subtitle: `${audience} reached out through the website contact form.`,
+        replyName,
+        replyEmail: email,
+        replyPhone: phone,
+        replySubject: `Re: ${subject}`,
+        highlight: { label: "Message", value: message },
+        sections,
+        footerNote:
+          "Reply to this email to write them directly. Their address is set as Reply-To.",
+      }),
+      text: buildPlainTextFromSections({
+        intro: "New contact inquiry from the Optometry Concierge website.",
+        replyName,
+        replyEmail: email,
+        replyPhone: phone,
+        sections: [
+          ...sections,
+          { title: "Message", rows: [{ label: "Message", value: message }] },
+        ],
+      }),
     });
 
     return res.status(200).json({

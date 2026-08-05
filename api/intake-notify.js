@@ -1,113 +1,189 @@
 import {
-  ADMIN_EMAIL,
   readJsonBody,
   sendAdminEmail,
-  formatFields,
+  buildAdminNotificationHtml,
+  buildPlainTextFromSections,
+  formatList,
 } from "./_lib/email.js";
-
-function formatList(value) {
-  if (Array.isArray(value)) return value.join(", ") || "N/A";
-  return value || "N/A";
-}
 
 function buildOdEmail(data) {
   const name = `${data.firstName || ""} ${data.lastName || ""}`.trim();
-  const fields = {
-    "Profile Type": "Optometrist",
-    Name: name,
-    Email: data.email || "N/A",
-    Phone: data.phone || "N/A",
-    School: data.school || "N/A",
-    "Other School": data.otherSchool || "",
-    "Graduation Year": data.gradYear || "N/A",
-    "License Status": data.licenseStatus || "N/A",
-    "License States": data.licenseStates || "N/A",
-    "Years in Practice": data.yearsInPractice || "N/A",
-    "Completed Residency": data.completedResidency || "N/A",
-    "Residency Type": data.residencyType || "",
-    "Preferred States": formatList(data.preferredStates),
-    "Preferred Cities": data.preferredCities || "N/A",
-    "Open to Relocation": data.openToRelocation || "N/A",
-    "Practice Setting": formatList(data.practiceSetting),
-    "Practice Type Preference": data.practiceTypePreference || "N/A",
-    "Clinical Interests": formatList(data.clinicalInterests),
-    "Salary Expectation": data.salaryExpectation || "N/A",
-    "Position Type": data.positionType || "N/A",
-    "Target Start Date": data.targetStartDate || "N/A",
-    "Job Priorities": formatList(data.jobPriorities),
-    "Interest in Ownership": data.interestInOwnership || "N/A",
-    "Resume URL": data.resumeUrl || "Not uploaded",
-    "Anything Else": data.anythingElse || "N/A",
-  };
+  const replyName = name || "Optometrist";
+  const schoolLabel =
+    data.school === "Other" && data.otherSchool
+      ? data.otherSchool
+      : data.school;
+
+  const sections = [
+    {
+      title: "Contact",
+      rows: [
+        { label: "Name", value: name },
+        { label: "Email", value: data.email },
+        { label: "Phone", value: data.phone },
+      ],
+    },
+    {
+      title: "Education & license",
+      rows: [
+        { label: "School", value: schoolLabel },
+        { label: "Graduation year", value: data.gradYear },
+        { label: "License status", value: data.licenseStatus },
+        { label: "License states", value: data.licenseStates },
+        { label: "Years in practice", value: data.yearsInPractice },
+        { label: "Completed residency", value: data.completedResidency },
+        { label: "Residency type", value: data.residencyType },
+      ],
+    },
+    {
+      title: "Preferences",
+      rows: [
+        { label: "Preferred states", value: formatList(data.preferredStates) },
+        { label: "Preferred cities", value: data.preferredCities },
+        { label: "Open to relocation", value: data.openToRelocation },
+        { label: "Practice setting", value: formatList(data.practiceSetting) },
+        {
+          label: "Practice type preference",
+          value: data.practiceTypePreference,
+        },
+        {
+          label: "Clinical interests",
+          value: formatList(data.clinicalInterests),
+        },
+        { label: "Position type", value: data.positionType },
+        { label: "Target start date", value: data.targetStartDate },
+        { label: "Salary expectation", value: data.salaryExpectation },
+        { label: "Job priorities", value: formatList(data.jobPriorities) },
+        { label: "Interest in ownership", value: data.interestInOwnership },
+        { label: "Resume", value: data.resumeUrl || "Not uploaded" },
+      ],
+    },
+  ];
+
+  const subject = `New optometrist profile — ${name || data.email || "Candidate"}`;
 
   return {
-    subject: `[New OD Profile] ${name || data.email || "Optometrist"}`,
+    subject,
     replyTo: data.email,
-    name: name || "Optometrist Intake",
-    fields: {
-      "Profile Type": "Optometrist",
-      Name: name,
-      Email: data.email || "N/A",
-      Phone: data.phone || "N/A",
-      School: data.school || "N/A",
-      "Graduation Year": data.gradYear || "N/A",
-    },
-    text: [
-      "A new optometrist profile was submitted on Optometry Concierge.",
-      "",
-      formatFields(fields),
-      "",
-      `Delivered to: ${ADMIN_EMAIL}`,
-    ].join("\n"),
+    replyName,
+    html: buildAdminNotificationHtml({
+      badge: "Optometrist profile",
+      title: replyName,
+      subtitle:
+        "A doctor just created a career profile. Reply to connect or request more details.",
+      replyName,
+      replyEmail: data.email,
+      replyPhone: data.phone,
+      replySubject: `Optometry Concierge — following up with ${replyName}`,
+      highlight: data.anythingElse
+        ? { label: "Anything else they shared", value: data.anythingElse }
+        : null,
+      sections,
+      footerNote:
+        "Reply to this email to write the optometrist directly. Their address is set as Reply-To.",
+    }),
+    text: buildPlainTextFromSections({
+      intro: "A new optometrist profile was submitted on Optometry Concierge.",
+      replyName,
+      replyEmail: data.email,
+      replyPhone: data.phone,
+      sections: [
+        ...sections,
+        data.anythingElse
+          ? {
+              title: "Anything else",
+              rows: [{ label: "Notes", value: data.anythingElse }],
+            }
+          : null,
+      ].filter(Boolean),
+    }),
   };
 }
 
 function buildPracticeEmail(data) {
-  const fields = {
-    "Profile Type": "Practice / Hiring Request",
-    "Contact Name": data.contactName || "N/A",
-    "Practice Name": data.practiceName || "N/A",
-    Email: data.email || "N/A",
-    Phone: data.phone || "N/A",
-    Location: data.location || "N/A",
-    "Practice Type": data.practiceType || "N/A",
-    "Number of ODs": data.numODs || "N/A",
-    "Position Type": data.positionType || "N/A",
-    "Salary Range": data.salaryRange || "N/A",
-    "Production Bonus": data.productionBonus || "N/A",
-    "Sign-On Bonus": data.signOnBonus || "N/A",
-    "Relocation Assistance": data.relocationAssistance || "N/A",
-    Benefits: formatList(data.benefits),
-    Schedule: data.schedule || "N/A",
-    "Patient Volume": data.patientVolume || "N/A",
-    "Primary Care Type": formatList(data.primaryCareType),
-    "New Grad Friendly": data.newGradFriendly || "N/A",
-    Mentorship: data.mentorshipAvailable || "N/A",
-    "Equipment / Tech": data.equipmentTech || "N/A",
-    "Ownership Track": data.ownershipTrack || "N/A",
-    Urgency: data.urgency || "N/A",
-    "Anything Else": data.anythingElse || "N/A",
-  };
+  const replyName =
+    data.contactName || data.practiceName || "Practice contact";
+  const practiceLabel = data.practiceName || replyName;
+
+  const sections = [
+    {
+      title: "Contact",
+      rows: [
+        { label: "Contact name", value: data.contactName },
+        { label: "Practice name", value: data.practiceName },
+        { label: "Email", value: data.email },
+        { label: "Phone", value: data.phone },
+        { label: "Location", value: data.location },
+      ],
+    },
+    {
+      title: "Practice details",
+      rows: [
+        { label: "Practice type", value: data.practiceType },
+        { label: "Number of ODs", value: data.numODs },
+        { label: "Patient volume", value: data.patientVolume },
+        { label: "Primary care type", value: formatList(data.primaryCareType) },
+        { label: "Equipment / tech", value: data.equipmentTech },
+        { label: "New grad friendly", value: data.newGradFriendly },
+        { label: "Mentorship", value: data.mentorshipAvailable },
+        { label: "Ownership track", value: data.ownershipTrack },
+      ],
+    },
+    {
+      title: "Hiring need",
+      rows: [
+        { label: "Position type", value: data.positionType },
+        { label: "Urgency", value: data.urgency },
+        { label: "Salary range", value: data.salaryRange },
+        { label: "Production bonus", value: data.productionBonus },
+        { label: "Sign-on bonus", value: data.signOnBonus },
+        { label: "Relocation assistance", value: data.relocationAssistance },
+        { label: "Benefits", value: formatList(data.benefits) },
+        { label: "Schedule", value: data.schedule },
+      ],
+    },
+  ];
+
+  const subject = `New practice hiring request — ${practiceLabel}`;
 
   return {
-    subject: `[New Practice Profile] ${data.practiceName || data.contactName || "Hiring Request"}`,
+    subject,
     replyTo: data.email,
-    name: data.contactName || data.practiceName || "Practice Intake",
-    fields: {
-      "Profile Type": "Practice / Hiring Request",
-      "Contact Name": data.contactName || "N/A",
-      "Practice Name": data.practiceName || "N/A",
-      Email: data.email || "N/A",
-      Phone: data.phone || "N/A",
-      Location: data.location || "N/A",
-    },
-    text: [
-      "A new practice hiring profile was submitted on Optometry Concierge.",
-      "",
-      formatFields(fields),
-      "",
-      `Delivered to: ${ADMIN_EMAIL}`,
-    ].join("\n"),
+    replyName,
+    html: buildAdminNotificationHtml({
+      badge: "Practice hiring request",
+      title: practiceLabel,
+      subtitle:
+        "A practice submitted a hiring profile. Reply to discuss candidates or next steps.",
+      replyName,
+      replyEmail: data.email,
+      replyPhone: data.phone,
+      replySubject: `Optometry Concierge — following up with ${practiceLabel}`,
+      highlight: data.anythingElse
+        ? { label: "Anything else they shared", value: data.anythingElse }
+        : data.urgency
+          ? { label: "Hiring urgency", value: data.urgency }
+          : null,
+      sections,
+      footerNote:
+        "Reply to this email to write the practice contact directly. Their address is set as Reply-To.",
+    }),
+    text: buildPlainTextFromSections({
+      intro:
+        "A new practice hiring profile was submitted on Optometry Concierge.",
+      replyName,
+      replyEmail: data.email,
+      replyPhone: data.phone,
+      sections: [
+        ...sections,
+        data.anythingElse
+          ? {
+              title: "Anything else",
+              rows: [{ label: "Notes", value: data.anythingElse }],
+            }
+          : null,
+      ].filter(Boolean),
+    }),
   };
 }
 
@@ -126,7 +202,8 @@ export default async function handler(req, res) {
 
   try {
     const body = await readJsonBody(req);
-    const type = body.type === "practice" ? "practice" : body.type === "od" ? "od" : null;
+    const type =
+      body.type === "practice" ? "practice" : body.type === "od" ? "od" : null;
 
     if (!type) {
       return res.status(400).json({ error: "Invalid intake type." });
