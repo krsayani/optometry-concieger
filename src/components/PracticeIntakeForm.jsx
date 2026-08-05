@@ -36,7 +36,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { cn, formatPhoneNumber, phoneDigits } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { checkEmailAvailability } from "@/services/profiles";
@@ -46,7 +46,9 @@ const schema = z.object({
   contactName: z.string().min(2, "Required"),
   practiceName: z.string().min(2, "Required"),
   email: z.string().email("Invalid email"),
-  phone: z.string().min(10, "Invalid phone"),
+  phone: z
+    .string()
+    .refine((v) => phoneDigits(v).length === 10, "Enter a valid 10-digit phone number"),
   location: z.string().min(5, "City, State required"),
 
   // Step 2: Practice Details
@@ -409,7 +411,18 @@ export function PracticeIntakeForm() {
                 </div>
                 <div className="space-y-2">
                    <Label htmlFor="phone">Phone Number</Label>
-                   <Input id="phone" {...register("phone")} placeholder="(000) 000-0000" />
+                   <Input
+                     id="phone"
+                     type="tel"
+                     inputMode="numeric"
+                     autoComplete="tel"
+                     placeholder="(555) 123-4567"
+                     {...register("phone", {
+                       onChange: (e) => {
+                         e.target.value = formatPhoneNumber(e.target.value);
+                       },
+                     })}
+                   />
                    {errors.phone && <p className="text-xs text-destructive">{errors.phone.message}</p>}
                 </div>
              </div>

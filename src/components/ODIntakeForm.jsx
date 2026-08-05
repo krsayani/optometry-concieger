@@ -33,7 +33,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { cn, formatPhoneNumber, phoneDigits } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { checkEmailAvailability } from "@/services/profiles";
@@ -79,7 +79,9 @@ const schema = z.object({
   firstName: z.string().min(1, "First Name is required"),
   lastName: z.string().min(1, "Last Name is required"),
   email: z.string().email("Invalid email address"),
-  phone: z.string().min(10, "Invalid phone number"),
+  phone: z
+    .string()
+    .refine((v) => phoneDigits(v).length === 10, "Enter a valid 10-digit phone number"),
 
   // Step 2: Professional
   school: z.string().min(1, "Please select a school"),
@@ -531,7 +533,18 @@ export function ODIntakeForm() {
 
              <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number</Label>
-                <Input id="phone" {...register("phone")} placeholder="(000) 000-0000" />
+                <Input
+                  id="phone"
+                  type="tel"
+                  inputMode="numeric"
+                  autoComplete="tel"
+                  placeholder="(555) 123-4567"
+                  {...register("phone", {
+                    onChange: (e) => {
+                      e.target.value = formatPhoneNumber(e.target.value);
+                    },
+                  })}
+                />
                 {errors.phone && <p className="text-xs text-destructive">{errors.phone.message}</p>}
              </div>
           </div>

@@ -18,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useAuth } from "@/context/AuthContext";
 import { updateProfile, uploadAvatar, listODIntakesByUser, listPracticeIntakesByUser, updateODIntake, updatePracticeIntake, deleteODIntake, deletePracticeIntake } from "@/services/profiles";
 import { supabase } from "@/integrations/supabase/client";
-import { cn } from "@/lib/utils";
+import { cn, formatPhoneNumber } from "@/lib/utils";
 
 const US_SCHOOLS = [
   "Arizona College of Optometry at Midwestern University",
@@ -458,7 +458,8 @@ function ODProfileEditor({ user, intake, onSave, isSaving, onDelete, resumeRef, 
         if (intake) {
             setFormData({
                 ...intake,
-                email: intake.email || user?.email || ""
+                email: intake.email || user?.email || "",
+                phone: formatPhoneNumber(intake.phone || ""),
             });
         } else {
             // Reset to default if creating new
@@ -516,7 +517,14 @@ function ODProfileEditor({ user, intake, onSave, isSaving, onDelete, resumeRef, 
                     </div>
                     <div className="space-y-2">
                         <Label>Phone Number</Label>
-                        <Input value={formData.phone} onChange={(e) => updateField("phone", e.target.value)} placeholder="(555) 000-0000" />
+                        <Input
+                          type="tel"
+                          inputMode="numeric"
+                          autoComplete="tel"
+                          value={formData.phone}
+                          onChange={(e) => updateField("phone", formatPhoneNumber(e.target.value))}
+                          placeholder="(555) 123-4567"
+                        />
                     </div>
                 </div>
             </div>
@@ -862,7 +870,8 @@ function PracticeProfileEditor({ user, intake, onSave, isSaving, onDelete }) {
         if (intake) {
             setFormData({
                 ...intake,
-                email: intake.email || user?.email || ""
+                email: intake.email || user?.email || "",
+                phone: formatPhoneNumber(intake.phone || ""),
             });
         } else {
             setFormData({
@@ -918,7 +927,14 @@ function PracticeProfileEditor({ user, intake, onSave, isSaving, onDelete }) {
                     </div>
                     <div className="space-y-2">
                         <Label>Phone Number</Label>
-                        <Input value={formData.phone} onChange={(e) => updateField("phone", e.target.value)} placeholder="(555) 000-0000" />
+                        <Input
+                          type="tel"
+                          inputMode="numeric"
+                          autoComplete="tel"
+                          value={formData.phone}
+                          onChange={(e) => updateField("phone", formatPhoneNumber(e.target.value))}
+                          placeholder="(555) 123-4567"
+                        />
                     </div>
                     <div className="space-y-2">
                         <Label>Practice Location (City, State)</Label>
