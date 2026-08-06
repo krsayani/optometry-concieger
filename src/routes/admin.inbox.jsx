@@ -272,7 +272,7 @@ function AdminInbox() {
       ) : null}
 
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div className="relative flex-1">
+        <div className="relative min-w-0 flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={search}
@@ -281,22 +281,29 @@ function AdminInbox() {
             className="pl-9"
           />
         </div>
-        <div className="flex gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           {[
             { id: "all", label: "All" },
             { id: "unread", label: "Unread" },
             { id: "replied", label: "Replied" },
-          ].map((item) => (
-            <Button
-              key={item.id}
-              type="button"
-              size="sm"
-              variant={filter === item.id ? "default" : "outline"}
-              onClick={() => setFilter(item.id)}
-            >
-              {item.label}
-            </Button>
-          ))}
+          ].map((item) => {
+            const active = filter === item.id;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => setFilter(item.id)}
+                className={cn(
+                  "inline-flex h-9 min-w-[4.75rem] items-center justify-center rounded-full px-4 text-xs font-semibold transition-colors",
+                  active
+                    ? "bg-primary text-primary-foreground"
+                    : "border border-border bg-background text-foreground hover:bg-muted",
+                )}
+              >
+                {item.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -307,8 +314,9 @@ function AdminInbox() {
           description="New contact forms show up automatically. Connect Google Workspace with the Apps Script above to also pull Admin@ Gmail here."
         />
       ) : (
-        <div className="grid h-[min(72vh,780px)] grid-cols-1 gap-4 lg:grid-cols-[340px_minmax(0,1fr)]">
-          <div className="min-h-0 overflow-y-auto overflow-x-hidden rounded-2xl border border-border bg-background">
+        <div className="grid h-[min(74vh,820px)] grid-cols-1 overflow-hidden rounded-2xl border border-border bg-background lg:grid-cols-[320px_minmax(0,1fr)]">
+          {/* Message list — fixed column, own scroll */}
+          <div className="min-h-0 overflow-y-auto overflow-x-hidden border-b border-border lg:border-b-0 lg:border-r">
             {filtered.map((email) => {
               const active = selected?.id === email.id;
               return (
@@ -317,13 +325,19 @@ function AdminInbox() {
                   type="button"
                   onClick={() => setSelectedId(email.id)}
                   className={cn(
-                    "h-[108px] w-full border-b border-border/70 px-4 py-3 text-left transition-colors last:border-b-0",
+                    "grid h-[96px] w-full grid-cols-[10px_minmax(0,1fr)] border-b border-border/70 text-left transition-colors last:border-b-0",
                     active ? "bg-primary/5" : "hover:bg-muted/40",
-                    !email.is_read && "bg-muted/20",
+                    !email.is_read && !active && "bg-muted/15",
                   )}
                 >
-                  <div className="flex h-full items-start gap-2">
-                    <span className="mt-1 inline-flex h-2.5 w-2.5 shrink-0 items-center justify-center">
+                  <span
+                    className={cn(
+                      "h-full w-[3px] justify-self-start",
+                      active ? "bg-primary" : "bg-transparent",
+                    )}
+                  />
+                  <div className="flex min-w-0 items-start gap-2 py-3 pr-3">
+                    <span className="mt-1.5 inline-flex h-2.5 w-2.5 shrink-0 items-center justify-center">
                       {!email.is_read ? (
                         <Circle className="h-2.5 w-2.5 fill-primary text-primary" />
                       ) : null}
@@ -333,7 +347,7 @@ function AdminInbox() {
                         <p className="truncate text-sm font-bold text-foreground">
                           {email.from_name || email.from_email}
                         </p>
-                        <span className="w-[78px] shrink-0 text-right text-[11px] text-muted-foreground tabular-nums">
+                        <span className="w-[72px] shrink-0 truncate text-right text-[11px] text-muted-foreground">
                           {email.received_at
                             ? formatDistanceToNow(new Date(email.received_at), {
                                 addSuffix: true,
@@ -344,16 +358,9 @@ function AdminInbox() {
                       <p className="truncate text-sm font-semibold text-foreground/90">
                         {email.subject || "(no subject)"}
                       </p>
-                      <p className="mt-0.5 line-clamp-2 h-[2.5rem] text-xs text-muted-foreground">
+                      <p className="mt-0.5 line-clamp-2 h-8 text-xs leading-4 text-muted-foreground">
                         {previewText(email)}
                       </p>
-                      <div className="mt-1 h-5">
-                        {email.replied_at ? (
-                          <Badge variant="outline" className="h-5 px-1.5 text-[10px]">
-                            Replied
-                          </Badge>
-                        ) : null}
-                      </div>
                     </div>
                   </div>
                 </button>
@@ -361,13 +368,14 @@ function AdminInbox() {
             })}
           </div>
 
-          <div className="flex min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-background">
+          {/* Detail — fixed header + scrollable body + fixed reply footer */}
+          <div className="grid min-h-0 min-w-0 grid-rows-[118px_minmax(0,1fr)_210px]">
             {selected ? (
               <>
-                <div className="shrink-0 border-b border-border px-5 py-4">
+                <div className="h-[118px] border-b border-border px-5 py-3">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
-                      <h2 className="truncate text-xl font-extrabold text-foreground">
+                      <h2 className="truncate text-lg font-extrabold text-foreground">
                         {selected.subject || "(no subject)"}
                       </h2>
                       <p className="mt-1 truncate text-sm text-muted-foreground">
@@ -396,41 +404,37 @@ function AdminInbox() {
                       Delete
                     </Button>
                   </div>
-                  <div className="mt-3 flex h-7 items-center gap-2 overflow-x-auto">
+                  <div className="mt-2 flex h-7 items-center gap-2 overflow-x-auto">
                     {Array.isArray(selected.attachments) &&
-                    selected.attachments.length > 0 ? (
-                      selected.attachments.map((file, idx) => (
-                        <Badge
-                          key={file.id || idx}
-                          variant="secondary"
-                          className="shrink-0"
-                        >
-                          <Paperclip className="mr-1 h-3 w-3" />
-                          {file.filename || "Attachment"}
-                        </Badge>
-                      ))
-                    ) : (
-                      <span className="text-xs text-muted-foreground">
-                        No attachments
-                      </span>
-                    )}
+                    selected.attachments.length > 0
+                      ? selected.attachments.map((file, idx) => (
+                          <Badge
+                            key={file.id || idx}
+                            variant="secondary"
+                            className="shrink-0"
+                          >
+                            <Paperclip className="mr-1 h-3 w-3" />
+                            {file.filename || "Attachment"}
+                          </Badge>
+                        ))
+                      : null}
                   </div>
                 </div>
 
-                <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
+                <div className="min-h-0 overflow-y-auto px-5 py-4">
                   {selected.html_body ? (
                     <div
-                      className="prose prose-sm max-w-none text-foreground"
+                      className="prose prose-sm max-w-none break-words text-foreground [&_img]:max-w-full [&_table]:block [&_table]:max-w-full [&_table]:overflow-x-auto"
                       dangerouslySetInnerHTML={{ __html: selected.html_body }}
                     />
                   ) : (
-                    <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-foreground">
+                    <pre className="whitespace-pre-wrap break-words font-sans text-sm leading-relaxed text-foreground">
                       {selected.text_body || "No message body"}
                     </pre>
                   )}
                 </div>
 
-                <div className="shrink-0 border-t border-border px-5 py-4">
+                <div className="border-t border-border px-5 py-3">
                   <div className="mb-2 flex items-center gap-2 text-sm font-bold text-foreground">
                     <Reply className="h-4 w-4 shrink-0" />
                     <span className="truncate">
@@ -440,13 +444,13 @@ function AdminInbox() {
                   <Textarea
                     value={replyBody}
                     onChange={(e) => setReplyBody(e.target.value)}
-                    rows={5}
-                    className="min-h-[120px] resize-none"
+                    className="h-[96px] resize-none"
                     placeholder="Write your reply…"
                   />
-                  <div className="mt-3 flex justify-end">
+                  <div className="mt-2 flex h-9 items-center justify-end">
                     <Button
                       type="button"
+                      size="sm"
                       disabled={!replyBody.trim() || replyMutation.isPending}
                       onClick={() => replyMutation.mutate()}
                     >
@@ -456,7 +460,7 @@ function AdminInbox() {
                 </div>
               </>
             ) : (
-              <div className="flex flex-1 items-center justify-center p-8 text-sm text-muted-foreground">
+              <div className="col-span-full flex items-center justify-center text-sm text-muted-foreground">
                 Select a message to read
               </div>
             )}
