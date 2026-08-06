@@ -121,7 +121,9 @@ export default async function handler(req, res) {
     const kind = String(body.kind || "outreach").trim();
     const bccAdmin = body.bccAdmin !== false;
     const includeSchoolVideo =
-      body.includeSchoolVideo === true || kind === "school";
+      body.includeSchoolVideo === true ||
+      kind === "school" ||
+      kind === "club";
 
     if (!to.length) {
       return res
