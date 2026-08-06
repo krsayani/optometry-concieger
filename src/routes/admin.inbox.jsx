@@ -121,11 +121,17 @@ function AdminInbox() {
     if (!selected) return;
     if (selectedId !== selected.id) setSelectedId(selected.id);
     if (!selected.is_read) {
-      markInboundEmailRead(selected.id, true)
-        .then(() =>
-          queryClient.invalidateQueries({ queryKey: ["admin-inbound-emails"] }),
-        )
-        .catch(() => {});
+      // Optimistic local mark-as-read so the list doesn't jump on refetch
+      queryClient.setQueryData(["admin-inbound-emails"], (prev) =>
+        Array.isArray(prev)
+          ? prev.map((email) =>
+              email.id === selected.id ? { ...email, is_read: true } : email,
+            )
+          : prev,
+      );
+      markInboundEmailRead(selected.id, true).catch(() => {
+        queryClient.invalidateQueries({ queryKey: ["admin-inbound-emails"] });
+      });
     }
   }, [selected?.id]);
 
@@ -181,9 +187,15 @@ function AdminInbox() {
           <div className="mb-2 inline-flex items-center gap-2 text-sm font-bold text-primary">
             <Inbox className="h-4 w-4" />
             Admin Inbox
-            {unreadCount > 0 ? (
-              <Badge variant="secondary">{unreadCount} unread</Badge>
-            ) : null}
+            <Badge
+              variant="secondary"
+              className={cn(
+                "min-w-[5.5rem] justify-center",
+                unreadCount === 0 && "opacity-40",
+              )}
+            >
+              {unreadCount} unread
+            </Badge>
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
             Email Inbox
@@ -295,8 +307,8 @@ function AdminInbox() {
           description="New contact forms show up automatically. Connect Google Workspace with the Apps Script above to also pull Admin@ Gmail here."
         />
       ) : (
-        <div className="grid gap-4 lg:grid-cols-[340px_minmax(0,1fr)]">
-          <div className="max-h-[70vh] overflow-y-auto rounded-2xl border border-border bg-background">
+        <div className="grid h-[min(72vh,780px)] grid-cols-1 gap-4 lg:grid-cols-[340px_minmax(0,1fr)]">
+          <div className="min-h-0 overflow-y-auto overflow-x-hidden rounded-2xl border border-border bg-background">
             {filtered.map((email) => {
               const active = selected?.id === email.id;
               return (
@@ -305,23 +317,23 @@ function AdminInbox() {
                   type="button"
                   onClick={() => setSelectedId(email.id)}
                   className={cn(
-                    "w-full border-b border-border/70 px-4 py-3 text-left transition-colors last:border-b-0",
+                    "h-[108px] w-full border-b border-border/70 px-4 py-3 text-left transition-colors last:border-b-0",
                     active ? "bg-primary/5" : "hover:bg-muted/40",
                     !email.is_read && "bg-muted/20",
                   )}
                 >
-                  <div className="flex items-start gap-2">
-                    {!email.is_read ? (
-                      <Circle className="mt-1 h-2.5 w-2.5 fill-primary text-primary" />
-                    ) : (
-                      <span className="mt-1 h-2.5 w-2.5" />
-                    )}
+                  <div className="flex h-full items-start gap-2">
+                    <span className="mt-1 inline-flex h-2.5 w-2.5 shrink-0 items-center justify-center">
+                      {!email.is_read ? (
+                        <Circle className="h-2.5 w-2.5 fill-primary text-primary" />
+                      ) : null}
+                    </span>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-2">
                         <p className="truncate text-sm font-bold text-foreground">
                           {email.from_name || email.from_email}
                         </p>
-                        <span className="shrink-0 text-[11px] text-muted-foreground">
+                        <span className="w-[78px] shrink-0 text-right text-[11px] text-muted-foreground tabular-nums">
                           {email.received_at
                             ? formatDistanceToNow(new Date(email.received_at), {
                                 addSuffix: true,
@@ -332,14 +344,16 @@ function AdminInbox() {
                       <p className="truncate text-sm font-semibold text-foreground/90">
                         {email.subject || "(no subject)"}
                       </p>
-                      <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
+                      <p className="mt-0.5 line-clamp-2 h-[2.5rem] text-xs text-muted-foreground">
                         {previewText(email)}
                       </p>
-                      {email.replied_at ? (
-                        <Badge className="mt-2" variant="outline">
-                          Replied
-                        </Badge>
-                      ) : null}
+                      <div className="mt-1 h-5">
+                        {email.replied_at ? (
+                          <Badge variant="outline" className="h-5 px-1.5 text-[10px]">
+                            Replied
+                          </Badge>
+                        ) : null}
+                      </div>
                     </div>
                   </div>
                 </button>
@@ -347,90 +361,106 @@ function AdminInbox() {
             })}
           </div>
 
-          {selected ? (
-            <div className="rounded-2xl border border-border bg-background">
-              <div className="border-b border-border px-5 py-4">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <h2 className="text-xl font-extrabold text-foreground">
-                      {selected.subject || "(no subject)"}
-                    </h2>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      From{" "}
-                      <span className="font-semibold text-foreground">
-                        {selected.from_name
-                          ? `${selected.from_name} <${selected.from_email}>`
-                          : selected.from_email}
+          <div className="flex min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-background">
+            {selected ? (
+              <>
+                <div className="shrink-0 border-b border-border px-5 py-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <h2 className="truncate text-xl font-extrabold text-foreground">
+                        {selected.subject || "(no subject)"}
+                      </h2>
+                      <p className="mt-1 truncate text-sm text-muted-foreground">
+                        From{" "}
+                        <span className="font-semibold text-foreground">
+                          {selected.from_name
+                            ? `${selected.from_name} <${selected.from_email}>`
+                            : selected.from_email}
+                        </span>
+                      </p>
+                      <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                        To {(selected.to_emails || []).join(", ") || "—"}
+                        {selected.received_at
+                          ? ` · ${new Date(selected.received_at).toLocaleString()}`
+                          : ""}
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="shrink-0"
+                      onClick={() => setConfirmDelete(selected)}
+                    >
+                      <Trash2 className="mr-1.5 h-4 w-4" />
+                      Delete
+                    </Button>
+                  </div>
+                  <div className="mt-3 flex h-7 items-center gap-2 overflow-x-auto">
+                    {Array.isArray(selected.attachments) &&
+                    selected.attachments.length > 0 ? (
+                      selected.attachments.map((file, idx) => (
+                        <Badge
+                          key={file.id || idx}
+                          variant="secondary"
+                          className="shrink-0"
+                        >
+                          <Paperclip className="mr-1 h-3 w-3" />
+                          {file.filename || "Attachment"}
+                        </Badge>
+                      ))
+                    ) : (
+                      <span className="text-xs text-muted-foreground">
+                        No attachments
                       </span>
-                    </p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
-                      To {(selected.to_emails || []).join(", ") || "—"}
-                      {selected.received_at
-                        ? ` · ${new Date(selected.received_at).toLocaleString()}`
-                        : ""}
-                    </p>
+                    )}
                   </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setConfirmDelete(selected)}
-                  >
-                    <Trash2 className="mr-1.5 h-4 w-4" />
-                    Delete
-                  </Button>
                 </div>
-                {Array.isArray(selected.attachments) &&
-                selected.attachments.length > 0 ? (
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {selected.attachments.map((file, idx) => (
-                      <Badge key={file.id || idx} variant="secondary">
-                        <Paperclip className="mr-1 h-3 w-3" />
-                        {file.filename || "Attachment"}
-                      </Badge>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
 
-              <div className="max-h-[36vh] overflow-y-auto px-5 py-4">
-                {selected.html_body ? (
-                  <div
-                    className="prose prose-sm max-w-none text-foreground"
-                    dangerouslySetInnerHTML={{ __html: selected.html_body }}
+                <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
+                  {selected.html_body ? (
+                    <div
+                      className="prose prose-sm max-w-none text-foreground"
+                      dangerouslySetInnerHTML={{ __html: selected.html_body }}
+                    />
+                  ) : (
+                    <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-foreground">
+                      {selected.text_body || "No message body"}
+                    </pre>
+                  )}
+                </div>
+
+                <div className="shrink-0 border-t border-border px-5 py-4">
+                  <div className="mb-2 flex items-center gap-2 text-sm font-bold text-foreground">
+                    <Reply className="h-4 w-4 shrink-0" />
+                    <span className="truncate">
+                      Reply to {selected.from_email}
+                    </span>
+                  </div>
+                  <Textarea
+                    value={replyBody}
+                    onChange={(e) => setReplyBody(e.target.value)}
+                    rows={5}
+                    className="min-h-[120px] resize-none"
+                    placeholder="Write your reply…"
                   />
-                ) : (
-                  <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-foreground">
-                    {selected.text_body || "No message body"}
-                  </pre>
-                )}
-              </div>
-
-              <div className="border-t border-border px-5 py-4">
-                <div className="mb-2 flex items-center gap-2 text-sm font-bold text-foreground">
-                  <Reply className="h-4 w-4" />
-                  Reply to {selected.from_email}
+                  <div className="mt-3 flex justify-end">
+                    <Button
+                      type="button"
+                      disabled={!replyBody.trim() || replyMutation.isPending}
+                      onClick={() => replyMutation.mutate()}
+                    >
+                      {replyMutation.isPending ? "Sending…" : "Send reply"}
+                    </Button>
+                  </div>
                 </div>
-                <Textarea
-                  value={replyBody}
-                  onChange={(e) => setReplyBody(e.target.value)}
-                  rows={6}
-                  placeholder="Write your reply…"
-                />
-                <div className="mt-3 flex justify-end">
-                  <Button
-                    type="button"
-                    disabled={
-                      !replyBody.trim() || replyMutation.isPending
-                    }
-                    onClick={() => replyMutation.mutate()}
-                  >
-                    {replyMutation.isPending ? "Sending…" : "Send reply"}
-                  </Button>
-                </div>
+              </>
+            ) : (
+              <div className="flex flex-1 items-center justify-center p-8 text-sm text-muted-foreground">
+                Select a message to read
               </div>
-            </div>
-          ) : null}
+            )}
+          </div>
         </div>
       )}
 
