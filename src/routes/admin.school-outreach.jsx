@@ -22,6 +22,10 @@ import {
   createSchoolOutreachSchool,
   updateSchoolOutreachSchool,
   deleteSchoolOutreachSchool,
+  createSchoolOutreachContact,
+  updateSchoolOutreachContact,
+  deleteSchoolOutreachContact,
+  getSchoolPrimaryContact,
   updateSchoolOutreachClub,
   sendOutreachEmail,
   SCHOOL_OUTREACH_STATUSES,
@@ -69,13 +73,25 @@ function firstNameFromContact(name) {
   return cleaned.split(/\s+/)[0] || "";
 }
 
-function personalizeTemplate(template, school) {
-  const first = firstNameFromContact(school?.primary_contact_name) || "there";
+function personalizeTemplate(template, school, contact) {
+  const primary = contact || getSchoolPrimaryContact(school);
+  const first =
+    firstNameFromContact(primary?.name || school?.primary_contact_name) ||
+    "there";
   return {
     subject: template.subject,
     body: template.body.replace(/\[First name\]/g, first),
   };
 }
+
+const EMPTY_CONTACT_FORM = {
+  name: "",
+  role: "",
+  email: "",
+  phone: "",
+  notes: "",
+  is_primary: false,
+};
 
 function todayISODate() {
   const now = new Date();
@@ -225,8 +241,11 @@ function AdminSchoolOutreach() {
   const [creatingSchool, setCreatingSchool] = useState(false);
   const [createForm, setCreateForm] = useState(EMPTY_SCHOOL_FORM);
   const [confirmDeleteSchool, setConfirmDeleteSchool] = useState(null);
+  const [contactForm, setContactForm] = useState(null);
+  // contactForm: { schoolId, ...fields } when adding; { id, schoolId, ...fields } when editing
+  const [confirmDeleteContact, setConfirmDeleteContact] = useState(null);
   const [compose, setCompose] = useState(null);
-  // compose: { school, templateId, to, cc, subject, body, bccAdmin, markFollowUp }
+  // compose: { school, contact, templateId, to, cc, subject, body, bccAdmin, markFollowUp }
 
   const patchSchoolField = (field, value) => {
     setSelectedSchool((prev) => (prev ? { ...prev, [field]: value } : prev));
@@ -269,6 +288,15 @@ function AdminSchoolOutreach() {
         () => {
           queryClient.invalidateQueries({
             queryKey: ["admin-school-outreach-clubs"],
+          });
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "school_outreach_contacts" },
+        () => {
+          queryClient.invalidateQueries({
+            queryKey: ["admin-school-outreach-schools"],
           });
         },
       )
@@ -325,6 +353,64 @@ function AdminSchoolOutreach() {
       toast.error(err?.message || "Could not delete school."),
   });
 
+  const contactMutation = useMutation({
+    mutationFn: async (form) => {
+      if (!form?.name?.trim()) throw new Error("Contact name is required.");
+      if (form.id) {
+        return updateSchoolOutreachContact(form.id, {
+          name: form.name.trim(),
+          role: form.role?.trim() || null,
+          email: form.email?.trim() || null,
+          phone: form.phone?.trim() || null,
+          notes: form.notes?.trim() || null,
+          is_primary: Boolean(form.is_primary),
+        });
+      }
+      return createSchoolOutreachContact({
+        school_id: form.schoolId,
+        name: form.name.trim(),
+        role: form.role?.trim() || null,
+        email: form.email?.trim() || null,
+        phone: form.phone?.trim() || null,
+        notes: form.notes?.trim() || null,
+        is_primary: Boolean(form.is_primary),
+      });
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["admin-school-outreach-schools"],
+      });
+      const refreshed = await listSchoolOutreachSchools();
+      if (contactForm?.schoolId) {
+        const next = refreshed.find((s) => s.id === contactForm.schoolId);
+        if (next) setSelectedSchool(next);
+      }
+      setContactForm(null);
+      toast.success(contactForm?.id ? "Contact updated" : "Contact added");
+    },
+    onError: (err) =>
+      toast.error(err?.message || "Could not save contact."),
+  });
+
+  const deleteContactMutation = useMutation({
+    mutationFn: (id) => deleteSchoolOutreachContact(id),
+    onSuccess: async () => {
+      const schoolId = confirmDeleteContact?.school_id;
+      setConfirmDeleteContact(null);
+      await queryClient.invalidateQueries({
+        queryKey: ["admin-school-outreach-schools"],
+      });
+      if (schoolId) {
+        const refreshed = await listSchoolOutreachSchools();
+        const next = refreshed.find((s) => s.id === schoolId);
+        if (next) setSelectedSchool(next);
+      }
+      toast.success("Contact deleted");
+    },
+    onError: (err) =>
+      toast.error(err?.message || "Could not delete contact."),
+  });
+
   const clubMutation = useMutation({
     mutationFn: ({ id, updates }) => updateSchoolOutreachClub(id, updates),
     onSuccess: (data) => {
@@ -369,16 +455,18 @@ function AdminSchoolOutreach() {
     });
   };
 
-  const openCompose = (school, templateId = "full") => {
+  const openCompose = (school, templateId = "full", contact = null) => {
+    const selected = contact || getSchoolPrimaryContact(school);
     const template =
       EMAIL_TEMPLATES.find((t) => t.id === templateId) || EMAIL_TEMPLATES[0];
-    const personalized = personalizeTemplate(template, school);
+    const personalized = personalizeTemplate(template, school, selected);
     const alreadyContacted =
       school.status && school.status !== "Not started";
     setCompose({
       school,
+      contact: selected,
       templateId: template.id,
-      to: school.primary_email || "",
+      to: selected?.email || school.primary_email || "",
       cc: "",
       subject: personalized.subject,
       body: personalized.body,
@@ -392,10 +480,37 @@ function AdminSchoolOutreach() {
       if (!prev) return prev;
       const template =
         EMAIL_TEMPLATES.find((t) => t.id === templateId) || EMAIL_TEMPLATES[0];
-      const personalized = personalizeTemplate(template, prev.school);
+      const personalized = personalizeTemplate(
+        template,
+        prev.school,
+        prev.contact,
+      );
       return {
         ...prev,
         templateId: template.id,
+        subject: personalized.subject,
+        body: personalized.body,
+      };
+    });
+  };
+
+  const applyComposeContact = (contactId) => {
+    setCompose((prev) => {
+      if (!prev) return prev;
+      const contact =
+        (prev.school.contacts || []).find((c) => c.id === contactId) || null;
+      const template =
+        EMAIL_TEMPLATES.find((t) => t.id === prev.templateId) ||
+        EMAIL_TEMPLATES[0];
+      const personalized = personalizeTemplate(
+        template,
+        prev.school,
+        contact,
+      );
+      return {
+        ...prev,
+        contact,
+        to: contact?.email || "",
         subject: personalized.subject,
         body: personalized.body,
       };
@@ -473,6 +588,10 @@ function AdminSchoolOutreach() {
     if (!schools) return [];
     const q = search.trim().toLowerCase();
     return schools.filter((item) => {
+      const contactBlob = (item.contacts || [])
+        .flatMap((c) => [c.name, c.email, c.role, c.phone, c.notes])
+        .filter(Boolean)
+        .join(" ");
       const matchesSearch =
         !q ||
         [
@@ -483,6 +602,7 @@ function AdminSchoolOutreach() {
           item.primary_contact_name,
           item.primary_email,
           item.region,
+          contactBlob,
         ]
           .filter(Boolean)
           .join(" ")
@@ -676,19 +796,39 @@ function AdminSchoolOutreach() {
                             </p>
                           </td>
                           <td className="px-4 py-3 align-top hidden md:table-cell">
-                            <p className="font-semibold">{item.primary_contact_name || "—"}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {item.primary_target_role}
-                            </p>
-                            {item.primary_email ? (
-                              <a
-                                href={`mailto:${item.primary_email}`}
-                                className="inline-flex items-center gap-1 text-xs font-semibold text-accent hover:underline mt-1"
-                              >
-                                <Mail className="h-3 w-3" />
-                                {item.primary_email}
-                              </a>
-                            ) : null}
+                            {(() => {
+                              const primary = getSchoolPrimaryContact(item);
+                              const extra = Math.max(
+                                0,
+                                (item.contacts || []).length - 1,
+                              );
+                              return (
+                                <>
+                                  <p className="font-semibold">
+                                    {primary?.name ||
+                                      item.primary_contact_name ||
+                                      "—"}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {primary?.role || item.primary_target_role}
+                                  </p>
+                                  {primary?.email || item.primary_email ? (
+                                    <a
+                                      href={`mailto:${primary?.email || item.primary_email}`}
+                                      className="inline-flex items-center gap-1 text-xs font-semibold text-accent hover:underline mt-1"
+                                    >
+                                      <Mail className="h-3 w-3" />
+                                      {primary?.email || item.primary_email}
+                                    </a>
+                                  ) : null}
+                                  {extra > 0 ? (
+                                    <p className="text-[11px] text-muted-foreground mt-1">
+                                      +{extra} more contact{extra === 1 ? "" : "s"}
+                                    </p>
+                                  ) : null}
+                                </>
+                              );
+                            })()}
                           </td>
                           <td className="px-4 py-3 align-top">
                             <Badge variant="outline" className="rounded-full">
@@ -713,7 +853,10 @@ function AdminSchoolOutreach() {
                               <Button
                                 size="sm"
                                 className="rounded-full"
-                                disabled={!item.primary_email}
+                                disabled={
+                                  !getSchoolPrimaryContact(item)?.email &&
+                                  !item.primary_email
+                                }
                                 onClick={() => openCompose(item)}
                               >
                                 <Send className="h-3.5 w-3.5 mr-1.5" />
@@ -897,7 +1040,10 @@ function AdminSchoolOutreach() {
                   <div className="flex flex-wrap gap-2 shrink-0">
                     <Button
                       className="rounded-full"
-                      disabled={!selectedSchool.primary_email}
+                      disabled={
+                        !getSchoolPrimaryContact(selectedSchool)?.email &&
+                        !selectedSchool.primary_email
+                      }
                       onClick={() => openCompose(selectedSchool)}
                     >
                       <Send className="h-4 w-4 mr-2" />
@@ -1013,80 +1159,139 @@ function AdminSchoolOutreach() {
                   </div>
                 </div>
 
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Primary contact name</Label>
-                    <Input
-                      className="rounded-xl"
-                      value={selectedSchool.primary_contact_name || ""}
-                      onChange={(e) =>
-                        patchSchoolField("primary_contact_name", e.target.value)
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-black text-foreground">
+                        Contacts
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Add multiple people at this school. Mark one as primary
+                        for default emailing.
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      size="sm"
+                      className="rounded-full shrink-0"
+                      onClick={() =>
+                        setContactForm({
+                          schoolId: selectedSchool.id,
+                          ...EMPTY_CONTACT_FORM,
+                          is_primary: !(selectedSchool.contacts || []).length,
+                        })
                       }
-                      onBlur={(e) =>
-                        saveSchoolField(
-                          "primary_contact_name",
-                          e.target.value.trim(),
-                        )
-                      }
-                    />
+                    >
+                      <Plus className="h-3.5 w-3.5 mr-1.5" />
+                      Add contact
+                    </Button>
                   </div>
-                  <div className="space-y-2">
-                    <Label>Target role</Label>
-                    <Input
-                      className="rounded-xl"
-                      value={selectedSchool.primary_target_role || ""}
-                      onChange={(e) =>
-                        patchSchoolField("primary_target_role", e.target.value)
-                      }
-                      onBlur={(e) =>
-                        saveSchoolField(
-                          "primary_target_role",
-                          e.target.value.trim(),
-                        )
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Primary email</Label>
-                    <Input
-                      type="email"
-                      className="rounded-xl"
-                      value={selectedSchool.primary_email || ""}
-                      onChange={(e) =>
-                        patchSchoolField("primary_email", e.target.value)
-                      }
-                      onBlur={(e) =>
-                        saveSchoolField("primary_email", e.target.value.trim())
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Phone</Label>
-                    <Input
-                      className="rounded-xl"
-                      value={selectedSchool.phone || ""}
-                      onChange={(e) => patchSchoolField("phone", e.target.value)}
-                      onBlur={(e) =>
-                        saveSchoolField("phone", e.target.value.trim())
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2 sm:col-span-2">
-                    <Label>Secondary / Dean contact</Label>
-                    <Textarea
-                      className="rounded-xl min-h-[72px]"
-                      value={selectedSchool.secondary_contact || ""}
-                      onChange={(e) =>
-                        patchSchoolField("secondary_contact", e.target.value)
-                      }
-                      onBlur={(e) =>
-                        saveSchoolField(
-                          "secondary_contact",
-                          e.target.value.trim(),
-                        )
-                      }
-                    />
-                  </div>
+
+                  {!(selectedSchool.contacts || []).length ? (
+                    <div className="rounded-xl border border-dashed border-border bg-muted/20 px-4 py-6 text-center text-sm text-muted-foreground">
+                      No contacts yet. Add Student Affairs, Dean, or club
+                      advisors here.
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {(selectedSchool.contacts || []).map((contact) => (
+                        <div
+                          key={contact.id}
+                          className="rounded-xl border border-border bg-muted/20 p-3"
+                        >
+                          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                            <div className="min-w-0">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <p className="font-bold text-foreground">
+                                  {contact.name}
+                                </p>
+                                {contact.is_primary ? (
+                                  <Badge className="rounded-full" variant="secondary">
+                                    Primary
+                                  </Badge>
+                                ) : null}
+                              </div>
+                              {contact.role ? (
+                                <p className="text-xs text-muted-foreground mt-0.5">
+                                  {contact.role}
+                                </p>
+                              ) : null}
+                              <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs font-semibold">
+                                {contact.email ? (
+                                  <a
+                                    href={`mailto:${contact.email}`}
+                                    className="inline-flex items-center gap-1 text-accent hover:underline"
+                                  >
+                                    <Mail className="h-3 w-3" />
+                                    {contact.email}
+                                  </a>
+                                ) : null}
+                                {contact.phone ? (
+                                  <a
+                                    href={`tel:${contact.phone}`}
+                                    className="inline-flex items-center gap-1 text-foreground/80"
+                                  >
+                                    <Phone className="h-3 w-3" />
+                                    {contact.phone}
+                                  </a>
+                                ) : null}
+                              </div>
+                              {contact.notes ? (
+                                <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
+                                  {contact.notes}
+                                </p>
+                              ) : null}
+                            </div>
+                            <div className="flex flex-wrap gap-2 shrink-0">
+                              <Button
+                                type="button"
+                                size="sm"
+                                className="rounded-full"
+                                disabled={!contact.email}
+                                onClick={() =>
+                                  openCompose(selectedSchool, "full", contact)
+                                }
+                              >
+                                <Send className="h-3.5 w-3.5 mr-1.5" />
+                                Email
+                              </Button>
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                className="rounded-full"
+                                onClick={() =>
+                                  setContactForm({
+                                    id: contact.id,
+                                    schoolId: selectedSchool.id,
+                                    name: contact.name || "",
+                                    role: contact.role || "",
+                                    email: contact.email || "",
+                                    phone: contact.phone || "",
+                                    notes: contact.notes || "",
+                                    is_primary: Boolean(contact.is_primary),
+                                  })
+                                }
+                              >
+                                Edit
+                              </Button>
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                className="rounded-full text-destructive hover:text-destructive"
+                                onClick={() =>
+                                  setConfirmDeleteContact(contact)
+                                }
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {(selectedSchool.program_website ||
@@ -1110,24 +1315,6 @@ function AdminSchoolOutreach() {
                         className="inline-flex items-center gap-1 text-accent hover:underline"
                       >
                         Open directory <ExternalLink className="h-3 w-3" />
-                      </a>
-                    ) : null}
-                    {selectedSchool.primary_email ? (
-                      <a
-                        href={`mailto:${selectedSchool.primary_email}`}
-                        className="inline-flex items-center gap-1 text-accent hover:underline"
-                      >
-                        <Mail className="h-3 w-3" />
-                        {selectedSchool.primary_email}
-                      </a>
-                    ) : null}
-                    {selectedSchool.phone ? (
-                      <a
-                        href={`tel:${selectedSchool.phone}`}
-                        className="inline-flex items-center gap-1 text-foreground/80"
-                      >
-                        <Phone className="h-3 w-3" />
-                        {selectedSchool.phone}
                       </a>
                     ) : null}
                   </div>
@@ -1499,6 +1686,156 @@ function AdminSchoolOutreach() {
         }
       />
 
+      <ConfirmDialog
+        open={Boolean(confirmDeleteContact)}
+        onOpenChange={(open) => !open && setConfirmDeleteContact(null)}
+        title="Delete this contact?"
+        description={`Remove ${confirmDeleteContact?.name || "this contact"} from the school.`}
+        confirmLabel="Delete"
+        destructive
+        onConfirm={() =>
+          confirmDeleteContact &&
+          deleteContactMutation.mutate(confirmDeleteContact.id)
+        }
+      />
+
+      {/* Add / edit school contact */}
+      <Dialog
+        open={Boolean(contactForm)}
+        onOpenChange={(open) => {
+          if (!open && !contactMutation.isPending) setContactForm(null);
+        }}
+      >
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          {contactForm ? (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-xl font-black">
+                  {contactForm.id ? "Edit contact" : "Add contact"}
+                </DialogTitle>
+                <DialogDescription>
+                  People you can email for this school’s outreach.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 pt-1">
+                <div className="space-y-2">
+                  <Label>Name *</Label>
+                  <Input
+                    className="rounded-xl"
+                    value={contactForm.name}
+                    onChange={(e) =>
+                      setContactForm((prev) => ({
+                        ...prev,
+                        name: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Role / title</Label>
+                  <Input
+                    className="rounded-xl"
+                    value={contactForm.role}
+                    placeholder="Dean of Student Affairs"
+                    onChange={(e) =>
+                      setContactForm((prev) => ({
+                        ...prev,
+                        role: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Email</Label>
+                    <Input
+                      type="email"
+                      className="rounded-xl"
+                      value={contactForm.email}
+                      onChange={(e) =>
+                        setContactForm((prev) => ({
+                          ...prev,
+                          email: e.target.value,
+                        }))
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Phone</Label>
+                    <Input
+                      className="rounded-xl"
+                      value={contactForm.phone}
+                      onChange={(e) =>
+                        setContactForm((prev) => ({
+                          ...prev,
+                          phone: e.target.value,
+                        }))
+                      }
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label>Notes</Label>
+                  <Textarea
+                    className="rounded-xl min-h-[72px]"
+                    value={contactForm.notes}
+                    onChange={(e) =>
+                      setContactForm((prev) => ({
+                        ...prev,
+                        notes: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+                <label className="flex items-center gap-2 text-sm font-medium">
+                  <Checkbox
+                    checked={Boolean(contactForm.is_primary)}
+                    onCheckedChange={(checked) =>
+                      setContactForm((prev) => ({
+                        ...prev,
+                        is_primary: Boolean(checked),
+                      }))
+                    }
+                  />
+                  Primary contact for this school
+                </label>
+                <div className="flex justify-end gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="rounded-full"
+                    disabled={contactMutation.isPending}
+                    onClick={() => setContactForm(null)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    className="rounded-full"
+                    disabled={contactMutation.isPending}
+                    onClick={() => contactMutation.mutate(contactForm)}
+                  >
+                    {contactMutation.isPending ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Saving…
+                      </>
+                    ) : contactForm.id ? (
+                      "Save contact"
+                    ) : (
+                      <>
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add contact
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </>
+          ) : null}
+        </DialogContent>
+      </Dialog>
+
       {/* Club detail dialog */}
       <Dialog
         open={!!selectedClub}
@@ -1615,6 +1952,30 @@ function AdminSchoolOutreach() {
               </DialogHeader>
 
               <div className="space-y-4 pt-1">
+                {(compose.school.contacts || []).length > 0 ? (
+                  <div className="space-y-2">
+                    <Label>Contact</Label>
+                    <Select
+                      value={compose.contact?.id || ""}
+                      onValueChange={applyComposeContact}
+                      disabled={sendMutation.isPending}
+                    >
+                      <SelectTrigger className="rounded-xl">
+                        <SelectValue placeholder="Choose a contact" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {(compose.school.contacts || []).map((c) => (
+                          <SelectItem key={c.id} value={c.id}>
+                            {c.name}
+                            {c.email ? ` · ${c.email}` : ""}
+                            {c.is_primary ? " (primary)" : ""}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                ) : null}
+
                 <div className="space-y-2">
                   <Label>Template</Label>
                   <Select

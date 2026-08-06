@@ -543,16 +543,82 @@ export const SCHOOL_OUTREACH_REGIONS = [
   "Territory",
 ];
 
+function sortSchoolContacts(contacts) {
+  return [...(contacts || [])].sort((a, b) => {
+    if (a.is_primary !== b.is_primary) return a.is_primary ? -1 : 1;
+    return (a.sort_order || 0) - (b.sort_order || 0);
+  });
+}
+
+function withSortedContacts(school) {
+  if (!school) return school;
+  return {
+    ...school,
+    contacts: sortSchoolContacts(school.contacts),
+  };
+}
+
+export function getSchoolPrimaryContact(school) {
+  const contacts = sortSchoolContacts(school?.contacts);
+  return (
+    contacts.find((c) => c.is_primary) ||
+    contacts.find((c) => c.email) ||
+    contacts[0] ||
+    null
+  );
+}
+
+async function syncSchoolPrimaryFields(schoolId) {
+  const { data: contacts } = await supabase
+    .from("school_outreach_contacts")
+    .select("*")
+    .eq("school_id", schoolId)
+    .order("sort_order", { ascending: true });
+
+  const sorted = sortSchoolContacts(contacts);
+  const primary =
+    sorted.find((c) => c.is_primary) ||
+    sorted.find((c) => c.email) ||
+    sorted[0] ||
+    null;
+  const secondary = sorted.find((c) => !primary || c.id !== primary.id) || null;
+
+  await supabase
+    .from("school_outreach_schools")
+    .update({
+      primary_contact_name: primary?.name || null,
+      primary_target_role: primary?.role || null,
+      primary_email: primary?.email || null,
+      phone: primary?.phone || null,
+      secondary_contact: secondary
+        ? [secondary.name, secondary.role, secondary.email, secondary.phone]
+            .filter(Boolean)
+            .join(" · ") || secondary.notes
+        : null,
+    })
+    .eq("id", schoolId);
+}
+
 export async function listSchoolOutreachSchools() {
   const { data, error } = await supabase
     .from("school_outreach_schools")
-    .select("*")
+    .select("*, contacts:school_outreach_contacts(*)")
     .order("sort_order", { ascending: true });
   if (error) throw error;
-  return data ?? [];
+  return (data ?? []).map(withSortedContacts);
 }
 
 export async function createSchoolOutreachSchool(payload) {
+  const {
+    primary_contact_name,
+    primary_target_role,
+    primary_email,
+    phone,
+    secondary_contact,
+    contacts: _contacts,
+    ...schoolFields
+  } = payload;
+
   const { data: maxRow } = await supabase
     .from("school_outreach_schools")
     .select("sort_order")
@@ -561,17 +627,60 @@ export async function createSchoolOutreachSchool(payload) {
     .maybeSingle();
 
   const sortOrder =
-    typeof payload.sort_order === "number"
-      ? payload.sort_order
+    typeof schoolFields.sort_order === "number"
+      ? schoolFields.sort_order
       : (maxRow?.sort_order || 0) + 1;
 
   const { data, error } = await supabase
     .from("school_outreach_schools")
-    .insert({ ...payload, sort_order: sortOrder })
+    .insert({
+      ...schoolFields,
+      primary_contact_name: primary_contact_name || null,
+      primary_target_role: primary_target_role || null,
+      primary_email: primary_email || null,
+      phone: phone || null,
+      secondary_contact: secondary_contact || null,
+      sort_order: sortOrder,
+    })
     .select()
     .single();
   if (error) throw error;
-  return data;
+
+  if (
+    primary_contact_name ||
+    primary_email ||
+    phone ||
+    primary_target_role
+  ) {
+    await supabase.from("school_outreach_contacts").insert({
+      school_id: data.id,
+      name: primary_contact_name || schoolFields.short_name || "Primary contact",
+      role: primary_target_role || null,
+      email: primary_email || null,
+      phone: phone || null,
+      is_primary: true,
+      sort_order: 0,
+    });
+  }
+
+  if (secondary_contact?.trim()) {
+    await supabase.from("school_outreach_contacts").insert({
+      school_id: data.id,
+      name: secondary_contact.trim().slice(0, 200),
+      role: "Secondary / Dean",
+      notes: secondary_contact.trim(),
+      is_primary: false,
+      sort_order: 1,
+    });
+  }
+
+  const { data: full } = await supabase
+    .from("school_outreach_schools")
+    .select("*, contacts:school_outreach_contacts(*)")
+    .eq("id", data.id)
+    .maybeSingle();
+
+  return withSortedContacts(full || data);
 }
 
 export async function updateSchoolOutreachSchool(id, updates) {
@@ -579,10 +688,10 @@ export async function updateSchoolOutreachSchool(id, updates) {
     .from("school_outreach_schools")
     .update(updates)
     .eq("id", id)
-    .select()
+    .select("*, contacts:school_outreach_contacts(*)")
     .maybeSingle();
   if (error) throw error;
-  return data;
+  return withSortedContacts(data);
 }
 
 export async function deleteSchoolOutreachSchool(id) {
@@ -591,6 +700,112 @@ export async function deleteSchoolOutreachSchool(id) {
     .delete()
     .eq("id", id);
   if (error) throw error;
+}
+
+export async function createSchoolOutreachContact(payload) {
+  const schoolId = payload.school_id;
+  if (!schoolId) throw new Error("school_id is required");
+
+  const { data: maxRow } = await supabase
+    .from("school_outreach_contacts")
+    .select("sort_order")
+    .eq("school_id", schoolId)
+    .order("sort_order", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const makePrimary = Boolean(payload.is_primary);
+  if (makePrimary) {
+    await supabase
+      .from("school_outreach_contacts")
+      .update({ is_primary: false })
+      .eq("school_id", schoolId);
+  }
+
+  const { data, error } = await supabase
+    .from("school_outreach_contacts")
+    .insert({
+      school_id: schoolId,
+      name: String(payload.name || "").trim(),
+      role: payload.role?.trim() || null,
+      email: payload.email?.trim() || null,
+      phone: payload.phone?.trim() || null,
+      notes: payload.notes?.trim() || null,
+      is_primary: makePrimary,
+      sort_order:
+        typeof payload.sort_order === "number"
+          ? payload.sort_order
+          : (maxRow?.sort_order || 0) + 1,
+    })
+    .select()
+    .single();
+  if (error) throw error;
+
+  await syncSchoolPrimaryFields(schoolId);
+  return data;
+}
+
+export async function updateSchoolOutreachContact(id, updates) {
+  const { data: existing, error: fetchError } = await supabase
+    .from("school_outreach_contacts")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+  if (fetchError) throw fetchError;
+  if (!existing) throw new Error("Contact not found");
+
+  if (updates.is_primary === true) {
+    await supabase
+      .from("school_outreach_contacts")
+      .update({ is_primary: false })
+      .eq("school_id", existing.school_id)
+      .neq("id", id);
+  }
+
+  const { data, error } = await supabase
+    .from("school_outreach_contacts")
+    .update(updates)
+    .eq("id", id)
+    .select()
+    .maybeSingle();
+  if (error) throw error;
+
+  await syncSchoolPrimaryFields(existing.school_id);
+  return data;
+}
+
+export async function deleteSchoolOutreachContact(id) {
+  const { data: existing, error: fetchError } = await supabase
+    .from("school_outreach_contacts")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+  if (fetchError) throw fetchError;
+  if (!existing) return;
+
+  const { error } = await supabase
+    .from("school_outreach_contacts")
+    .delete()
+    .eq("id", id);
+  if (error) throw error;
+
+  if (existing.is_primary) {
+    const { data: next } = await supabase
+      .from("school_outreach_contacts")
+      .select("id")
+      .eq("school_id", existing.school_id)
+      .order("sort_order", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+    if (next?.id) {
+      await supabase
+        .from("school_outreach_contacts")
+        .update({ is_primary: true })
+        .eq("id", next.id);
+    }
+  }
+
+  await syncSchoolPrimaryFields(existing.school_id);
 }
 
 export async function listSchoolOutreachClubs() {
