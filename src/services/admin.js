@@ -534,6 +534,41 @@ export const SCHOOL_OUTREACH_STATUSES = [
 
 export const SCHOOL_OUTREACH_OWNERS = ["Bilal", "Karim"];
 
+/** Static fallbacks when a founder has not set a profile avatar yet. */
+export const OUTREACH_OWNER_PHOTO_FALLBACKS = {
+  Bilal: "/images/owners/bilal.jpg",
+  Karim: "/images/owners/karim.jpg",
+};
+
+/**
+ * Resolve Bilal / Karim photos from their profile avatars (live),
+ * falling back to the static founder crops.
+ */
+export async function listOutreachOwnerPhotos() {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("full_name, avatar_url")
+    .or(
+      "full_name.ilike.%Bilal%,full_name.ilike.%Karim%,full_name.ilike.%Ismail%,full_name.ilike.%Sayani%",
+    );
+
+  if (error) throw error;
+
+  const photos = { ...OUTREACH_OWNER_PHOTO_FALLBACKS };
+  for (const profile of data || []) {
+    const name = String(profile.full_name || "");
+    const avatar = String(profile.avatar_url || "").trim();
+    if (!avatar) continue;
+    if (/bilal/i.test(name) || /ismail/i.test(name)) {
+      photos.Bilal = avatar;
+    }
+    if (/karim/i.test(name) || /sayani/i.test(name)) {
+      photos.Karim = avatar;
+    }
+  }
+  return photos;
+}
+
 export const SCHOOL_OUTREACH_REGIONS = [
   "Northeast",
   "Southeast",

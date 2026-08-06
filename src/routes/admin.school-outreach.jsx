@@ -40,7 +40,7 @@ import { PageLoader } from "@/components/LoadingSpinner";
 import {
   OwnerBadge,
   OwnerSelectLabel,
-  ownerPhotoUrl,
+  useOwnerPhotoUrl,
 } from "@/components/admin/OwnerBadge";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -249,6 +249,11 @@ function StatCard({ label, value, accent, photo }) {
       </p>
     </div>
   );
+}
+
+function OwnerStatCard({ owner, value }) {
+  const photo = useOwnerPhotoUrl(owner);
+  return <StatCard label={owner} value={value} photo={photo} />;
 }
 
 function CopyButton({ text, label = "Copy" }) {
@@ -871,16 +876,8 @@ function AdminSchoolOutreach() {
             value={schoolStats.byStatus["Sharing with students"] || 0}
             accent="text-emerald-600"
           />
-          <StatCard
-            label="Bilal"
-            value={schoolStats.bilal}
-            photo={ownerPhotoUrl("Bilal")}
-          />
-          <StatCard
-            label="Karim"
-            value={schoolStats.karim}
-            photo={ownerPhotoUrl("Karim")}
-          />
+          <OwnerStatCard owner="Bilal" value={schoolStats.bilal} />
+          <OwnerStatCard owner="Karim" value={schoolStats.karim} />
         </div>
 
         <Tabs value={tab} onValueChange={setTab} className="w-full">

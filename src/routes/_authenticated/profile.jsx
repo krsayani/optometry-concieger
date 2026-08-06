@@ -140,6 +140,7 @@ function ProfilePage() {
     mutationFn: (updates) => updateProfile(user.id, updates),
     onSuccess: async () => {
       await refreshProfile();
+      queryClient.invalidateQueries({ queryKey: ["outreach-owner-photos"] });
       toast.success("Account updated");
     },
   });
