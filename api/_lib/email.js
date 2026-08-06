@@ -622,12 +622,25 @@ const SCHOOL_INTRO_URL = "https://www.optometryconcierge.com/intro";
 const SCHOOL_INTRO_POSTER =
   "https://www.optometryconcierge.com/videos/school-outreach-poster.jpg";
 
+const SITE_HOME_URL = "https://www.optometryconcierge.com";
+
+function linkStyle() {
+  return `color:${BRAND.teal};font-weight:700;text-decoration:underline;`;
+}
+
 function linkifyEscapedText(escaped) {
-  return escaped.replace(
+  // URLs first
+  let html = escaped.replace(
     /(https?:\/\/[^\s<]+)/g,
     (url) =>
-      `<a href="${url}" style="color:${BRAND.teal};font-weight:700;text-decoration:none;" target="_blank" rel="noopener noreferrer">${url}</a>`,
+      `<a href="${url}" style="${linkStyle()}" target="_blank" rel="noopener noreferrer">${url}</a>`,
   );
+  // Brand name → homepage (skip if somehow already inside a tag attribute)
+  html = html.replace(
+    /Optometry Concierge/g,
+    `<a href="${SITE_HOME_URL}" style="${linkStyle()}" target="_blank" rel="noopener noreferrer">Optometry Concierge</a>`,
+  );
+  return html;
 }
 
 function renderVideoCtaBlock() {
@@ -639,7 +652,7 @@ function renderVideoCtaBlock() {
     </div>
   </a>
   <p style="margin:10px 0 0;font-size:12px;color:${BRAND.muted};line-height:1.5;">
-    Or open: <a href="${SCHOOL_INTRO_URL}" style="color:${BRAND.teal};font-weight:700;text-decoration:none;">${SCHOOL_INTRO_URL}</a>
+    Or open: <a href="${SCHOOL_INTRO_URL}" style="${linkStyle()}">${SCHOOL_INTRO_URL}</a>
   </p>
 </div>`;
 }
@@ -693,13 +706,15 @@ export function buildPlainOutreachHtml({ subject, body, includeSchoolVideo }) {
   <div style="max-width:640px;margin:0 auto;padding:28px 16px;">
     <div style="background:${BRAND.white};border:1px solid ${BRAND.border};border-radius:16px;overflow:hidden;">
       <div style="background:${BRAND.navy};padding:18px 24px;">
-        <p style="margin:0;font-size:13px;letter-spacing:0.12em;text-transform:uppercase;color:${BRAND.teal};font-weight:700;">Optometry Concierge</p>
+        <p style="margin:0;font-size:13px;letter-spacing:0.12em;text-transform:uppercase;color:${BRAND.teal};font-weight:700;">
+          <a href="${SITE_HOME_URL}" style="color:${BRAND.teal};font-weight:700;text-decoration:none;" target="_blank" rel="noopener noreferrer">Optometry Concierge</a>
+        </p>
         <p style="margin:6px 0 0;font-size:18px;font-weight:700;color:${BRAND.white};">${escapeHtml(subject || "Message")}</p>
       </div>
       <div style="padding:28px 24px;">${paragraphs.join("")}</div>
     </div>
     <p style="margin:16px 8px 0;font-size:12px;color:${BRAND.muted};line-height:1.5;">
-      Sent by Optometry Concierge · Admin@optometryconcierge.com
+      Sent by <a href="${SITE_HOME_URL}" style="color:${BRAND.teal};font-weight:700;text-decoration:underline;" target="_blank" rel="noopener noreferrer">Optometry Concierge</a>
     </p>
   </div>
 </body>

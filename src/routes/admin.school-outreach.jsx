@@ -217,7 +217,7 @@ Thank you for everything you pour into getting these students ready. Happy to an
 Warmly,
 Dr. Bilal Ismail & Dr. Karim Sayani
 Optometry Concierge
-https://www.optometryconcierge.com  ·  Admin@optometryconcierge.com`,
+https://www.optometryconcierge.com`,
   },
   {
     id: "short",
@@ -233,7 +233,8 @@ Watch our short intro:
 https://www.optometryconcierge.com/intro
 
 Thank you,
-Bilal & Karim  ·  Optometry Concierge  ·  https://www.optometryconcierge.com`,
+Bilal & Karim  ·  Optometry Concierge
+https://www.optometryconcierge.com`,
   },
 ];
 
