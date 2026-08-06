@@ -13,15 +13,20 @@ import {
   Check,
   Send,
   Loader2,
+  Plus,
+  Trash2,
 } from "lucide-react";
 import {
   listSchoolOutreachSchools,
   listSchoolOutreachClubs,
+  createSchoolOutreachSchool,
   updateSchoolOutreachSchool,
+  deleteSchoolOutreachSchool,
   updateSchoolOutreachClub,
   sendOutreachEmail,
   SCHOOL_OUTREACH_STATUSES,
   SCHOOL_OUTREACH_OWNERS,
+  SCHOOL_OUTREACH_REGIONS,
 } from "@/services/admin";
 import { PageLoader } from "@/components/LoadingSpinner";
 import { toast } from "sonner";
@@ -47,6 +52,7 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EmptyState } from "@/components/EmptyState";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -75,6 +81,31 @@ function todayISODate() {
   const now = new Date();
   const tzOffset = now.getTimezoneOffset() * 60000;
   return new Date(now.getTime() - tzOffset).toISOString().slice(0, 10);
+}
+
+const EMPTY_SCHOOL_FORM = {
+  region: "South Central",
+  school: "",
+  short_name: "",
+  city: "",
+  state: "",
+  program_website: "",
+  directory_page: "",
+  primary_target_role: "",
+  primary_contact_name: "",
+  primary_email: "",
+  phone: "",
+  secondary_contact: "",
+  owner: "Bilal",
+  status: "Not started",
+  notes: "",
+};
+
+function slugShortName(value) {
+  return String(value || "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .slice(0, 40);
 }
 
 const EMAIL_TEMPLATES = [
@@ -191,8 +222,24 @@ function AdminSchoolOutreach() {
   const [ownerFilter, setOwnerFilter] = useState("All");
   const [selectedSchool, setSelectedSchool] = useState(null);
   const [selectedClub, setSelectedClub] = useState(null);
+  const [creatingSchool, setCreatingSchool] = useState(false);
+  const [createForm, setCreateForm] = useState(EMPTY_SCHOOL_FORM);
+  const [confirmDeleteSchool, setConfirmDeleteSchool] = useState(null);
   const [compose, setCompose] = useState(null);
   // compose: { school, templateId, to, cc, subject, body, bccAdmin, markFollowUp }
+
+  const patchSchoolField = (field, value) => {
+    setSelectedSchool((prev) => (prev ? { ...prev, [field]: value } : prev));
+  };
+
+  const saveSchoolField = (field, value) => {
+    if (!selectedSchool?.id) return;
+    const next = value === "" ? null : value;
+    schoolMutation.mutate({
+      id: selectedSchool.id,
+      updates: { [field]: next },
+    });
+  };
 
   const { data: schools, isLoading: schoolsLoading } = useQuery({
     queryKey: ["admin-school-outreach-schools"],
@@ -241,7 +288,41 @@ function AdminSchoolOutreach() {
       if (data) setSelectedSchool(data);
       toast.success("School updated");
     },
-    onError: () => toast.error("Could not update school. Please try again."),
+    onError: (err) =>
+      toast.error(err?.message || "Could not update school. Please try again."),
+  });
+
+  const createSchoolMutation = useMutation({
+    mutationFn: (payload) => createSchoolOutreachSchool(payload),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: ["admin-school-outreach-schools"],
+      });
+      setCreatingSchool(false);
+      setCreateForm(EMPTY_SCHOOL_FORM);
+      setSelectedSchool(data);
+      toast.success("School added");
+    },
+    onError: (err) =>
+      toast.error(
+        err?.message?.includes("unique") || err?.code === "23505"
+          ? "That short name is already used. Pick a different abbreviation."
+          : err?.message || "Could not add school.",
+      ),
+  });
+
+  const deleteSchoolMutation = useMutation({
+    mutationFn: (id) => deleteSchoolOutreachSchool(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["admin-school-outreach-schools"],
+      });
+      setConfirmDeleteSchool(null);
+      setSelectedSchool(null);
+      toast.success("School deleted");
+    },
+    onError: (err) =>
+      toast.error(err?.message || "Could not delete school."),
   });
 
   const clubMutation = useMutation({
@@ -255,6 +336,38 @@ function AdminSchoolOutreach() {
     },
     onError: () => toast.error("Could not update club. Please try again."),
   });
+
+  const submitCreateSchool = () => {
+    const school = createForm.school.trim();
+    const shortName = slugShortName(
+      createForm.short_name || school.split("–")[0] || school,
+    );
+    if (!school) {
+      toast.error("School name is required.");
+      return;
+    }
+    if (!shortName) {
+      toast.error("Short name / abbreviation is required.");
+      return;
+    }
+    createSchoolMutation.mutate({
+      region: createForm.region || "South Central",
+      school,
+      short_name: shortName,
+      city: createForm.city.trim() || null,
+      state: createForm.state.trim() || null,
+      program_website: createForm.program_website.trim() || null,
+      directory_page: createForm.directory_page.trim() || null,
+      primary_target_role: createForm.primary_target_role.trim() || null,
+      primary_contact_name: createForm.primary_contact_name.trim() || null,
+      primary_email: createForm.primary_email.trim() || null,
+      phone: createForm.phone.trim() || null,
+      secondary_contact: createForm.secondary_contact.trim() || null,
+      owner: createForm.owner || "Bilal",
+      status: createForm.status || "Not started",
+      notes: createForm.notes.trim() || null,
+    });
+  };
 
   const openCompose = (school, templateId = "full") => {
     const template =
@@ -420,6 +533,16 @@ function AdminSchoolOutreach() {
               </p>
             </div>
           </div>
+          <Button
+            className="rounded-full shrink-0"
+            onClick={() => {
+              setCreateForm(EMPTY_SCHOOL_FORM);
+              setCreatingSchool(true);
+            }}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add school
+          </Button>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-8">
@@ -507,7 +630,19 @@ function AdminSchoolOutreach() {
               <EmptyState
                 icon={GraduationCap}
                 title="No schools match"
-                description="Try clearing filters or search."
+                description="Try clearing filters, or add a new optometry school."
+                action={
+                  <Button
+                    className="rounded-full"
+                    onClick={() => {
+                      setCreateForm(EMPTY_SCHOOL_FORM);
+                      setCreatingSchool(true);
+                    }}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add school
+                  </Button>
+                }
               />
             ) : (
               <div className="rounded-2xl border border-border bg-card shadow-soft overflow-hidden">
@@ -741,7 +876,7 @@ function AdminSchoolOutreach() {
         </Tabs>
       </div>
 
-      {/* School detail dialog */}
+      {/* School detail / edit dialog */}
       <Dialog
         open={!!selectedSchool}
         onOpenChange={(open) => !open && setSelectedSchool(null)}
@@ -753,37 +888,234 @@ function AdminSchoolOutreach() {
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 pr-6">
                   <div>
                     <DialogTitle className="text-xl font-black">
-                      {selectedSchool.short_name}
+                      Edit school
                     </DialogTitle>
                     <DialogDescription className="text-sm leading-relaxed">
-                      {selectedSchool.school}
+                      Update school details, contacts, and outreach status.
                     </DialogDescription>
                   </div>
-                  <Button
-                    className="rounded-full shrink-0"
-                    disabled={!selectedSchool.primary_email}
-                    onClick={() => openCompose(selectedSchool)}
-                  >
-                    <Send className="h-4 w-4 mr-2" />
-                    Send email
-                  </Button>
+                  <div className="flex flex-wrap gap-2 shrink-0">
+                    <Button
+                      className="rounded-full"
+                      disabled={!selectedSchool.primary_email}
+                      onClick={() => openCompose(selectedSchool)}
+                    >
+                      <Send className="h-4 w-4 mr-2" />
+                      Send email
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="rounded-full text-destructive hover:text-destructive"
+                      onClick={() => setConfirmDeleteSchool(selectedSchool)}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete
+                    </Button>
+                  </div>
                 </div>
               </DialogHeader>
 
               <div className="space-y-5 pt-2">
-                <div className="grid sm:grid-cols-2 gap-3 text-sm">
-                  <div className="rounded-xl border border-border bg-muted/30 p-3">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                      Primary contact
-                    </p>
-                    <p className="font-bold">{selectedSchool.primary_contact_name || "—"}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {selectedSchool.primary_target_role}
-                    </p>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label>School name</Label>
+                    <Input
+                      className="rounded-xl"
+                      value={selectedSchool.school || ""}
+                      onChange={(e) => patchSchoolField("school", e.target.value)}
+                      onBlur={(e) => saveSchoolField("school", e.target.value.trim())}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Short name</Label>
+                    <Input
+                      className="rounded-xl"
+                      value={selectedSchool.short_name || ""}
+                      onChange={(e) =>
+                        patchSchoolField("short_name", e.target.value)
+                      }
+                      onBlur={(e) =>
+                        saveSchoolField(
+                          "short_name",
+                          slugShortName(e.target.value),
+                        )
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Region</Label>
+                    <Select
+                      value={selectedSchool.region || "South Central"}
+                      onValueChange={(v) =>
+                        schoolMutation.mutate({
+                          id: selectedSchool.id,
+                          updates: { region: v },
+                        })
+                      }
+                    >
+                      <SelectTrigger className="rounded-xl">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {SCHOOL_OUTREACH_REGIONS.map((r) => (
+                          <SelectItem key={r} value={r}>
+                            {r}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>City</Label>
+                    <Input
+                      className="rounded-xl"
+                      value={selectedSchool.city || ""}
+                      onChange={(e) => patchSchoolField("city", e.target.value)}
+                      onBlur={(e) => saveSchoolField("city", e.target.value.trim())}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>State</Label>
+                    <Input
+                      className="rounded-xl"
+                      value={selectedSchool.state || ""}
+                      onChange={(e) => patchSchoolField("state", e.target.value)}
+                      onBlur={(e) =>
+                        saveSchoolField("state", e.target.value.trim())
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Program website</Label>
+                    <Input
+                      className="rounded-xl"
+                      value={selectedSchool.program_website || ""}
+                      onChange={(e) =>
+                        patchSchoolField("program_website", e.target.value)
+                      }
+                      onBlur={(e) =>
+                        saveSchoolField("program_website", e.target.value.trim())
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Directory page</Label>
+                    <Input
+                      className="rounded-xl"
+                      value={selectedSchool.directory_page || ""}
+                      onChange={(e) =>
+                        patchSchoolField("directory_page", e.target.value)
+                      }
+                      onBlur={(e) =>
+                        saveSchoolField("directory_page", e.target.value.trim())
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Primary contact name</Label>
+                    <Input
+                      className="rounded-xl"
+                      value={selectedSchool.primary_contact_name || ""}
+                      onChange={(e) =>
+                        patchSchoolField("primary_contact_name", e.target.value)
+                      }
+                      onBlur={(e) =>
+                        saveSchoolField(
+                          "primary_contact_name",
+                          e.target.value.trim(),
+                        )
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Target role</Label>
+                    <Input
+                      className="rounded-xl"
+                      value={selectedSchool.primary_target_role || ""}
+                      onChange={(e) =>
+                        patchSchoolField("primary_target_role", e.target.value)
+                      }
+                      onBlur={(e) =>
+                        saveSchoolField(
+                          "primary_target_role",
+                          e.target.value.trim(),
+                        )
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Primary email</Label>
+                    <Input
+                      type="email"
+                      className="rounded-xl"
+                      value={selectedSchool.primary_email || ""}
+                      onChange={(e) =>
+                        patchSchoolField("primary_email", e.target.value)
+                      }
+                      onBlur={(e) =>
+                        saveSchoolField("primary_email", e.target.value.trim())
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Phone</Label>
+                    <Input
+                      className="rounded-xl"
+                      value={selectedSchool.phone || ""}
+                      onChange={(e) => patchSchoolField("phone", e.target.value)}
+                      onBlur={(e) =>
+                        saveSchoolField("phone", e.target.value.trim())
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label>Secondary / Dean contact</Label>
+                    <Textarea
+                      className="rounded-xl min-h-[72px]"
+                      value={selectedSchool.secondary_contact || ""}
+                      onChange={(e) =>
+                        patchSchoolField("secondary_contact", e.target.value)
+                      }
+                      onBlur={(e) =>
+                        saveSchoolField(
+                          "secondary_contact",
+                          e.target.value.trim(),
+                        )
+                      }
+                    />
+                  </div>
+                </div>
+
+                {(selectedSchool.program_website ||
+                  selectedSchool.directory_page) && (
+                  <div className="flex flex-wrap gap-3 text-xs font-bold">
+                    {selectedSchool.program_website ? (
+                      <a
+                        href={selectedSchool.program_website}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1 text-accent hover:underline"
+                      >
+                        Open website <ExternalLink className="h-3 w-3" />
+                      </a>
+                    ) : null}
+                    {selectedSchool.directory_page ? (
+                      <a
+                        href={selectedSchool.directory_page}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1 text-accent hover:underline"
+                      >
+                        Open directory <ExternalLink className="h-3 w-3" />
+                      </a>
+                    ) : null}
                     {selectedSchool.primary_email ? (
                       <a
                         href={`mailto:${selectedSchool.primary_email}`}
-                        className="inline-flex items-center gap-1 text-xs font-semibold text-accent hover:underline mt-2"
+                        className="inline-flex items-center gap-1 text-accent hover:underline"
                       >
                         <Mail className="h-3 w-3" />
                         {selectedSchool.primary_email}
@@ -792,44 +1124,14 @@ function AdminSchoolOutreach() {
                     {selectedSchool.phone ? (
                       <a
                         href={`tel:${selectedSchool.phone}`}
-                        className="flex items-center gap-1 text-xs font-semibold text-foreground/80 mt-1"
+                        className="inline-flex items-center gap-1 text-foreground/80"
                       >
                         <Phone className="h-3 w-3" />
                         {selectedSchool.phone}
                       </a>
                     ) : null}
                   </div>
-                  <div className="rounded-xl border border-border bg-muted/30 p-3">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">
-                      Secondary / Dean
-                    </p>
-                    <p className="text-sm font-medium leading-snug">
-                      {selectedSchool.secondary_contact || "—"}
-                    </p>
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      {selectedSchool.program_website ? (
-                        <a
-                          href={selectedSchool.program_website}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-1 text-xs font-bold text-accent hover:underline"
-                        >
-                          Website <ExternalLink className="h-3 w-3" />
-                        </a>
-                      ) : null}
-                      {selectedSchool.directory_page ? (
-                        <a
-                          href={selectedSchool.directory_page}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-1 text-xs font-bold text-accent hover:underline"
-                        >
-                          Directory <ExternalLink className="h-3 w-3" />
-                        </a>
-                      ) : null}
-                    </div>
-                  </div>
-                </div>
+                )}
 
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -885,16 +1187,10 @@ function AdminSchoolOutreach() {
                       className="rounded-xl"
                       value={selectedSchool.date_emailed || ""}
                       onChange={(e) =>
-                        setSelectedSchool((prev) => ({
-                          ...prev,
-                          date_emailed: e.target.value || null,
-                        }))
+                        patchSchoolField("date_emailed", e.target.value || null)
                       }
                       onBlur={(e) =>
-                        schoolMutation.mutate({
-                          id: selectedSchool.id,
-                          updates: { date_emailed: e.target.value || null },
-                        })
+                        saveSchoolField("date_emailed", e.target.value || null)
                       }
                     />
                   </div>
@@ -905,16 +1201,16 @@ function AdminSchoolOutreach() {
                       className="rounded-xl"
                       value={selectedSchool.follow_up_date || ""}
                       onChange={(e) =>
-                        setSelectedSchool((prev) => ({
-                          ...prev,
-                          follow_up_date: e.target.value || null,
-                        }))
+                        patchSchoolField(
+                          "follow_up_date",
+                          e.target.value || null,
+                        )
                       }
                       onBlur={(e) =>
-                        schoolMutation.mutate({
-                          id: selectedSchool.id,
-                          updates: { follow_up_date: e.target.value || null },
-                        })
+                        saveSchoolField(
+                          "follow_up_date",
+                          e.target.value || null,
+                        )
                       }
                     />
                   </div>
@@ -925,18 +1221,8 @@ function AdminSchoolOutreach() {
                   <Input
                     className="rounded-xl"
                     value={selectedSchool.reply || ""}
-                    onChange={(e) =>
-                      setSelectedSchool((prev) => ({
-                        ...prev,
-                        reply: e.target.value,
-                      }))
-                    }
-                    onBlur={(e) =>
-                      schoolMutation.mutate({
-                        id: selectedSchool.id,
-                        updates: { reply: e.target.value || null },
-                      })
-                    }
+                    onChange={(e) => patchSchoolField("reply", e.target.value)}
+                    onBlur={(e) => saveSchoolField("reply", e.target.value)}
                     placeholder="Short reply note"
                   />
                 </div>
@@ -946,18 +1232,8 @@ function AdminSchoolOutreach() {
                   <Textarea
                     className="rounded-xl min-h-[100px]"
                     value={selectedSchool.notes || ""}
-                    onChange={(e) =>
-                      setSelectedSchool((prev) => ({
-                        ...prev,
-                        notes: e.target.value,
-                      }))
-                    }
-                    onBlur={(e) =>
-                      schoolMutation.mutate({
-                        id: selectedSchool.id,
-                        updates: { notes: e.target.value || null },
-                      })
-                    }
+                    onChange={(e) => patchSchoolField("notes", e.target.value)}
+                    onBlur={(e) => saveSchoolField("notes", e.target.value)}
                   />
                 </div>
               </div>
@@ -965,6 +1241,263 @@ function AdminSchoolOutreach() {
           ) : null}
         </DialogContent>
       </Dialog>
+
+      {/* Add school dialog */}
+      <Dialog
+        open={creatingSchool}
+        onOpenChange={(open) => {
+          if (!open && !createSchoolMutation.isPending) {
+            setCreatingSchool(false);
+            setCreateForm(EMPTY_SCHOOL_FORM);
+          }
+        }}
+      >
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-black">
+              Add optometry school
+            </DialogTitle>
+            <DialogDescription>
+              Add a school to the shared outreach tracker.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 pt-1">
+            <div className="space-y-2">
+              <Label>School name *</Label>
+              <Input
+                className="rounded-xl"
+                value={createForm.school}
+                onChange={(e) =>
+                  setCreateForm((prev) => ({ ...prev, school: e.target.value }))
+                }
+                placeholder="University of … – College of Optometry"
+              />
+            </div>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Short name *</Label>
+                <Input
+                  className="rounded-xl"
+                  value={createForm.short_name}
+                  onChange={(e) =>
+                    setCreateForm((prev) => ({
+                      ...prev,
+                      short_name: e.target.value,
+                    }))
+                  }
+                  placeholder="e.g. UIW / RSO"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Region</Label>
+                <Select
+                  value={createForm.region}
+                  onValueChange={(v) =>
+                    setCreateForm((prev) => ({ ...prev, region: v }))
+                  }
+                >
+                  <SelectTrigger className="rounded-xl">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SCHOOL_OUTREACH_REGIONS.map((r) => (
+                      <SelectItem key={r} value={r}>
+                        {r}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>City</Label>
+                <Input
+                  className="rounded-xl"
+                  value={createForm.city}
+                  onChange={(e) =>
+                    setCreateForm((prev) => ({ ...prev, city: e.target.value }))
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>State</Label>
+                <Input
+                  className="rounded-xl"
+                  value={createForm.state}
+                  onChange={(e) =>
+                    setCreateForm((prev) => ({ ...prev, state: e.target.value }))
+                  }
+                  placeholder="TX"
+                />
+              </div>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Primary contact</Label>
+                <Input
+                  className="rounded-xl"
+                  value={createForm.primary_contact_name}
+                  onChange={(e) =>
+                    setCreateForm((prev) => ({
+                      ...prev,
+                      primary_contact_name: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Target role</Label>
+                <Input
+                  className="rounded-xl"
+                  value={createForm.primary_target_role}
+                  onChange={(e) =>
+                    setCreateForm((prev) => ({
+                      ...prev,
+                      primary_target_role: e.target.value,
+                    }))
+                  }
+                  placeholder="Dean of Student Affairs"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Email</Label>
+                <Input
+                  type="email"
+                  className="rounded-xl"
+                  value={createForm.primary_email}
+                  onChange={(e) =>
+                    setCreateForm((prev) => ({
+                      ...prev,
+                      primary_email: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Phone</Label>
+                <Input
+                  className="rounded-xl"
+                  value={createForm.phone}
+                  onChange={(e) =>
+                    setCreateForm((prev) => ({ ...prev, phone: e.target.value }))
+                  }
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Program website</Label>
+              <Input
+                className="rounded-xl"
+                value={createForm.program_website}
+                onChange={(e) =>
+                  setCreateForm((prev) => ({
+                    ...prev,
+                    program_website: e.target.value,
+                  }))
+                }
+                placeholder="https://"
+              />
+            </div>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Owner</Label>
+                <Select
+                  value={createForm.owner}
+                  onValueChange={(v) =>
+                    setCreateForm((prev) => ({ ...prev, owner: v }))
+                  }
+                >
+                  <SelectTrigger className="rounded-xl">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SCHOOL_OUTREACH_OWNERS.map((o) => (
+                      <SelectItem key={o} value={o}>
+                        {o}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Status</Label>
+                <Select
+                  value={createForm.status}
+                  onValueChange={(v) =>
+                    setCreateForm((prev) => ({ ...prev, status: v }))
+                  }
+                >
+                  <SelectTrigger className="rounded-xl">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SCHOOL_OUTREACH_STATUSES.map((s) => (
+                      <SelectItem key={s} value={s}>
+                        {s}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Notes</Label>
+              <Textarea
+                className="rounded-xl min-h-[80px]"
+                value={createForm.notes}
+                onChange={(e) =>
+                  setCreateForm((prev) => ({ ...prev, notes: e.target.value }))
+                }
+              />
+            </div>
+            <div className="flex justify-end gap-2 pt-1">
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-full"
+                disabled={createSchoolMutation.isPending}
+                onClick={() => {
+                  setCreatingSchool(false);
+                  setCreateForm(EMPTY_SCHOOL_FORM);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                className="rounded-full"
+                disabled={createSchoolMutation.isPending}
+                onClick={submitCreateSchool}
+              >
+                {createSchoolMutation.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Saving…
+                  </>
+                ) : (
+                  <>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add school
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <ConfirmDialog
+        open={Boolean(confirmDeleteSchool)}
+        onOpenChange={(open) => !open && setConfirmDeleteSchool(null)}
+        title="Delete this school?"
+        description={`Remove ${confirmDeleteSchool?.short_name || "this school"} from the outreach tracker. This cannot be undone.`}
+        confirmLabel="Delete"
+        destructive
+        onConfirm={() =>
+          confirmDeleteSchool &&
+          deleteSchoolMutation.mutate(confirmDeleteSchool.id)
+        }
+      />
 
       {/* Club detail dialog */}
       <Dialog

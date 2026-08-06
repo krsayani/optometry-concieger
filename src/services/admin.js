@@ -534,6 +534,15 @@ export const SCHOOL_OUTREACH_STATUSES = [
 
 export const SCHOOL_OUTREACH_OWNERS = ["Bilal", "Karim"];
 
+export const SCHOOL_OUTREACH_REGIONS = [
+  "Northeast",
+  "Southeast",
+  "Midwest",
+  "South Central",
+  "West",
+  "Territory",
+];
+
 export async function listSchoolOutreachSchools() {
   const { data, error } = await supabase
     .from("school_outreach_schools")
@@ -541,6 +550,28 @@ export async function listSchoolOutreachSchools() {
     .order("sort_order", { ascending: true });
   if (error) throw error;
   return data ?? [];
+}
+
+export async function createSchoolOutreachSchool(payload) {
+  const { data: maxRow } = await supabase
+    .from("school_outreach_schools")
+    .select("sort_order")
+    .order("sort_order", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const sortOrder =
+    typeof payload.sort_order === "number"
+      ? payload.sort_order
+      : (maxRow?.sort_order || 0) + 1;
+
+  const { data, error } = await supabase
+    .from("school_outreach_schools")
+    .insert({ ...payload, sort_order: sortOrder })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
 }
 
 export async function updateSchoolOutreachSchool(id, updates) {
@@ -552,6 +583,14 @@ export async function updateSchoolOutreachSchool(id, updates) {
     .maybeSingle();
   if (error) throw error;
   return data;
+}
+
+export async function deleteSchoolOutreachSchool(id) {
+  const { error } = await supabase
+    .from("school_outreach_schools")
+    .delete()
+    .eq("id", id);
+  if (error) throw error;
 }
 
 export async function listSchoolOutreachClubs() {
