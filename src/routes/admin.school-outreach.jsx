@@ -96,11 +96,41 @@ function greetingFromContacts(contacts, school) {
   return `${list.slice(0, -1).join(", ")}, and ${list[list.length - 1]}`;
 }
 
+/**
+ * Templates are written in Bilal's voice (Bilal first, Karim as colleague).
+ * For schools/clubs owned by Karim, swap their positioning in the copy.
+ */
+function applyOwnerVoice(text, owner) {
+  let out = String(text || "");
+  if (owner !== "Karim") return out;
+
+  // Temp tokens avoid double-swapping during replace
+  out = out
+    .replace(/Dr\. Bilal Ismail/g, "__TMP_SPEAKER_DR__")
+    .replace(/Dr\. Karim Sayani/g, "__TMP_COLLEAGUE_DR__")
+    .replace(/Bilal Ismail/g, "__TMP_SPEAKER__")
+    .replace(/Karim Sayani/g, "__TMP_COLLEAGUE__")
+    .replace(/\bBilal & Karim\b/g, "__TMP_SIG_SHORT__")
+    .replace(/\bKarim and me\b/g, "__TMP_VIDEO_REF__");
+
+  return out
+    .replace(/__TMP_SPEAKER_DR__/g, "Dr. Karim Sayani")
+    .replace(/__TMP_COLLEAGUE_DR__/g, "Dr. Bilal Ismail")
+    .replace(/__TMP_SPEAKER__/g, "Karim Sayani")
+    .replace(/__TMP_COLLEAGUE__/g, "Bilal Ismail")
+    .replace(/__TMP_SIG_SHORT__/g, "Karim & Bilal")
+    .replace(/__TMP_VIDEO_REF__/g, "Bilal and me");
+}
+
 function personalizeTemplate(template, school, contacts) {
   const first = greetingFromContacts(contacts, school);
-  return {
+  const withName = {
     subject: template.subject,
     body: template.body.replace(/\[First name\]/g, first),
+  };
+  return {
+    subject: applyOwnerVoice(withName.subject, school?.owner),
+    body: applyOwnerVoice(withName.body, school?.owner),
   };
 }
 
@@ -1226,6 +1256,11 @@ function AdminSchoolOutreach() {
                 </li>
                 <li>
                   Follow up once after ~7–10 days, then log it in the tracker.
+                </li>
+                <li>
+                  Templates are written in Bilal’s voice. For schools owned by
+                  Karim, compose auto-swaps so Karim speaks first and Bilal is
+                  the colleague.
                 </li>
               </ul>
             </div>
