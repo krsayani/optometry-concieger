@@ -1117,6 +1117,32 @@ export async function listInboundEmails() {
   return data ?? [];
 }
 
+/** Ready-to-paste Apps Script that syncs Admin@ Gmail → website Inbox. */
+export async function fetchWorkspaceSyncSetup() {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session?.access_token) {
+    throw new Error("You must be signed in.");
+  }
+
+  const response = await fetch("/api/workspace-sync-setup", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${session.access_token}`,
+    },
+    body: JSON.stringify({}),
+  });
+
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(payload.error || "Could not load Workspace sync setup.");
+  }
+  return payload;
+}
+
 export async function markInboundEmailRead(id, isRead = true) {
   const { data, error } = await supabase
     .from("inbound_emails")

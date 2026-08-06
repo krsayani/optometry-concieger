@@ -61,6 +61,7 @@ function apiDevPlugin() {
           "resend-inbound",
           "inbox-reply",
           "workspace-inbound",
+          "workspace-sync-setup",
         ]);
         if (!allowed.has(route)) {
           return next();

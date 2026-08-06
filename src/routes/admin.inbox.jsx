@@ -9,12 +9,16 @@ import {
   Trash2,
   Paperclip,
   Circle,
+  Copy,
+  ExternalLink,
+  Loader2,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import {
   deleteInboundEmail,
+  fetchWorkspaceSyncSetup,
   listInboundEmails,
   markInboundEmailRead,
   replyToInboundEmail,
@@ -55,6 +59,27 @@ function AdminInbox() {
   const { data: emails, isLoading, isError, error } = useQuery({
     queryKey: ["admin-inbound-emails"],
     queryFn: listInboundEmails,
+  });
+
+  const workspaceSynced = useMemo(
+    () =>
+      (emails || []).some((email) =>
+        String(email.resend_email_id || "").startsWith("gmail:"),
+      ),
+    [emails],
+  );
+
+  const copySyncScriptMutation = useMutation({
+    mutationFn: fetchWorkspaceSyncSetup,
+    onSuccess: async (payload) => {
+      if (!payload?.script) {
+        throw new Error("Setup script was empty.");
+      }
+      await navigator.clipboard.writeText(payload.script);
+      toast.success("Apps Script copied — paste it at script.google.com");
+    },
+    onError: (err) =>
+      toast.error(err?.message || "Could not copy Workspace sync script."),
   });
 
   useEffect(() => {
@@ -170,6 +195,70 @@ function AdminInbox() {
         </div>
       </div>
 
+      {!workspaceSynced ? (
+        <div className="mb-5 rounded-2xl border border-amber-500/25 bg-amber-500/5 p-4 md:p-5">
+          <p className="text-sm font-black text-foreground">
+            Google Workspace inbox is not connected yet
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
+            Contact/intake emails already appear here. Mail that lands in
+            Admin@ Gmail needs a one-time Apps Script so it also syncs to this
+            page (every 5 minutes).
+          </p>
+          <ol className="mt-3 list-decimal space-y-1.5 pl-5 text-sm text-foreground/90">
+            <li>
+              Click <span className="font-semibold">Copy Apps Script</span> below
+            </li>
+            <li>
+              Open{" "}
+              <a
+                href="https://script.google.com"
+                target="_blank"
+                rel="noreferrer"
+                className="font-semibold text-accent hover:underline"
+              >
+                script.google.com
+              </a>{" "}
+              as <span className="font-semibold">Admin@optometryconcierge.com</span>
+            </li>
+            <li>New project → paste → Save → run <span className="font-semibold">syncWorkspaceInbox</span> once (approve permissions)</li>
+            <li>
+              Triggers → Add trigger → every <span className="font-semibold">5 minutes</span>
+            </li>
+          </ol>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Button
+              type="button"
+              className="rounded-full"
+              disabled={copySyncScriptMutation.isPending}
+              onClick={() => copySyncScriptMutation.mutate()}
+            >
+              {copySyncScriptMutation.isPending ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Copy className="h-4 w-4 mr-2" />
+              )}
+              Copy Apps Script
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-full"
+              asChild
+            >
+              <a
+                href="https://script.google.com/home/projects/create"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Open Apps Script
+                <ExternalLink className="h-3.5 w-3.5 ml-1.5" />
+              </a>
+            </Button>
+          </div>
+        </div>
+      ) : null}
+
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="relative flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -203,7 +292,7 @@ function AdminInbox() {
         <EmptyState
           icon={MailOpen}
           title="No messages yet"
-          description="New contact forms and intake alerts will show up here automatically (and in Admin@ Gmail)."
+          description="New contact forms show up automatically. Connect Google Workspace with the Apps Script above to also pull Admin@ Gmail here."
         />
       ) : (
         <div className="grid gap-4 lg:grid-cols-[340px_minmax(0,1fr)]">

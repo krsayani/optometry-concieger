@@ -1,36 +1,25 @@
 /**
  * Optometry Concierge — Google Workspace → Website Inbox sync
  *
- * SETUP (one time, ~5 minutes)
- * 1. Open https://script.google.com while signed in as Admin@optometryconcierge.com
- * 2. New project → paste this entire file
- * 3. Set SCRIPT PROPERTIES (Project Settings → Script properties):
- *      INBOUND_API_URL = https://www.optometryconcierge.com/api/workspace-inbound
- *      INBOUND_API_SECRET = <same value as WORKSPACE_INBOUND_SECRET on Vercel>
- * 4. Run syncWorkspaceInbox once → approve Gmail + external request permissions
- * 5. Triggers → Add trigger:
- *      Function: syncWorkspaceInbox
- *      Event source: Time-driven
- *      Type: Minutes timer
- *      Interval: Every 5 minutes
- *
- * What it does:
- * - Reads recent Inbox messages from Admin@ Gmail / Google Workspace
- * - Posts them to the website Admin → Inbox (server dedupes by Gmail id)
- * - Skips mail that already came from Admin@ (contact/intake mirrors)
+ * Prefer copying the ready-made script from Admin → Inbox → “Copy Apps Script”
+ * (it includes your secret). Or paste this file and set Script properties:
+ *   INBOUND_API_URL = https://www.optometryconcierge.com/api/workspace-inbound
+ *   INBOUND_API_SECRET = <WORKSPACE_INBOUND_SECRET from Vercel>
  */
 
+var CONFIG_API_URL = "https://www.optometryconcierge.com/api/workspace-inbound";
+var CONFIG_API_SECRET = ""; // filled automatically when copied from Admin → Inbox
 var LOOKBACK_QUERY = "in:inbox newer_than:14d";
 var MAX_THREADS = 40;
 
 function syncWorkspaceInbox() {
   var props = PropertiesService.getScriptProperties();
-  var apiUrl = String(props.getProperty("INBOUND_API_URL") || "").trim();
-  var secret = String(props.getProperty("INBOUND_API_SECRET") || "").trim();
+  var apiUrl = String(props.getProperty("INBOUND_API_URL") || CONFIG_API_URL || "").trim();
+  var secret = String(props.getProperty("INBOUND_API_SECRET") || CONFIG_API_SECRET || "").trim();
 
   if (!apiUrl || !secret) {
     throw new Error(
-      "Set Script properties INBOUND_API_URL and INBOUND_API_SECRET first.",
+      "Missing API URL or secret. Copy the script from Admin → Inbox, or set Script properties.",
     );
   }
 
@@ -52,7 +41,6 @@ function syncWorkspaceInbox() {
     return;
   }
 
-  // Keep payload small — newest first, cap batch size
   emails.sort(function (a, b) {
     return String(b.received_at).localeCompare(String(a.received_at));
   });
@@ -131,7 +119,6 @@ function messageToPayload_(message) {
   };
 }
 
-/** Manual test helper — run once from the Apps Script editor. */
 function testSyncOnce() {
   syncWorkspaceInbox();
 }
