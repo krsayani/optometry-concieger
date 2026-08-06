@@ -33,6 +33,11 @@ import {
   SCHOOL_OUTREACH_REGIONS,
 } from "@/services/admin";
 import { PageLoader } from "@/components/LoadingSpinner";
+import {
+  OwnerBadge,
+  OwnerSelectLabel,
+  ownerPhotoUrl,
+} from "@/components/admin/OwnerBadge";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -187,12 +192,21 @@ function statusTone(status) {
   }
 }
 
-function StatCard({ label, value, accent }) {
+function StatCard({ label, value, accent, photo }) {
   return (
     <div className="rounded-2xl border border-border bg-card p-4 shadow-soft">
-      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-        {label}
-      </p>
+      <div className="flex items-center gap-2">
+        {photo ? (
+          <img
+            src={photo}
+            alt=""
+            className="h-7 w-7 rounded-full object-cover ring-1 ring-border"
+          />
+        ) : null}
+        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+          {label}
+        </p>
+      </div>
       <p
         className={cn(
           "mt-1 text-2xl font-black tracking-tight",
@@ -684,8 +698,16 @@ function AdminSchoolOutreach() {
             value={schoolStats.byStatus["Sharing with students"] || 0}
             accent="text-emerald-600"
           />
-          <StatCard label="Bilal" value={schoolStats.bilal} />
-          <StatCard label="Karim" value={schoolStats.karim} />
+          <StatCard
+            label="Bilal"
+            value={schoolStats.bilal}
+            photo={ownerPhotoUrl("Bilal")}
+          />
+          <StatCard
+            label="Karim"
+            value={schoolStats.karim}
+            photo={ownerPhotoUrl("Karim")}
+          />
         </div>
 
         <Tabs value={tab} onValueChange={setTab} className="w-full">
@@ -717,14 +739,18 @@ function AdminSchoolOutreach() {
                 />
               </div>
               <Select value={ownerFilter} onValueChange={setOwnerFilter}>
-                <SelectTrigger className="w-full sm:w-40 rounded-xl">
-                  <SelectValue placeholder="Owner" />
+                <SelectTrigger className="w-full sm:w-44 rounded-xl">
+                  {ownerFilter !== "All" ? (
+                    <OwnerSelectLabel owner={ownerFilter} />
+                  ) : (
+                    <SelectValue placeholder="Owner" />
+                  )}
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="All">All owners</SelectItem>
                   {SCHOOL_OUTREACH_OWNERS.map((o) => (
                     <SelectItem key={o} value={o}>
-                      {o}
+                      <OwnerSelectLabel owner={o} />
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -831,9 +857,7 @@ function AdminSchoolOutreach() {
                             })()}
                           </td>
                           <td className="px-4 py-3 align-top">
-                            <Badge variant="outline" className="rounded-full">
-                              {item.owner}
-                            </Badge>
+                            <OwnerBadge owner={item.owner} />
                           </td>
                           <td className="px-4 py-3 align-top">
                             <span
@@ -934,9 +958,7 @@ function AdminSchoolOutreach() {
                             </p>
                           </td>
                           <td className="px-4 py-3 align-top">
-                            <Badge variant="outline" className="rounded-full">
-                              {item.owner}
-                            </Badge>
+                            <OwnerBadge owner={item.owner} />
                           </td>
                           <td className="px-4 py-3 align-top">
                             <span
@@ -1333,12 +1355,16 @@ function AdminSchoolOutreach() {
                       }
                     >
                       <SelectTrigger className="rounded-xl">
-                        <SelectValue />
+                        {selectedSchool.owner ? (
+                          <OwnerSelectLabel owner={selectedSchool.owner} />
+                        ) : (
+                          <SelectValue />
+                        )}
                       </SelectTrigger>
                       <SelectContent>
                         {SCHOOL_OUTREACH_OWNERS.map((o) => (
                           <SelectItem key={o} value={o}>
-                            {o}
+                            <OwnerSelectLabel owner={o} />
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -1595,12 +1621,16 @@ function AdminSchoolOutreach() {
                   }
                 >
                   <SelectTrigger className="rounded-xl">
-                    <SelectValue />
+                    {createForm.owner ? (
+                      <OwnerSelectLabel owner={createForm.owner} />
+                    ) : (
+                      <SelectValue />
+                    )}
                   </SelectTrigger>
                   <SelectContent>
                     {SCHOOL_OUTREACH_OWNERS.map((o) => (
                       <SelectItem key={o} value={o}>
-                        {o}
+                        <OwnerSelectLabel owner={o} />
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -1870,12 +1900,16 @@ function AdminSchoolOutreach() {
                       }
                     >
                       <SelectTrigger className="rounded-xl">
-                        <SelectValue />
+                        {selectedClub.owner ? (
+                          <OwnerSelectLabel owner={selectedClub.owner} />
+                        ) : (
+                          <SelectValue />
+                        )}
                       </SelectTrigger>
                       <SelectContent>
                         {SCHOOL_OUTREACH_OWNERS.map((o) => (
                           <SelectItem key={o} value={o}>
-                            {o}
+                            <OwnerSelectLabel owner={o} />
                           </SelectItem>
                         ))}
                       </SelectContent>
