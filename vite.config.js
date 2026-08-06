@@ -21,6 +21,7 @@ function apiDevPlugin() {
         "INBOUND_RECEIVE_EMAIL",
         "INBOUND_FORWARD_TO",
         "INBOUND_FORWARD_ENABLED",
+        "WORKSPACE_INBOUND_SECRET",
         "SUPABASE_SERVICE_ROLE_KEY",
         "VITE_SUPABASE_URL",
         "SUPABASE_URL",
@@ -59,6 +60,7 @@ function apiDevPlugin() {
           "outreach-email",
           "resend-inbound",
           "inbox-reply",
+          "workspace-inbound",
         ]);
         if (!allowed.has(route)) {
           return next();

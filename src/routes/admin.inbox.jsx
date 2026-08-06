@@ -164,8 +164,8 @@ function AdminInbox() {
             Email Inbox
           </h1>
           <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-            Contact forms, intake alerts, and inbound replies appear here and in
-            Google Workspace (Admin@). Reply from the dashboard or from Gmail.
+            Contact forms, intake alerts, and Google Workspace (Admin@) inbox
+            mail appear here. Reply from the dashboard or from Gmail.
           </p>
         </div>
       </div>
