@@ -78,15 +78,43 @@ function firstNameFromContact(name) {
   return cleaned.split(/\s+/)[0] || "";
 }
 
-function personalizeTemplate(template, school, contact) {
-  const primary = contact || getSchoolPrimaryContact(school);
-  const first =
-    firstNameFromContact(primary?.name || school?.primary_contact_name) ||
-    "there";
+function greetingFromContacts(contacts, school) {
+  const list = (Array.isArray(contacts) ? contacts : contacts ? [contacts] : [])
+    .map((c) => firstNameFromContact(c?.name))
+    .filter(Boolean);
+  if (!list.length) {
+    return (
+      firstNameFromContact(school?.primary_contact_name) || "there"
+    );
+  }
+  if (list.length === 1) return list[0];
+  if (list.length === 2) return `${list[0]} and ${list[1]}`;
+  return `${list.slice(0, -1).join(", ")}, and ${list[list.length - 1]}`;
+}
+
+function personalizeTemplate(template, school, contacts) {
+  const first = greetingFromContacts(contacts, school);
   return {
     subject: template.subject,
     body: template.body.replace(/\[First name\]/g, first),
   };
+}
+
+function emailsFromContacts(contacts) {
+  return [
+    ...new Set(
+      (contacts || [])
+        .map((c) => String(c?.email || "").trim())
+        .filter(Boolean),
+    ),
+  ];
+}
+
+function resolveComposeContacts(school, contactIds) {
+  const all = school?.contacts || [];
+  if (!contactIds?.length) return [];
+  const byId = new Map(all.map((c) => [c.id, c]));
+  return contactIds.map((id) => byId.get(id)).filter(Boolean);
 }
 
 const EMPTY_CONTACT_FORM = {
@@ -259,7 +287,7 @@ function AdminSchoolOutreach() {
   // contactForm: { schoolId, ...fields } when adding; { id, schoolId, ...fields } when editing
   const [confirmDeleteContact, setConfirmDeleteContact] = useState(null);
   const [compose, setCompose] = useState(null);
-  // compose: { school, contact, templateId, to, cc, subject, body, bccAdmin, markFollowUp }
+  // compose: { school, contactIds, templateId, to, cc, subject, body, bccAdmin, markFollowUp }
 
   const patchSchoolField = (field, value) => {
     setSelectedSchool((prev) => (prev ? { ...prev, [field]: value } : prev));
@@ -470,17 +498,31 @@ function AdminSchoolOutreach() {
   };
 
   const openCompose = (school, templateId = "full", contact = null) => {
-    const selected = contact || getSchoolPrimaryContact(school);
+    const withEmail = (school.contacts || []).filter((c) => c.email);
+    const initialContacts = contact?.email
+      ? [contact]
+      : getSchoolPrimaryContact(school)?.email
+        ? [getSchoolPrimaryContact(school)]
+        : withEmail.slice(0, 1);
+    const contactIds = initialContacts.map((c) => c.id).filter(Boolean);
     const template =
       EMAIL_TEMPLATES.find((t) => t.id === templateId) || EMAIL_TEMPLATES[0];
-    const personalized = personalizeTemplate(template, school, selected);
+    const personalized = personalizeTemplate(
+      template,
+      school,
+      initialContacts,
+    );
     const alreadyContacted =
       school.status && school.status !== "Not started";
+    const toEmails = emailsFromContacts(initialContacts);
     setCompose({
       school,
-      contact: selected,
+      contactIds,
       templateId: template.id,
-      to: selected?.email || school.primary_email || "",
+      to:
+        toEmails.join(", ") ||
+        school.primary_email ||
+        "",
       cc: "",
       subject: personalized.subject,
       body: personalized.body,
@@ -494,10 +536,11 @@ function AdminSchoolOutreach() {
       if (!prev) return prev;
       const template =
         EMAIL_TEMPLATES.find((t) => t.id === templateId) || EMAIL_TEMPLATES[0];
+      const contacts = resolveComposeContacts(prev.school, prev.contactIds);
       const personalized = personalizeTemplate(
         template,
         prev.school,
-        prev.contact,
+        contacts,
       );
       return {
         ...prev,
@@ -508,23 +551,49 @@ function AdminSchoolOutreach() {
     });
   };
 
-  const applyComposeContact = (contactId) => {
+  const toggleComposeContact = (contactId) => {
     setCompose((prev) => {
       if (!prev) return prev;
-      const contact =
-        (prev.school.contacts || []).find((c) => c.id === contactId) || null;
+      const exists = prev.contactIds.includes(contactId);
+      const contactIds = exists
+        ? prev.contactIds.filter((id) => id !== contactId)
+        : [...prev.contactIds, contactId];
+      const contacts = resolveComposeContacts(prev.school, contactIds);
       const template =
         EMAIL_TEMPLATES.find((t) => t.id === prev.templateId) ||
         EMAIL_TEMPLATES[0];
       const personalized = personalizeTemplate(
         template,
         prev.school,
-        contact,
+        contacts,
       );
       return {
         ...prev,
-        contact,
-        to: contact?.email || "",
+        contactIds,
+        to: emailsFromContacts(contacts).join(", "),
+        subject: personalized.subject,
+        body: personalized.body,
+      };
+    });
+  };
+
+  const selectAllComposeContacts = () => {
+    setCompose((prev) => {
+      if (!prev) return prev;
+      const contacts = (prev.school.contacts || []).filter((c) => c.email);
+      const contactIds = contacts.map((c) => c.id);
+      const template =
+        EMAIL_TEMPLATES.find((t) => t.id === prev.templateId) ||
+        EMAIL_TEMPLATES[0];
+      const personalized = personalizeTemplate(
+        template,
+        prev.school,
+        contacts,
+      );
+      return {
+        ...prev,
+        contactIds,
+        to: emailsFromContacts(contacts).join(", "),
         subject: personalized.subject,
         body: personalized.body,
       };
@@ -534,10 +603,16 @@ function AdminSchoolOutreach() {
   const sendMutation = useMutation({
     mutationFn: async () => {
       if (!compose) throw new Error("Nothing to send.");
-      if (!compose.to?.trim()) throw new Error("Recipient email is required.");
+      const recipients = compose.to
+        .split(/[,;]/)
+        .map((v) => v.trim())
+        .filter(Boolean);
+      if (!recipients.length) {
+        throw new Error("At least one recipient email is required.");
+      }
 
       const result = await sendOutreachEmail({
-        to: compose.to.trim(),
+        to: recipients,
         cc: compose.cc.trim() || undefined,
         subject: compose.subject.trim(),
         body: compose.body.trim(),
@@ -564,9 +639,9 @@ function AdminSchoolOutreach() {
           };
 
       await updateSchoolOutreachSchool(compose.school.id, updates);
-      return { result, updates };
+      return { result, updates, recipients };
     },
-    onSuccess: ({ updates }) => {
+    onSuccess: ({ updates, recipients }) => {
       queryClient.invalidateQueries({
         queryKey: ["admin-school-outreach-schools"],
       });
@@ -575,7 +650,12 @@ function AdminSchoolOutreach() {
           ? { ...prev, ...updates }
           : prev,
       );
-      toast.success(`Email sent to ${compose.to}`);
+      const count = recipients?.length || 0;
+      toast.success(
+        count > 1
+          ? `Email sent to ${count} contacts`
+          : `Email sent to ${recipients?.[0] || "recipient"}`,
+      );
       setCompose(null);
     },
     onError: (err) => {
@@ -1986,27 +2066,63 @@ function AdminSchoolOutreach() {
               </DialogHeader>
 
               <div className="space-y-4 pt-1">
-                {(compose.school.contacts || []).length > 0 ? (
+                {(compose.school.contacts || []).filter((c) => c.email).length >
+                0 ? (
                   <div className="space-y-2">
-                    <Label>Contact</Label>
-                    <Select
-                      value={compose.contact?.id || ""}
-                      onValueChange={applyComposeContact}
-                      disabled={sendMutation.isPending}
-                    >
-                      <SelectTrigger className="rounded-xl">
-                        <SelectValue placeholder="Choose a contact" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {(compose.school.contacts || []).map((c) => (
-                          <SelectItem key={c.id} value={c.id}>
-                            {c.name}
-                            {c.email ? ` · ${c.email}` : ""}
-                            {c.is_primary ? " (primary)" : ""}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <div className="flex items-center justify-between gap-2">
+                      <Label>
+                        Recipients
+                        {compose.contactIds.length > 0
+                          ? ` (${compose.contactIds.length})`
+                          : ""}
+                      </Label>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 rounded-full text-xs"
+                        disabled={sendMutation.isPending}
+                        onClick={selectAllComposeContacts}
+                      >
+                        Select all with email
+                      </Button>
+                    </div>
+                    <div className="rounded-xl border border-border bg-muted/20 divide-y divide-border/70 max-h-48 overflow-y-auto">
+                      {(compose.school.contacts || [])
+                        .filter((c) => c.email)
+                        .map((c) => {
+                          const checked = compose.contactIds.includes(c.id);
+                          return (
+                            <label
+                              key={c.id}
+                              className="flex items-start gap-2.5 px-3 py-2.5 cursor-pointer hover:bg-muted/40"
+                            >
+                              <Checkbox
+                                checked={checked}
+                                disabled={sendMutation.isPending}
+                                onCheckedChange={() =>
+                                  toggleComposeContact(c.id)
+                                }
+                                className="mt-0.5"
+                              />
+                              <span className="min-w-0">
+                                <span className="block text-sm font-semibold leading-snug">
+                                  {c.name || "Unnamed"}
+                                  {c.is_primary ? (
+                                    <span className="ml-1.5 text-[10px] font-bold uppercase tracking-wide text-accent">
+                                      Primary
+                                    </span>
+                                  ) : null}
+                                </span>
+                                <span className="block text-xs text-muted-foreground truncate">
+                                  {c.role ? `${c.role} · ` : ""}
+                                  {c.email}
+                                </span>
+                              </span>
+                            </label>
+                          );
+                        })}
+                    </div>
                   </div>
                 ) : null}
 
@@ -2034,8 +2150,9 @@ function AdminSchoolOutreach() {
                   <div className="space-y-2">
                     <Label>To</Label>
                     <Input
-                      type="email"
+                      type="text"
                       className="rounded-xl"
+                      placeholder="comma-separated emails"
                       value={compose.to}
                       disabled={sendMutation.isPending}
                       onChange={(e) =>
@@ -2149,7 +2266,10 @@ function AdminSchoolOutreach() {
                     ) : (
                       <>
                         <Send className="h-4 w-4 mr-2" />
-                        Send email
+                        {compose.to.split(/[,;]/).filter((v) => v.trim())
+                          .length > 1
+                          ? `Send to ${compose.to.split(/[,;]/).filter((v) => v.trim()).length} contacts`
+                          : "Send email"}
                       </>
                     )}
                   </Button>

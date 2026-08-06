@@ -99,9 +99,18 @@ export default async function handler(req, res) {
     }
 
     const body = await readJsonBody(req);
-    const to = String(body.to || "")
-      .trim()
-      .toLowerCase();
+    const toRaw = Array.isArray(body.to)
+      ? body.to
+      : String(body.to || "")
+          .split(/[,;]/)
+          .map((v) => v.trim());
+    const to = [
+      ...new Set(
+        toRaw
+          .map((v) => String(v || "").trim().toLowerCase())
+          .filter((v) => isValidEmail(v)),
+      ),
+    ];
     const ccRaw = String(body.cc || "").trim();
     const subject = String(body.subject || "").trim();
     const message = String(body.body || body.message || "").trim();
@@ -114,10 +123,10 @@ export default async function handler(req, res) {
     const includeSchoolVideo =
       body.includeSchoolVideo === true || kind === "school";
 
-    if (!to || !isValidEmail(to)) {
+    if (!to.length) {
       return res
         .status(400)
-        .json({ error: "A valid recipient email is required." });
+        .json({ error: "At least one valid recipient email is required." });
     }
     if (!subject) {
       return res.status(400).json({ error: "Subject is required." });
