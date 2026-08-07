@@ -483,7 +483,8 @@ export async function sendUserEmail({
   if (ccList.length) payload.cc = ccList;
   if (bccList.length) payload.bcc = bccList;
 
-  const formattedReplyTo = formatReplyTo(replyTo, replyName);
+  // Default Reply-To to Admin@ so personal staff emails are never exposed.
+  const formattedReplyTo = formatReplyTo(replyTo || ADMIN_EMAIL, replyName);
   if (formattedReplyTo) {
     payload.replyTo = formattedReplyTo;
   }

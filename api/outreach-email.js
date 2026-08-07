@@ -156,7 +156,7 @@ export default async function handler(req, res) {
         body: message,
         includeSchoolVideo,
       }),
-      replyTo: auth.user.email || ADMIN_EMAIL,
+      replyTo: ADMIN_EMAIL,
       replyName: "Optometry Concierge",
     });
 
