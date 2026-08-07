@@ -163,12 +163,15 @@ export default async function handler(req, res) {
       console.error("[resend-inbound] admin_notifications insert failed", notifyErr);
     }
 
-    // Mirror into Google Workspace / Gmail unless Workspace already has it
-    // (e.g. Google forwarded Admin@ → inbox@ and received_for includes Admin@).
+    // Optional Resend → Workspace forward. Off by default — Admin@ stays on
+    // Google MX, and the Apps Script syncs Workspace → website inbox instead.
+    // Never forward to inbox.optometryconcierge.com (no MX; causes delivery delays).
     let forwarded = false;
+    const forwardEnabled = process.env.INBOUND_FORWARD_ENABLED === "true";
     const skipForward =
-      process.env.INBOUND_FORWARD_ENABLED === "false" ||
-      alreadyDeliveredToWorkspace({ toEmails, receivedFor, ccEmails });
+      !forwardEnabled ||
+      alreadyDeliveredToWorkspace({ toEmails, receivedFor, ccEmails }) ||
+      String(WORKSPACE_NOTIFY_EMAIL || "").includes("@inbox.");
 
     if (!skipForward && WORKSPACE_NOTIFY_EMAIL) {
       try {
