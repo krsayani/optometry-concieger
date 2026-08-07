@@ -15,13 +15,8 @@ function apiDevPlugin() {
       const env = loadEnv(server.config.mode, __dirname, "");
       for (const key of [
         "RESEND_API_KEY",
-        "RESEND_WEBHOOK_SECRET",
         "CONTACT_TO_EMAIL",
         "CONTACT_FROM_EMAIL",
-        "INBOUND_RECEIVE_EMAIL",
-        "INBOUND_FORWARD_TO",
-        "INBOUND_FORWARD_ENABLED",
-        "WORKSPACE_INBOUND_SECRET",
         "SUPABASE_SERVICE_ROLE_KEY",
         "VITE_SUPABASE_URL",
         "SUPABASE_URL",
@@ -58,10 +53,6 @@ function apiDevPlugin() {
           "register-account",
           "school-outreach-email",
           "outreach-email",
-          "resend-inbound",
-          "inbox-reply",
-          "workspace-inbound",
-          "workspace-sync-setup",
         ]);
         if (!allowed.has(route)) {
           return next();

@@ -28,7 +28,6 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as AdminInboxRouteImport } from './routes/admin.inbox'
 import { Route as AdminMatchesRouteImport } from './routes/admin.matches'
 import { Route as AdminOdIntakesRouteImport } from './routes/admin.od-intakes'
 import { Route as AdminOdOutreachRouteImport } from './routes/admin.od-outreach'
@@ -131,11 +130,6 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 })
-const AdminInboxRoute = AdminInboxRouteImport.update({
-  id: '/inbox',
-  path: '/inbox',
-  getParentRoute: () => AdminRoute,
-})
 const AdminMatchesRoute = AdminMatchesRouteImport.update({
   id: '/matches',
   path: '/matches',
@@ -181,7 +175,6 @@ const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 const AdminRouteChildren = {
-  AdminInboxRoute: AdminInboxRoute,
   AdminMatchesRoute: AdminMatchesRoute,
   AdminOdIntakesRoute: AdminOdIntakesRoute,
   AdminOdOutreachRoute: AdminOdOutreachRoute,

@@ -121,7 +121,7 @@ function Contact() {
               </div>
               <h2 className="font-bold text-lg text-primary mb-1">Email Us</h2>
               <p className="text-sm text-muted-foreground mb-3">
-                Form submissions are delivered directly to our admin inbox.
+                Form submissions are emailed directly to our team.
               </p>
               <a
                 href={`mailto:${CONTACT_EMAIL}`}

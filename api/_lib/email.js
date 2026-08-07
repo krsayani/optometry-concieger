@@ -11,22 +11,6 @@ export const ADMIN_EMAIL = normalizeEmail(
   process.env.CONTACT_TO_EMAIL || "admin@optometryconcierge.com",
 );
 
-/** Google Workspace / Gmail address (Admin@) — primary mailbox. */
-export const WORKSPACE_NOTIFY_EMAIL = normalizeEmail(
-  process.env.INBOUND_FORWARD_TO ||
-    process.env.CONTACT_TO_EMAIL ||
-    "admin@optometryconcierge.com",
-);
-
-/**
- * Resend receiving address that feeds the website inbox.
- * Prefer a Resend-managed `*.resend.app` address so Admin@ can stay on Google Workspace.
- * Set via INBOUND_RECEIVE_EMAIL after copying it from Resend → Receiving.
- */
-export const INBOUND_RECEIVE_EMAIL = normalizeEmail(
-  process.env.INBOUND_RECEIVE_EMAIL || "",
-);
-
 const BRAND = {
   navy: "#051C3F",
   teal: "#2A9D9D",
@@ -364,55 +348,6 @@ export function getResendClient() {
   return new Resend(apiKey);
 }
 
-export async function fetchReceivedEmail(emailId) {
-  const resend = getResendClient();
-  const { data, error } = await resend.emails.receiving.get(emailId);
-  if (error) {
-    throw new Error(error.message || "Failed to fetch received email");
-  }
-  return data;
-}
-
-/**
- * Forward a received email to Google Workspace / Gmail so admins see it
- * outside the website inbox too.
- */
-export async function forwardReceivedEmailToWorkspace(emailId, to = WORKSPACE_NOTIFY_EMAIL) {
-  const recipient = normalizeEmail(to);
-  if (!recipient) {
-    throw new Error("Missing workspace notify email.");
-  }
-
-  const resend = getResendClient();
-  const from =
-    process.env.CONTACT_FROM_EMAIL ||
-    "Optometry Concierge <Admin@optometryconcierge.com>";
-
-  const { data, error } = await resend.emails.receiving.forward({
-    emailId,
-    to: recipient,
-    from,
-    passthrough: true,
-  });
-
-  if (error) {
-    throw new Error(error.message || "Failed to forward inbound email");
-  }
-  return data;
-}
-
-export function parseFromAddress(from) {
-  const raw = String(from || "").trim();
-  const match = raw.match(/^(.*)<([^>]+)>$/);
-  if (match) {
-    return {
-      from_name: match[1].trim().replace(/^"|"$/g, "") || null,
-      from_email: normalizeEmail(match[2]),
-    };
-  }
-  return { from_name: null, from_email: normalizeEmail(raw) };
-}
-
 function getFromAddress() {
   return (
     process.env.CONTACT_FROM_EMAIL ||
@@ -436,56 +371,17 @@ async function sendWithResend(payload) {
   return data;
 }
 
-/**
- * Mirror an admin notification into the website Inbox (/admin/inbox).
- * Contact/intake emails are sent TO Admin@ (Gmail) — they do not hit the
- * Resend inbound webhook, so we store them here as well.
- */
-async function mirrorAdminEmailToWebsiteInbox({
-  resendId,
-  subject,
-  replyTo,
-  replyName,
-  text,
-  html,
-}) {
+/** Best-effort dashboard ping when a site form emails Admin@. */
+async function notifyAdminDashboard({ subject, replyTo, replyName }) {
   const admin = getServiceRoleClient();
-  if (!admin) {
-    console.warn(
-      "[sendAdminEmail] SUPABASE_SERVICE_ROLE_KEY missing — website inbox not updated",
-    );
-    return;
-  }
+  if (!admin) return;
 
   const fromEmail = normalizeEmail(replyTo) || "noreply@optometryconcierge.com";
   const fromName = String(replyName || "").trim() || null;
-  const row = {
-    resend_email_id: resendId || `admin-${Date.now()}`,
-    message_id: resendId ? `<${resendId}@resend.dev>` : null,
-    from_email: fromEmail,
-    from_name: fromName,
-    to_emails: ADMIN_EMAIL ? [ADMIN_EMAIL] : [],
-    cc_emails: [],
-    subject: subject || "(no subject)",
-    text_body: text || null,
-    html_body: html || null,
-    attachments: [],
-    is_read: false,
-    received_at: new Date().toISOString(),
-  };
-
-  const { error } = await admin
-    .from("inbound_emails")
-    .upsert(row, { onConflict: "resend_email_id" });
-
-  if (error) {
-    console.error("[sendAdminEmail] website inbox upsert failed", error);
-    return;
-  }
 
   try {
     await admin.from("admin_notifications").insert({
-      title: "New inbox email",
+      title: "New site email",
       content: `${fromName || fromEmail} — ${subject || "(no subject)"}`,
     });
   } catch (notifyErr) {
@@ -494,8 +390,7 @@ async function mirrorAdminEmailToWebsiteInbox({
 }
 
 /**
- * Send an email to the admin inbox via Resend.
- * Also mirrors into the website Admin → Inbox.
+ * Send an email to Admin@ via Resend (outbound only — replies stay in Gmail).
  * @param {{ subject: string, replyTo?: string, replyName?: string, text: string, html?: string }} options
  */
 export async function sendAdminEmail({
@@ -531,18 +426,10 @@ export async function sendAdminEmail({
     replyTo: formattedReplyTo || null,
   });
 
-  // Best-effort: Gmail already has the message; also show it in /admin/inbox
   try {
-    await mirrorAdminEmailToWebsiteInbox({
-      resendId: data.id,
-      subject,
-      replyTo,
-      replyName,
-      text,
-      html,
-    });
-  } catch (mirrorErr) {
-    console.error("[sendAdminEmail] mirror to website inbox failed", mirrorErr);
+    await notifyAdminDashboard({ subject, replyTo, replyName });
+  } catch (notifyErr) {
+    console.error("[sendAdminEmail] dashboard notify failed", notifyErr);
   }
 
   return data;
